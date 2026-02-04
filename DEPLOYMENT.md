@@ -129,7 +129,27 @@ We will add a **new** server block instead of modifying the default one.
    ```
    *This will load the new config without dropping connections for other sites.*
 
-## 5. Updating Code Later
+## 5. HTTPS Setup (Let's Encrypt)
+
+Secure your site with a free SSL certificate.
+
+1.  **Install Certbot**:
+    ```bash
+    sudo apt install certbot python3-certbot-nginx
+    ```
+
+2.  **Obtain Certificate**:
+    ```bash
+    sudo certbot --nginx -d wesolar.fastcopies.in
+    ```
+    - Enter your email when asked.
+    - Agree to terms (type 'Y').
+    - Choose to **redirect HTTP to HTTPS** (usually option 2) if asked.
+
+3.  **Verify**:
+    Visit https://wesolar.fastcopies.in
+
+## 6. Updating Code Later
 
 When you need to update the version:
 
