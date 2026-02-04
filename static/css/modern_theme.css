@@ -152,6 +152,7 @@ a {
     font-size: 1.5rem;
     background: var(--gradient-primary);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -198,6 +199,7 @@ a {
 .text-gradient {
     background: var(--gradient-primary);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -248,4 +250,127 @@ a {
     /* Light Blue tint */
     border: 1px solid #bae6fd;
     color: var(--accent-primary);
+}
+
+/* =========================================
+   MOBILE RESPONSIVENESS
+   ========================================= */
+@media (max-width: 768px) {
+
+    /* Reduce container padding */
+    .container-fluid {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    /* Card Adjustments */
+    .glass-card {
+        padding: 0;
+        border-radius: 16px;
+    }
+
+    .card-header {
+        padding: 1rem;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    /* Typography */
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    h4 {
+        font-size: 1.25rem;
+    }
+
+    .display-6 {
+        font-size: 1.5rem;
+    }
+
+    /* Navbar */
+    .navbar-brand {
+        font-size: 1.25rem;
+    }
+
+    .nav-link {
+        margin-left: 0;
+        padding: 0.5rem 0;
+    }
+
+    /* Buttons */
+    .btn-premium,
+    .btn-premium-outline {
+        width: 100%;
+        display: block;
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+
+    .d-flex.align-items-center.me-3 {
+        margin-right: 0 !important;
+        margin-bottom: 1rem;
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Tables */
+    .table thead {
+        display: none;
+        /* Hide headers on very small screens if using card view approach, but for now kept simple */
+    }
+
+    .table,
+    .table tbody,
+    .table tr,
+    .table td {
+        display: block;
+        width: 100%;
+    }
+
+    .table tr {
+        margin-bottom: 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1rem;
+        background: #fff;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: right;
+        padding: 0.5rem 0;
+        border: none;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 0.9rem;
+    }
+
+    .table td:last-child {
+        border-bottom: none;
+        justify-content: flex-end;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .table td:before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-align: left;
+        margin-right: 1rem;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+    }
+
+    /* Adjust avatar size */
+    .avatar-circle {
+        width: 40px;
+        height: 40px;
+        font-size: 0.9rem;
+    }
 }

@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-0">Field Engineer Data</h2>
+            <p class="text-muted small">All Submitted Surveys</p>
+        </div>
+        <a href="{% url 'office_dashboard' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <div class="card glass-card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-secondary small text-uppercase">
+                        <tr>
+                            <th class="ps-4 py-3 border-0">Customer / SC No</th>
+                            <th class="py-3 border-0">Submitted By</th>
+                            <th class="py-3 border-0">Status</th>
+                            <th class="py-3 border-0">Date</th>
+                            <th class="py-3 border-0 text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in surveys %}
+                        <tr>
+                            <td class="ps-4" data-label="Customer">
+                                <span class="fw-bold text-dark d-block">{{ item.customer_name }}</span>
+                                <small class="text-muted">{{ item.sc_no }}</small>
+                            </td>
+                            <td class="text-secondary small" data-label="Submitted By">
+                                {% if item.created_by %}
+                                {{ item.created_by.get_full_name|default:item.created_by.username }}
+                                {% else %}
+                                <span class="text-muted">Unknown</span>
+                                {% endif %}
+                            </td>
+                            <td data-label="Status">
+                                {% if item.workflow_status == 'Completed' %}
+                                <span class="badge bg-success-subtle text-success">Completed</span>
+                                {% else %}
+                                <span class="badge bg-warning-subtle text-warning">Pending</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-muted small" data-label="Date">
+                                <div>{{ item.created_at|date:"M d, Y" }}</div>
+                            </td>
+                            <td class="text-end pe-4" data-label="Actions">
+                                <a href="{% url 'site_detail_fe_view' item.pk %}"
+                                    class="btn btn-sm btn-outline-info me-1">
+                                    <i class="bi bi-eye me-1"></i>View
+                                </a>
+                                <a href="{% url 'update_survey' item.pk %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-pencil me-1"></i>Edit
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">No surveys found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

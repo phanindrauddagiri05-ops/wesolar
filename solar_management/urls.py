@@ -12,6 +12,8 @@ urlpatterns = [
     
     # Office / Admin
     path('office/', views.office_dashboard, name='office_dashboard'),
+    path('office/fe-view/<int:pk>/', views.site_detail_fe_view, name='site_detail_fe_view'),
+    path('office/installer-view/<int:pk>/', views.site_detail_installer_view, name='site_detail_installer_view'),
 
     # Master Dashboard
     path('dashboard/', views.master_dashboard, name='dashboard'),
@@ -39,4 +41,9 @@ urlpatterns = [
     # Enquiry System
     path('enquiry/new/', views.create_enquiry, name='create_enquiry'),
     path('enquiry/list/', views.enquiry_list, name='enquiry_list'),
+
+    # Office Portal Restructure
+    path('office/fe-data/', views.office_fe_data, name='office_fe_data'),
+    path('office/installer-data/', views.office_installer_data, name='office_installer_data'),
+    path('office/workers-profiles/', views.office_workers_profiles, name='office_workers_profiles'),
 ]

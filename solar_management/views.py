@@ -469,3 +469,41 @@ def enquiry_list(request):
     """View to list all enquiries. Read-only for most, manageable by Admin."""
     enquiries = Enquiry.objects.all().order_by('-created_at')
     return render(request, 'solar/enquiry_list.html', {'enquiries': enquiries})
+
+# ==========================================
+# 9. OFFICE PORTAL RESTRUCTURE
+# ==========================================
+
+@staff_member_required
+def office_fe_data(request):
+    """View to list all Field Engineer data (Customer Surveys). Read-only viewing but with Edit option."""
+    surveys = CustomerSurvey.objects.all().order_by('-created_at')
+    return render(request, 'solar/office_fe_data.html', {'surveys': surveys})
+
+@staff_member_required
+def office_installer_data(request):
+    """View to list all Installer data (Installations). Read-only viewing but with Edit option."""
+    installations = Installation.objects.all().select_related('survey').order_by('-timestamp')
+    return render(request, 'solar/office_installer_data.html', {'installations': installations})
+
+@staff_member_required
+def office_workers_profiles(request):
+    """View to list Field Engineers and Installers separately."""
+    field_engineers = User.objects.filter(groups__name='Field_Engineers')
+    installers = User.objects.filter(groups__name='Installers')
+    return render(request, 'solar/office_workers_profiles.html', {
+        'field_engineers': field_engineers,
+        'installers': installers
+    })
+
+@staff_member_required
+def site_detail_fe_view(request, pk):
+    """Restricted view: Shows only Field Engineer data (Survey) for Office Admin."""
+    customer = get_object_or_404(CustomerSurvey, pk=pk)
+    return render(request, 'solar/site_detail.html', {'customer': customer, 'view_mode': 'fe_only'})
+
+@staff_member_required
+def site_detail_installer_view(request, pk):
+    """Restricted view: Shows only Installer data (Installation) for Office Admin."""
+    customer = get_object_or_404(CustomerSurvey, pk=pk)
+    return render(request, 'solar/site_detail.html', {'customer': customer, 'view_mode': 'installer_only'})

@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid px-4 py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-0">Workers Profiles</h2>
+            <p class="text-muted small">Registered Field Engineers and Installers</p>
+        </div>
+        <a href="{% url 'office_dashboard' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <!-- Field Engineers Table -->
+        <div class="col-lg-6">
+            <div class="card glass-card border-0 h-100">
+                <div class="card-header bg-transparent border-0 pt-4 pb-2">
+                    <h5 class="fw-bold text-success mb-0"><i class="bi bi-people-fill me-2"></i>Field Engineers</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4 border-0">Name</th>
+                                    <th class="border-0">Mobile</th>
+                                    <th class="border-0">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in field_engineers %}
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle bg-success-subtle text-success me-2 fw-bold"
+                                                style="width: 32px; height: 32px; font-size: 0.85rem;">
+                                                {{ user.first_name|first }}{{ user.last_name|first }}
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold text-dark small">{{ user.get_full_name }}</div>
+                                                <div class="text-muted" style="font-size: 0.75rem;">{{ user.email }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="small">{{ user.userprofile.mobile_number }}</td>
+                                    <td>
+                                        {% if user.is_active %}
+                                        <span
+                                            class="badge bg-success-subtle text-success border border-success rounded-pill"
+                                            style="font-size: 0.7rem;">Active</span>
+                                        {% else %}
+                                        <span
+                                            class="badge bg-secondary-subtle text-secondary border border-secondary rounded-pill"
+                                            style="font-size: 0.7rem;">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center py-3 text-muted small">No Field Engineers found.
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Installers Table -->
+        <div class="col-lg-6">
+            <div class="card glass-card border-0 h-100">
+                <div class="card-header bg-transparent border-0 pt-4 pb-2">
+                    <h5 class="fw-bold text-warning mb-0"><i class="bi bi-tools me-2"></i>Installers</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4 border-0">Name</th>
+                                    <th class="border-0">Mobile</th>
+                                    <th class="border-0">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in installers %}
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle bg-warning-subtle text-warning me-2 fw-bold"
+                                                style="width: 32px; height: 32px; font-size: 0.85rem;">
+                                                {{ user.first_name|first }}{{ user.last_name|first }}
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold text-dark small">{{ user.get_full_name }}</div>
+                                                <div class="text-muted" style="font-size: 0.75rem;">{{ user.email }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="small">{{ user.userprofile.mobile_number }}</td>
+                                    <td>
+                                        {% if user.is_active %}
+                                        <span
+                                            class="badge bg-success-subtle text-success border border-success rounded-pill"
+                                            style="font-size: 0.7rem;">Active</span>
+                                        {% else %}
+                                        <span
+                                            class="badge bg-secondary-subtle text-secondary border border-secondary rounded-pill"
+                                            style="font-size: 0.7rem;">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center py-3 text-muted small">No Installers found.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

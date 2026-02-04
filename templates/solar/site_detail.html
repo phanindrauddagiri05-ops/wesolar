@@ -15,170 +15,151 @@
     </div>
 
     <div class="row">
-        <!-- Site Technicals -->
-        <!-- Only shown if NOT Field Engineer OR if Admin OR if Installer -->
-        {% if request.user.userprofile.role != 'Field Engineer' or request.user.is_staff %}
-        {% if customer.has_installation %}
-        <div class="col-md-12 mb-4">
-            <div class="card glass-card">
-                <div class="card-header bg-transparent border-bottom d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 text-dark"><i class="bi bi-tools me-2"></i>Installation Report</h5>
-                    <span class="badge bg-soft-primary text-primary px-3 py-2 rounded-pill">
-                        <i class="bi bi-person-fill me-1"></i> Installer: {{
-                        customer.installation.updated_by.get_full_name|default:customer.installation.updated_by.username
-                        }}
-                    </span>
-                </div>
-                <div class="card-body">
-                    <!-- Technical Specs -->
-                    <h6 class="text-uppercase text-secondary small fw-bold mb-3">System Specifications</h6>
-                    <div class="row mb-4">
-                        <div class="col-md-3 mb-3">
-                            <small class="text-muted d-block">Inverter</small>
-                            <span class="fw-bold text-dark">{{ customer.installation.inverter_make }} <span
-                                    class="badge bg-light text-dark border ms-1">{{ customer.installation.inverter_phase
-                                    }}</span></span>
+        {% if view_mode == 'installer_only' or view_mode != 'fe_only' and request.user.userprofile.role != 'Field Engineer' or view_mode != 'fe_only' and request.user.is_staff %}
+            {% if customer.has_installation %}
+            <div class="col-md-12 mb-4">
+                <div class="card glass-card">
+                    <div class="card-header bg-transparent border-bottom d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 text-dark"><i class="bi bi-tools me-2"></i>Installation Report</h5>
+                        <span class="badge bg-soft-primary text-primary px-3 py-2 rounded-pill">
+                            <i class="bi bi-person-fill me-1"></i> Installer: {{ customer.installation.updated_by.get_full_name|default:customer.installation.updated_by.username }}
+                        </span>
+                    </div>
+
+                    <div class="card-body">
+                        <h6 class="text-uppercase text-secondary small fw-bold mb-3">System Specifications</h6>
+                        <div class="row mb-4">
+                            <div class="col-6 col-md-3 mb-3">
+                                <small class="text-muted d-block">Inverter</small>
+                                <span class="fw-bold text-dark">{{ customer.installation.inverter_make }}
+                                    <span class="badge bg-light text-dark border ms-1">{{ customer.installation.inverter_phase }}</span>
+                                </span>
+                            </div>
+                            <div class="col-6 col-md-3 mb-3">
+                                <small class="text-muted d-block">App Status</small>
+                                {% if customer.installation.app_installation_status %}
+                                <span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i> Installed</span>
+                                {% else %}
+                                <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i> Pending</span>
+                                {% endif %}
+                            </div>
+                            <div class="col-6 col-md-3 mb-3">
+                                <small class="text-muted d-block">Warranty</small>
+                                {% if customer.installation.warranty_claimed %}
+                                <span class="text-success fw-bold"><i class="bi bi-shield-check me-1"></i> Claimed</span>
+                                {% else %}
+                                <span class="text-muted"><i class="bi bi-shield-x me-1"></i> Not Claimed</span>
+                                {% endif %}
+                            </div>
+                            <div class="col-6 col-md-3 mb-3">
+                                <small class="text-muted d-block">Installed On</small>
+                                <span class="font-monospace text-dark">{{ customer.installation.timestamp|date:"M d, Y" }}</span>
+                            </div>
                         </div>
-                        <div class="col-md-3 mb-3">
-                            <small class="text-muted d-block">App Status</small>
-                            {% if customer.installation.app_installation_status %}
-                            <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i> Installed</span>
-                            {% else %}
-                            <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i>
-                                Pending</span>
+
+                        <hr class="text-muted opacity-25">
+
+                        <h6 class="text-uppercase text-secondary small fw-bold mb-3 mt-4">Material Consumption</h6>
+                        <div class="row mb-4">
+                            <div class="col-6 col-md-3 mb-3">
+                                <div class="p-3 bg-light rounded text-center border">
+                                    <small class="text-muted d-block">AC Cable</small>
+                                    <span class="fw-bold fs-5 text-dark">{{ customer.installation.ac_cable_used }}<span class="fs-6 text-muted">m</span></span>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3 mb-3">
+                                <div class="p-3 bg-light rounded text-center border">
+                                    <small class="text-muted d-block">DC Cable</small>
+                                    <span class="fw-bold fs-5 text-dark">{{ customer.installation.dc_cable_used }}<span class="fs-6 text-muted">m</span></span>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3 mb-3">
+                                <div class="p-3 bg-light rounded text-center border">
+                                    <small class="text-muted d-block">LA Cable</small>
+                                    <span class="fw-bold fs-5 text-dark">{{ customer.installation.la_cable_used }}<span class="fs-6 text-muted">m</span></span>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3 mb-3">
+                                <div class="p-3 bg-light rounded text-center border">
+                                    <small class="text-muted d-block">Pipes</small>
+                                    <span class="fw-bold fs-5 text-dark">{{ customer.installation.pipes_used }}<span class="fs-6 text-muted">m</span></span>
+                                </div>
+                            </div>
+                        </div>
+                        {% if customer.installation.leftover_materials %}
+                        <div class="alert alert-secondary border-0 bg-gray-100 mb-4">
+                            <small class="fw-bold text-dark"><i class="bi bi-box-seam me-2"></i>Leftover Materials:</small>
+                            <p class="mb-0 mt-1 small">{{ customer.installation.leftover_materials }}</p>
+                        </div>
+                        {% endif %}
+
+                        <hr class="text-muted opacity-25">
+
+                        <h6 class="text-uppercase text-secondary small fw-bold mb-3 mt-4">Site Gallery</h6>
+                        <div class="row g-3">
+                            {% if customer.installation.inverter_serial_photo %}
+                            <div class="col-6 col-md-3">
+                                <div class="card border-0 shadow-sm h-100 overflow-hidden">
+                                    <div class="ratio ratio-4x3">
+                                        <img src="{{ customer.installation.inverter_serial_photo.url }}" class="card-img-top object-fit-cover" alt="Inverter Serial">
+                                    </div>
+                                    <div class="card-body p-2 text-center bg-white">
+                                        <small class="text-muted">Inverter Serial</small>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {% if customer.installation.inverter_acdb_photo %}
+                            <div class="col-6 col-md-3">
+                                <div class="card border-0 shadow-sm h-100 overflow-hidden">
+                                    <div class="ratio ratio-4x3">
+                                        <img src="{{ customer.installation.inverter_acdb_photo.url }}" class="card-img-top object-fit-cover" alt="ACDB/DCDB">
+                                    </div>
+                                    <div class="card-body p-2 text-center bg-white">
+                                        <small class="text-muted">ACDB/DCDB</small>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {% if customer.installation.panel_serial_photo %}
+                            <div class="col-6 col-md-3">
+                                <div class="card border-0 shadow-sm h-100 overflow-hidden">
+                                    <div class="ratio ratio-4x3">
+                                        <img src="{{ customer.installation.panel_serial_photo.url }}" class="card-img-top object-fit-cover" alt="Panel Serial">
+                                    </div>
+                                    <div class="card-body p-2 text-center bg-white">
+                                        <small class="text-muted">Panel Serial</small>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {% if customer.installation.site_photos_with_customer %}
+                            <div class="col-6 col-md-3">
+                                <div class="card border-0 shadow-sm h-100 overflow-hidden">
+                                    <div class="ratio ratio-4x3">
+                                        <img src="{{ customer.installation.site_photos_with_customer.url }}" class="card-img-top object-fit-cover" alt="Site w/ Customer">
+                                    </div>
+                                    <div class="card-body p-2 text-center bg-white">
+                                        <small class="text-muted">Completed Site</small>
+                                    </div>
+                                </div>
+                            </div>
                             {% endif %}
                         </div>
-                        <div class="col-md-3 mb-3">
-                            <small class="text-muted d-block">Warranty</small>
-                            {% if customer.installation.warranty_claimed %}
-                            <span class="text-success fw-bold"><i class="bi bi-shield-check me-1"></i> Claimed</span>
-                            {% else %}
-                            <span class="text-muted"><i class="bi bi-shield-x me-1"></i> Not Claimed</span>
-                            {% endif %}
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <small class="text-muted d-block">Installed On</small>
-                            <span class="font-monospace text-dark">{{ customer.installation.timestamp|date:"M d, Y"
-                                }}</span>
-                        </div>
-                    </div>
 
-                    <hr class="text-muted opacity-25">
-
-                    <!-- Materials -->
-                    <h6 class="text-uppercase text-secondary small fw-bold mb-3 mt-4">Material Consumption</h6>
-                    <div class="row mb-4">
-                        <div class="col-6 col-md-3 mb-3">
-                            <div class="p-3 bg-light rounded text-center border">
-                                <small class="text-muted d-block">AC Cable</small>
-                                <span class="fw-bold fs-5 text-dark">{{ customer.installation.ac_cable_used }}<span
-                                        class="fs-6 text-muted">m</span></span>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 mb-3">
-                            <div class="p-3 bg-light rounded text-center border">
-                                <small class="text-muted d-block">DC Cable</small>
-                                <span class="fw-bold fs-5 text-dark">{{ customer.installation.dc_cable_used }}<span
-                                        class="fs-6 text-muted">m</span></span>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 mb-3">
-                            <div class="p-3 bg-light rounded text-center border">
-                                <small class="text-muted d-block">LA Cable</small>
-                                <span class="fw-bold fs-5 text-dark">{{ customer.installation.la_cable_used }}<span
-                                        class="fs-6 text-muted">m</span></span>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 mb-3">
-                            <div class="p-3 bg-light rounded text-center border">
-                                <small class="text-muted d-block">Pipes</small>
-                                <span class="fw-bold fs-5 text-dark">{{ customer.installation.pipes_used }}<span
-                                        class="fs-6 text-muted">m</span></span>
-                            </div>
-                        </div>
-                    </div>
-                    {% if customer.installation.leftover_materials %}
-                    <div class="alert alert-secondary border-0 bg-gray-100 mb-4">
-                        <small class="fw-bold text-dark"><i class="bi bi-box-seam me-2"></i>Leftover Materials:</small>
-                        <p class="mb-0 mt-1 small">{{ customer.installation.leftover_materials }}</p>
-                    </div>
-                    {% endif %}
-
-                    <hr class="text-muted opacity-25">
-
-                    <!-- Photo Gallery -->
-                    <h6 class="text-uppercase text-secondary small fw-bold mb-3 mt-4">Site Gallery</h6>
-                    <div class="row g-3">
-                        {% if customer.installation.inverter_serial_photo %}
-                        <div class="col-6 col-md-3">
-                            <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                                <div class="ratio ratio-4x3">
-                                    <img src="{{ customer.installation.inverter_serial_photo.url }}"
-                                        class="card-img-top object-fit-cover" alt="Inverter Serial">
-                                </div>
-                                <div class="card-body p-2 text-center bg-white">
-                                    <small class="text-muted">Inverter Serial</small>
-                                </div>
-                            </div>
-                        </div>
-                        {% endif %}
-
-                        {% if customer.installation.inverter_acdb_photo %}
-                        <div class="col-6 col-md-3">
-                            <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                                <div class="ratio ratio-4x3">
-                                    <img src="{{ customer.installation.inverter_acdb_photo.url }}"
-                                        class="card-img-top object-fit-cover" alt="ACDB/DCDB">
-                                </div>
-                                <div class="card-body p-2 text-center bg-white">
-                                    <small class="text-muted">ACDB/DCDB</small>
-                                </div>
-                            </div>
-                        </div>
-                        {% endif %}
-
-                        {% if customer.installation.panel_serial_photo %}
-                        <div class="col-6 col-md-3">
-                            <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                                <div class="ratio ratio-4x3">
-                                    <img src="{{ customer.installation.panel_serial_photo.url }}"
-                                        class="card-img-top object-fit-cover" alt="Panel Serial">
-                                </div>
-                                <div class="card-body p-2 text-center bg-white">
-                                    <small class="text-muted">Panel Serial</small>
-                                </div>
-                            </div>
-                        </div>
-                        {% endif %}
-
-                        {% if customer.installation.site_photos_with_customer %}
-                        <div class="col-6 col-md-3">
-                            <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                                <div class="ratio ratio-4x3">
-                                    <img src="{{ customer.installation.site_photos_with_customer.url }}"
-                                        class="card-img-top object-fit-cover" alt="Site w/ Customer">
-                                </div>
-                                <div class="card-body p-2 text-center bg-white">
-                                    <small class="text-muted">Completed Site</small>
-                                </div>
-                            </div>
+                        {% if customer.installation.installer_remarks %}
+                        <div class="mt-4 p-3 bg-light rounded border-start border-4 border-info">
+                            <small class="text-uppercase text-info fw-bold">Installer Remarks</small>
+                            <p class="mb-0 mt-1 text-dark">{{ customer.installation.installer_remarks }}</p>
                         </div>
                         {% endif %}
                     </div>
-
-                    {% if customer.installation.installer_remarks %}
-                    <div class="mt-4 p-3 bg-light rounded border-start border-4 border-info">
-                        <small class="text-uppercase text-info fw-bold">Installer Remarks</small>
-                        <p class="mb-0 mt-1 text-dark">{{ customer.installation.installer_remarks }}</p>
-                    </div>
-                    {% endif %}
                 </div>
             </div>
-        </div>
-        {% endif %}
-        {% endif %}
-
-        <!-- Customer Info -->
+            {% endif %} {% endif %} {% if view_mode != 'installer_only' %}
         <div class="col-md-6 mb-4">
             <div class="card glass-card h-100">
                 <div class="card-header bg-transparent border-bottom">
@@ -211,7 +192,6 @@
             </div>
         </div>
 
-        <!-- Identity & Finance -->
         <div class="col-md-6 mb-4">
             <div class="card glass-card h-100">
                 <div class="card-header bg-transparent border-bottom">
@@ -248,7 +228,6 @@
             </div>
         </div>
 
-        <!-- Site Technicals -->
         <div class="col-md-12 mb-4">
             <div class="card glass-card">
                 <div class="card-header bg-transparent border-bottom">
@@ -256,20 +235,19 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-3 mb-3">
+                        <div class="col-6 col-md-3 mb-3">
                             <small class="text-muted d-block">Feasibility</small>
                             <span class="fw-bold fs-5">{{ customer.feasibility_kw }} KW</span>
                         </div>
-                        <div class="col-md-3 mb-3">
+                        <div class="col-6 col-md-3 mb-3">
                             <small class="text-muted d-block">Roof Type</small>
                             <span class="fw-bold">{{ customer.roof_type }}</span>
                         </div>
-                        <div class="col-md-3 mb-3">
+                        <div class="col-6 col-md-3 mb-3">
                             <small class="text-muted d-block">Structure</small>
-                            <span class="fw-bold">{{ customer.structure_type }} ({{ customer.structure_height }}
-                                ft)</span>
+                            <span class="fw-bold">{{ customer.structure_type }} ({{ customer.structure_height }} ft)</span>
                         </div>
-                        <div class="col-md-3 mb-3">
+                        <div class="col-6 col-md-3 mb-3">
                             <small class="text-muted d-block">GPS Coordinates</small>
                             <span class="fw-bold d-block text-dark mt-1">{{ customer.gps_coordinates }}</span>
                             <div class="mt-2 ratio ratio-1x1 border rounded overflow-hidden shadow-sm">
@@ -296,7 +274,6 @@
             </div>
         </div>
 
-        <!-- MEFMA Details -->
         {% if customer.mefma_status %}
         <div class="col-md-12 mb-4">
             <div class="card border-warning bg-soft-warning">
@@ -315,7 +292,6 @@
         </div>
         {% endif %}
 
-        <!-- Remarks -->
         <div class="col-md-12">
             <div class="card bg-light">
                 <div class="card-body">
@@ -324,7 +300,6 @@
                 </div>
             </div>
         </div>
-
-    </div>
+        {% endif %} </div>
 </div>
 {% endblock %}
