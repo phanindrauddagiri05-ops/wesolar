@@ -5,12 +5,13 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-36k^9i9ey+#26jgem47k52tnrscj_gftk^zayo5(csu8#ufb-z'
+import os
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-36k^9i9ey+#26jgem47k52tnrscj_gftk^zayo5(csu8#ufb-z')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = [
@@ -63,7 +64,7 @@ WSGI_APPLICATION = 'wesolar_web.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'c:/Users/Phanindra/solar_db_safe.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
