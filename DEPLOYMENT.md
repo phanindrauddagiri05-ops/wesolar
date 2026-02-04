@@ -93,7 +93,7 @@ We will add a **new** server block instead of modifying the default one.
    ```nginx
    server {
        listen 80;
-       server_name your-domain-or-ip;  # Change this!
+       server_name wesolar.fastcopies.in;
 
        location = /favicon.ico { access_log off; log_not_found off; }
        
