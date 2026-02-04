@@ -373,4 +373,9 @@ a {
         height: 40px;
         font-size: 0.9rem;
     }
+
+    .btn-mobile-full {
+        width: 100%;
+        display: block;
+    }
 }

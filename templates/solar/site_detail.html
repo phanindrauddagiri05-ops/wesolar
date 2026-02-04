@@ -15,7 +15,7 @@
     </div>
 
     <div class="row">
-        {% if view_mode == 'installer_only' or view_mode != 'fe_only' and request.user.userprofile.role != 'Field Engineer' or view_mode != 'fe_only' and request.user.is_staff %}
+        {% if view_mode == 'installer_only' or not view_mode and request.user.userprofile.role != 'Field Engineer' or not view_mode and request.user.is_staff %}
             {% if customer.has_installation %}
             <div class="col-md-12 mb-4">
                 <div class="card glass-card">
@@ -159,7 +159,10 @@
                     </div>
                 </div>
             </div>
-            {% endif %} {% endif %} {% if view_mode != 'installer_only' %}
+            {% endif %}
+        {% endif %}
+
+        {% if view_mode == 'fe_only' or not view_mode %}
         <div class="col-md-6 mb-4">
             <div class="card glass-card h-100">
                 <div class="card-header bg-transparent border-bottom">
@@ -300,6 +303,7 @@
                 </div>
             </div>
         </div>
-        {% endif %} </div>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="container-fluid px-4 py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
         <div>
             <h2 class="fw-bold text-dark mb-0">Pending Installations</h2>
             <p class="text-muted small">Installer Dashboard - Full Visibility</p>
@@ -33,18 +33,20 @@
                     <tbody>
                         {% for item in pending_installations %}
                         <tr>
-                            <td class="ps-4 fw-bold text-dark">{{ item.customer_name }}</td>
-                            <td class="text-muted">{{ item.sc_no }}</td>
-                            <td class="text-muted">{{ item.phase }}</td>
-                            <td class="text-muted">{{ item.roof_type }}</td>
-                            <td>
+                            <td class="ps-4 fw-bold text-dark" data-label="Customer Name">{{ item.customer_name }}</td>
+                            <td class="text-muted" data-label="SC No">{{ item.sc_no }}</td>
+                            <td class="text-muted" data-label="Phase">{{ item.phase }}</td>
+                            <td class="text-muted" data-label="Roof Type">{{ item.roof_type }}</td>
+                            <td data-label="Status">
                                 <span class="badge bg-warning text-dark">Pending</span>
                             </td>
-                            <td class="text-center">
-                                <a href="{% url 'update_installation' item.id %}" class="btn btn-sm btn-premium mb-1">
+                            <td class="text-center" data-label="Details">
+                                <a href="{% url 'update_installation' item.id %}"
+                                    class="btn btn-sm btn-premium mb-1 btn-mobile-full">
                                     <i class="bi bi-file-earmark-plus"></i> New Installation
                                 </a>
-                                <a href="{% url 'site_detail' item.id %}" class="btn btn-sm btn-outline-info">
+                                <a href="{% url 'site_detail' item.id %}"
+                                    class="btn btn-sm btn-outline-info btn-mobile-full">
                                     View Full Details
                                 </a>
                             </td>
@@ -86,17 +88,18 @@
                     <tbody>
                         {% for item in completed_installations %}
                         <tr>
-                            <td class="ps-4 fw-bold text-dark">{{ item.customer_name }}</td>
-                            <td class="text-muted">{{ item.sc_no }}</td>
-                            <td class="text-muted">{{ item.phase }}</td>
-                            <td>
+                            <td class="ps-4 fw-bold text-dark" data-label="Customer Name">{{ item.customer_name }}</td>
+                            <td class="text-muted" data-label="SC No">{{ item.sc_no }}</td>
+                            <td class="text-muted" data-label="Phase">{{ item.phase }}</td>
+                            <td data-label="Completion Status">
                                 <span class="badge bg-success">Installation Complete</span>
                             </td>
-                            <td class="text-center">
-                                <a href="{% url 'site_detail' item.id %}" class="btn btn-sm btn-outline-success">
+                            <td class="text-center" data-label="Actions">
+                                <a href="{% url 'site_detail' item.id %}"
+                                    class="btn btn-sm btn-outline-success btn-mobile-full">
                                     <i class="bi bi-eye"></i> View Details
                                 </a>
-                        
+
                             </td>
                         </tr>
                         {% empty %}

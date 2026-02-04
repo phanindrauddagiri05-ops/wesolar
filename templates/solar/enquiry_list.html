@@ -2,12 +2,12 @@
 
 {% block content %}
 <div class="container-fluid px-4 py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
         <div>
             <h2 class="fw-bold text-dark mb-0">Enquiries</h2>
             <p class="text-muted small">Contact Requests from Landing Page</p>
         </div>
-        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-mobile-full">
             <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
         </a>
     </div>
@@ -28,14 +28,13 @@
                     <tbody>
                         {% for item in enquiries %}
                         <tr>
-                            <td class="ps-4 fw-bold text-dark">{{ item.name }}</td>
-                            <td class="text-muted">{{ item.mobile_number }}</td>
-                            <td class="text-muted">{{ item.email }}</td>
-                            <td class="text-muted text-truncate" style="max-width: 250px;">{{ item.address }}</td>
-                            <td class="text-muted small">
+                            <td class="ps-4 fw-bold text-dark" data-label="Name">{{ item.name }}</td>
+                            <td class="text-muted" data-label="Mobile">{{ item.mobile_number }}</td>
+                            <td class="text-muted" data-label="Email">{{ item.email }}</td>
+                            <td class="text-muted text-truncate" style="max-width: 250px;" data-label="Address">{{item.address }}</td>
+                            <td class="text-muted small" data-label="Submitted On">
                                 <div>{{ item.created_at|date:"M d, Y" }}</div>
-                                <div class="text-secondary" style="font-size: 0.85em;">{{ item.created_at|date:"H:i:s"
-                                    }}</div>
+                                <div class="text-secondary" style="font-size: 0.85em;">{{ item.created_at|date:"H:i:s"}}</div>
                             </td>
                         </tr>
                         {% empty %}
