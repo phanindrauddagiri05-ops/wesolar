@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container d-flex align-items-center justify-content-center" style="min-height: 80vh;">
+    <div class="card glass-card shadow-lg" style="max-width: 500px; width: 100%;">
+        <div class="card-header text-center py-4 border-0">
+            <h2 class="mb-0 text-success">Create Account</h2>
+            <p class="text-muted small">Join as Engineer or Installer</p>
+        </div>
+        <div class="card-body p-4 pt-0">
+
+            <form method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn btn-premium btn-lg bg-success border-success">Create
+                        Account</button>
+                </div>
+            </form>
+
+            <div class="text-center mt-4">
+                <a href="{% url 'login' %}" class="text-info text-decoration-none">Already have an account? Login</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="card p-4 shadow">
+    <h3>Installer Entry Portal</h3>
+    <hr>
+    <div class="mb-4 p-3 bg-light border rounded">
+        <label class="form-label"><strong>Step 1: Fetch Customer Data</strong></label>
+        <div class="input-group">
+            <input type="text" id="phone_lookup" class="form-control" placeholder="Enter Phone Number (10 digits)">
+            <button class="btn btn-dark" type="button" onclick="fetchData()">Fetch Details</button>
+        </div>
+        <small class="text-muted">Data will be fetched from Field Engineer records.</small>
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-success w-100 mt-3">Submit Installation Details</button>
+    </form>
+</div>
+
+<script>
+function fetchData() {
+    const phone = document.getElementById('phone_lookup').value;
+    if (phone.length < 10) {
+        alert("Please enter a valid 10-digit phone number.");
+        return;
+    }
+
+    fetch(`/api/get-customer/?phone=${phone}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Auto-fill form fields by their IDs (Django IDs are usually id_fieldname)
+                document.getElementById('id_customer_name').value = data.customer_name;
+                document.getElementById('id_sc_no').value = data.sc_no;
+                document.getElementById('id_phase').value = data.phase;
+                
+                // Show a success message
+                alert("Data found for: " + data.customer_name);
+            } else {
+                alert("No record found for this phone number. Please check with Field Engineer.");
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+</script>
+{% endblock %}

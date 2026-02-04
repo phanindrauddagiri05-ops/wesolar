@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container d-flex align-items-center justify-content-center" style="min-height: 80vh;">
+    <div class="card glass-card shadow-lg" style="max-width: 400px; width: 100%;">
+        <div class="card-header text-center py-4 border-0">
+            <h2 class="mb-0 text-gradient">{% if role_name %}{{ role_name }}{% else %}User{% endif %} Login</h2>
+            <p class="text-muted small">Welcome back to WeSolar</p>
+        </div>
+        <div class="card-body p-4 pt-0">
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn btn-premium btn-lg">Login</button>
+                </div>
+            </form>
+
+            <div class="text-center mt-4">
+                <p class="text-muted mb-2">Don't have an account?</p>
+                <a href="{% url 'signup' %}" class="text-active text-decoration-none text-primary">Create Account</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

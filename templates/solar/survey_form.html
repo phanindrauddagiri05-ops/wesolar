@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-9">
+        <div class="card glass-card border-0">
+            <div class="card-header border-bottom border-light bg-transparent py-3">
+                <h2 class="text-center mb-0 text-gradient">Field Engineer - Site Survey</h2>
+                <p class="text-center text-muted small mb-0">Capture inaccurate site details for solar feasibility</p>
+            </div>
+
+            <div class="card-body p-4">
+                <form method="post" class="needs-validation" novalidate enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <h5 class="text-primary border-bottom pb-2 mb-3"><i class="bi bi-person-fill me-2"></i>Customer
+                        Details</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">{{ form.customer_name|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.sc_no|as_crispy_field }}</div>
+                        <div class="col-md-4">{{ form.phase|as_crispy_field }}</div>
+                        <div class="col-md-4">{{ form.feasibility_kw|as_crispy_field }}</div>
+                        <div class="col-md-4">{{ form.phone_number|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.email|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.aadhar_linked_phone|as_crispy_field }}</div>
+                    </div>
+
+                    <h5 class="text-primary border-bottom pb-2 mb-3"><i class="bi bi-bank me-2"></i>Financial & Identity
+                    </h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">{{ form.aadhar_no|as_crispy_field }}</div>
+                        <div class="col-md-4">{{ form.pan_card|as_crispy_field }}</div>
+                        <div class="col-md-4">{{ form.bank_account_no|as_crispy_field }}</div>
+                    </div>
+
+                    <h5 class="text-primary border-bottom pb-2 mb-3"><i class="bi bi-geo-alt-fill me-2"></i>Site Details
+                    </h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">{{ form.roof_type|as_crispy_field }}</div>
+                        <div class="col-md-4">{{ form.structure_type|as_crispy_field }}</div>
+                        <div class="col-md-4">{{ form.structure_height|as_crispy_field }}</div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4 pt-4">
+                            {{ form.is_critical_site|as_crispy_field }}
+                        </div>
+                        <div class="col-md-8">
+                            {{ form.roof_photo|as_crispy_field }}
+                            <small class="text-muted fst-italic">* Mandatory if Critical Site is checked</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-primary"><i class="bi bi-crosshair"></i></span>
+                            {{ form.gps_coordinates|as_crispy_field }}
+                            <button type="button" class="btn btn-outline-primary" id="getLocationBtn"
+                                title="Get Current Location">
+                                <i class="bi bi-geo-fill"></i> Auto-Detect
+                            </button>
+                        </div>
+                        <small class="text-muted">Click Auto-Detect to capture coordinates.</small>
+                    </div>
+
+                    <h5 class="text-primary border-bottom pb-2 mb-3"><i class="bi bi-currency-rupee me-2"></i>Pricing &
+                        Approvals</h5>
+                    <div class="bg-light p-3 rounded mb-4 border">
+                        <div class="row">
+                            <div class="col-md-4">{{ form.agreed_amount|as_crispy_field }}</div>
+                            <div class="col-md-4">{{ form.registration_status|as_crispy_field }}</div>
+                            <div class="col-md-4 pt-4">
+                                {{ form.mefma_status|as_crispy_field }}
+                            </div>
+                        </div>
+                        <!-- MEFMA Dependent Fields -->
+                        <div class="row mt-2" id="mefmaFields" style="display:none;">
+                            <div class="col-md-6">{{ form.rp_name|as_crispy_field }}</div>
+                            <div class="col-md-6">{{ form.rp_phone_number|as_crispy_field }}</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        {{ form.fe_remarks|as_crispy_field }}
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-premium btn-lg">Submit Survey Data</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('getLocationBtn').addEventListener('click', function () {
+        const btn = this;
+        const inputField = document.getElementById('id_gps_coordinates');
+
+        if (navigator.geolocation) {
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Detecting...';
+            btn.disabled = true;
+
+            navigator.geolocation.getCurrentPosition(function (position) {
+                const lat = position.coords.latitude.toFixed(6);
+                const long = position.coords.longitude.toFixed(6);
+
+                if (inputField) {
+                    inputField.value = `Lat: ${lat}, Long: ${long}`;
+                    btn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Captured';
+                    btn.classList.remove('btn-outline-primary');
+                    btn.classList.add('btn-success');
+                    setTimeout(() => {
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="bi bi-geo-fill"></i> Update Location';
+                        btn.classList.remove('btn-success');
+                        btn.classList.add('btn-outline-primary');
+                    }, 3000);
+                }
+            }, function (error) {
+                alert("Location access denied. Please enable GPS.");
+                btn.innerHTML = '<i class="bi bi-geo-alt"></i> Retry';
+                btn.disabled = false;
+            });
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    });
+
+    // MEFMA Toggle Logic
+    const mefmaCheckbox = document.getElementById('id_mefma_status');
+    const mefmaFields = document.getElementById('mefmaFields');
+
+    function toggleMefma() {
+        if (mefmaCheckbox.checked) {
+            mefmaFields.style.display = 'flex';
+        } else {
+            mefmaFields.style.display = 'none';
+        }
+    }
+
+    if (mefmaCheckbox) {
+        mefmaCheckbox.addEventListener('change', toggleMefma);
+        toggleMefma(); // Run on load
+    }
+</script>
+{% endblock %}

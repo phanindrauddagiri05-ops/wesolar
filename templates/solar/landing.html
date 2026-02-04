@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container d-flex flex-column align-items-center justify-content-center" style="min-height: 80vh;">
+    <div class="text-center mb-5">
+        <h1 class="display-3 fw-bold text-gradient mb-3">Powering the Future</h1>
+        <p class="lead text-secondary mb-4">Select your role to access the WeSolar platform.</p>
+
+    </div>
+
+    <div class="row g-4 w-100 justify-content-center">
+        <!-- Field Engineer -->
+        <div class="col-md-3">
+            <a href="{% url 'login' %}?role=field_engineer"
+                class="card glass-card h-100 text-decoration-none hover-lift">
+                <div class="card-body text-center d-flex flex-column align-items-center justify-content-center p-5">
+                    <div class="icon-box text-success">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <h3 class="card-title text-dark">Field Engineer</h3>
+                    <p class="text-muted small">Site Surveys & Data Collection</p>
+                    <span class="btn btn-premium mt-3 w-100">Login <i class="bi bi-arrow-right ms-2"></i></span>
+                </div>
+            </a>
+        </div>
+
+        <!-- Installer -->
+        <div class="col-md-3">
+            <a href="{% url 'login' %}?role=installer" class="card glass-card h-100 text-decoration-none hover-lift">
+                <div class="card-body text-center d-flex flex-column align-items-center justify-content-center p-5">
+                    <div class="icon-box text-warning">
+                        <i class="bi bi-tools"></i>
+                    </div>
+                    <h3 class="card-title text-dark">Installer</h3>
+                    <p class="text-muted small">Installation Updates & Media</p>
+                    <span class="btn btn-premium mt-3 w-100">Login <i class="bi bi-arrow-right ms-2"></i></span>
+                </div>
+            </a>
+        </div>
+
+        <!-- Office -->
+        <div class="col-md-3">
+            <a href="{% url 'office_login' %}" class="card glass-card h-100 text-decoration-none hover-lift">
+                <div class="card-body text-center d-flex flex-column align-items-center justify-content-center p-5">
+                    <div class="icon-box text-danger">
+                        <i class="bi bi-building"></i>
+                    </div>
+                    <h3 class="card-title text-dark">Office</h3>
+                    <p class="text-muted small">Admin Dashboard & Approvals</p>
+                    <span class="btn btn-premium mt-3 w-100">Login <i class="bi bi-arrow-right ms-2"></i></span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Enquiry Link -->
+    <div class="mt-5">
+        <button type="button" class="btn btn-premium btn-lg shadow-sm px-5" data-bs-toggle="modal"
+            data-bs-target="#enquiryModal">
+            <i class="bi bi-envelope-fill me-2"></i>Have an Enquiry? Contact Us
+        </button>
+
+    </div>
+
+    <!-- Enquiry Modal -->
+    <div class="modal fade" id="enquiryModal" tabindex="-1" aria-labelledby="enquiryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-card border-0">
+                <div class="modal-header border-bottom border-light">
+                    <h5 class="modal-title font-weight-bold" id="enquiryModalLabel">Enquiry Form</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form action="{% url 'create_enquiry' %}" method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="id_name" class="form-label">Full Name</label>
+                            <input type="text" name="name" class="form-control" id="id_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_mobile_number" class="form-label">Mobile Number</label>
+                            <input type="text" name="mobile_number" class="form-control" id="id_mobile_number" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_email" class="form-label">Email Address</label>
+                            <input type="email" name="email" class="form-control" id="id_email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_address" class="form-label">Address</label>
+                            <textarea name="address" class="form-control" id="id_address" rows="3" required></textarea>
+                        </div>
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-premium btn-lg">Submit Enquiry</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

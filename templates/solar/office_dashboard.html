@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-gradient"><i class="bi bi-building text-danger me-2"></i>Office Dashboard</h2>
+            <p class="text-muted mb-0">Admin Control Center</p>
+        </div>
+        <div>
+            <a href="{% url 'enquiry_list' %}" class="btn btn-outline-primary me-2">
+                <i class="bi bi-envelope me-2"></i>View Enquiries
+            </a>
+           
+        </div>
+    </div>
+
+    <!-- Section 1: Pending Approvals -->
+    <div class="card glass-card border-0 mb-5">
+        <div class="card-header bg-transparent border-0 pt-4 pb-0">
+            <h4 class="card-title fw-bold text-dark"><i class="bi bi-person-check-fill text-warning me-2"></i>Pending
+                Account Approvals</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="bg-light text-secondary small text-uppercase">
+                        <tr>
+                            <th class="ps-4 border-0">User Details</th>
+                            <th class="border-0">Start Date</th>
+                            <th class="border-0">Role</th>
+                            <th class="border-0">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user_obj in pending_users %}
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle bg-light text-primary me-3 fw-bold">
+                                        {{ user_obj.first_name|first }}{{ user_obj.last_name|first }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-dark">{{ user_obj.get_full_name }}</div>
+                                        <div class="small text-muted">{{ user_obj.email }}</div>
+                                        <div class="small text-muted">{{ user_obj.userprofile.mobile_number }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-muted">{{ user_obj.date_joined|date:"M d, Y" }}</td>
+                            <td>
+                                <span
+                                    class="badge bg-secondary-subtle text-secondary border border-secondary rounded-pill px-3">
+                                    {{ user_obj.groups.all.0.name }}
+                                </span>
+                            </td>
+                            <td>
+                                <form action="{% url 'approve_user' user_obj.pk %}" method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-success shadow-sm">
+                                        <i class="bi bi-check-lg me-1"></i>Approve
+                                    </button>
+                                </form>
+                                <button class="btn btn-sm btn-outline-danger ms-1"
+                                    onclick="alert('Rejection flow to be implemented')">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-4 text-muted">
+                                <i class="bi bi-check-circle display-6 mb-2 d-block text-success opacity-50"></i>
+                                All caught up! No pending approvals.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Section 2: Field Engineer Data -->
+        <div class="col-lg-6">
+            <div class="card glass-card border-0 h-100">
+                <div class="card-header bg-transparent border-0 pt-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-people-fill text-primary me-2"></i>Field
+                            Engineer Data</h5>
+                        <span class="badge bg-primary rounded-pill">{{ fe_data.count }} Records</span>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light sticky-top">
+                                <tr>
+                                    <th class="ps-4 border-0">Customer</th>
+                                    <th class="border-0">Engineer</th>
+                                    <th class="border-0">Status</th>
+                                    <th class="border-0">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in fe_data %}
+                                <tr>
+                                    <td class="ps-4 fw-bold text-dark">{{ item.customer_name }}</td>
+                                    <td class="text-secondary small">{{ item.created_by.get_full_name }}</td>
+                                    <td>
+                                        {% if item.workflow_status == 'Completed' %}
+                                        <span class="badge bg-success-subtle text-success">Completed</span>
+                                        {% else %}
+                                        <span class="badge bg-warning-subtle text-warning">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-muted small">
+                                        <div>{{ item.created_at|date:"M d, Y" }}</div>
+                                        <div class="text-secondary" style="font-size: 0.85em;">{{item.created_at|date:"H:i:s" }}</div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Installer Data -->
+        <div class="col-lg-6">
+            <div class="card glass-card border-0 h-100">
+                <div class="card-header bg-transparent border-0 pt-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-tools text-warning me-2"></i>Installer Data
+                        </h5>
+                        <span class="badge bg-warning text-dark rounded-pill">{{ installer_data.count }} Records</span>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light sticky-top">
+                                <tr>
+                                    <th class="ps-4 border-0">Ref Survey</th>
+                                    <th class="border-0">Installer</th>
+                                    <th class="border-0">Inverter</th>
+                                    <th class="border-0">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in installer_data %}
+                                <tr>
+                                    <td class="ps-4 fw-bold text-dark">{{ item.survey.customer_name }}</td>
+                                    <td class="text-secondary small">{{ item.updated_by.get_full_name }}</td>
+                                    <td class="text-dark small">{{ item.inverter_make }}</td>
+                                    <td class="text-muted small">
+                                        <div>{{ item.created_at|date:"M d, Y" }}</div>
+                                        <div class="text-secondary" style="font-size: 0.85em;">{{item.created_at|date:"H:i:s" }}</div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

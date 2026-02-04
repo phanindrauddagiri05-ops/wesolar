@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3">
+    <h3>Active Surveys</h3>
+    <a href="{% url 'create_survey' %}" class="btn btn-success">+ New Survey</a>
+</div>
+
+<table class="table table-hover card">
+    <thead class="table-dark">
+        <tr>
+            <th>Customer</th>
+            <th>SC No</th>
+            <th>Phone</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for survey in surveys %}
+        <tr>
+            <td>{{ survey.customer_name }}</td>
+            <td>{{ survey.sc_no }}</td>
+            <td>{{ survey.phone_number }}</td>
+            <td>
+                {% if survey.registration_status %}
+                <span class="badge bg-success">Registered</span>
+                {% else %}
+                <span class="badge bg-warning">Pending</span>
+                {% endif %}
+            </td>
+            <td>
+                <a href="{% url 'delete_and_restart' survey.pk %}" class="btn btn-danger btn-sm">Delete & Restart</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

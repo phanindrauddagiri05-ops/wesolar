@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Survey Details (Read Only) -->
+        <div class="col-12 mb-4">
+            <div class="card glass-card border-0">
+                <div class="card-header bg-transparent border-bottom">
+                    <h5 class="mb-0 text-dark"><i class="bi bi-info-circle me-2"></i>Field Engineer Data</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">Customer</small>
+                            <span class="fw-bold">{{ survey.customer_name }}</span>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">Phone</small>
+                            <span class="fw-bold">{{ survey.phone_number }}</span>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">SC No</small>
+                            <span class="fw-bold">{{ survey.sc_no }}</span>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">Phase</small>
+                            <span class="fw-bold">{{ survey.phase }}</span>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">Feasibility</small>
+                            <span class="fw-bold">{{ survey.feasibility_kw }} KW</span>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">Roof Type</small>
+                            <span class="fw-bold">{{ survey.roof_type }}</span>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted d-block">Structure</small>
+                            <span class="fw-bold">{{ survey.structure_type }} ({{ survey.structure_height }} ft)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Installation Form -->
+        <div class="col-12">
+            <div class="card shadow-lg border-0 p-4">
+                <h2 class="fw-bold text-dark mb-4"><i class="bi bi-tools"></i> Installation Entry Portal</h2>
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <!-- Hiding Survey Selection as it's pre-filled -->
+                    <!-- Survey is handled automatically by the backend -->
+
+                    <h5 class="text-primary border-bottom pb-2 mt-3 mb-3"><i class="bi bi-cpu me-2"></i>Hardware</h5>
+                    <div class="row">
+                        <div class="col-md-6">{{ form.inverter_make|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.inverter_phase|as_crispy_field }}</div>
+
+                        <div class="col-md-4">{{ form.inverter_serial_photo|as_crispy_field }}</div>
+                        <div class="col-md-4">{{ form.inverter_acdb_photo|as_crispy_field }}</div>
+                        <div class="col-md-4">{{ form.panel_serial_photo|as_crispy_field }}</div>
+                    </div>
+
+                    <h5 class="text-primary border-bottom pb-2 mt-3 mb-3"><i
+                            class="bi bi-gear-wide-connected me-2"></i>Logistics & Materials</h5>
+                    <div class="row">
+                        <div class="col-md-3">{{ form.ac_cable_used|as_crispy_field }}</div>
+                        <div class="col-md-3">{{ form.dc_cable_used|as_crispy_field }}</div>
+                        <div class="col-md-3">{{ form.la_cable_used|as_crispy_field }}</div>
+                        <div class="col-md-3">{{ form.pipes_used|as_crispy_field }}</div>
+                        <div class="col-md-12">{{ form.leftover_materials|as_crispy_field }}</div>
+                    </div>
+
+                    <h5 class="text-primary border-bottom pb-2 mt-3 mb-3"><i
+                            class="bi bi-check-circle me-2"></i>Completion</h5>
+                    <div class="row">
+                        <div class="col-md-4 pt-4">
+                            {{ form.warranty_claimed|as_crispy_field }}
+                        </div>
+                        <div class="col-md-4 pt-4">
+                            {{ form.app_installation_status|as_crispy_field }}
+                        </div>
+                        <div class="col-md-4">{{ form.site_photos_with_customer|as_crispy_field }}</div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-6">{{ form.installer_remarks|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.customer_remarks|as_crispy_field }}</div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 mt-3 py-2 fw-bold">Submit Installation
+                        Report</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // No client-side fetch needed; data is passed via context
+</script>
+{% endblock %}

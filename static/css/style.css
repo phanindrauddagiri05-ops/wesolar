@@ -1,0 +1,71 @@
+/* WeSolar Custom Styles */
+
+:root {
+    --wesolar-primary: #0d6efd;
+    --wesolar-success: #198754;
+    --wesolar-warning: #f1c40f;
+    --wesolar-dark: #212529;
+}
+
+/* 1. Dashboard Table Polish */
+.table-hover tbody tr:hover {
+    background-color: rgba(13, 110, 253, 0.05); /* Soft blue highlight */
+    transition: background-color 0.2s ease;
+}
+
+#projectTable th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+}
+
+/* 2. Custom Status Badges */
+.badge-pill-custom {
+    padding: 0.5em 1em;
+    font-weight: 500;
+    border: 1px solid transparent;
+}
+
+/* 3. Masked Data Security Look */
+.font-monospace {
+    font-family: 'Courier New', Courier, monospace;
+    letter-spacing: 1px;
+}
+
+/* 4. Form Styling for Students/Installers */
+.card-shadow {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border: none;
+}
+
+input:focus, select:focus {
+    border-color: var(--wesolar-primary) !important;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+}
+
+/* 5. Responsive Image Thumbnails (For Installation Gallery) */
+.gallery-img {
+    height: 150px;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.gallery-img:hover {
+    transform: scale(1.03);
+}
+
+/* 6. Dashboard Timeline Stepper */
+.step-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin: 0 auto;
+}

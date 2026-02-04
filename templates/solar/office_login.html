@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container d-flex align-items-center justify-content-center" style="min-height: 80vh;">
+    <div class="card glass-card shadow-lg border-danger" style="max-width: 400px; width: 100%;">
+        <div class="card-header text-center py-4 border-0">
+            <h2 class="mb-0 text-danger"><i class="bi bi-building me-2"></i>Office Portal</h2>
+            <p class="text-muted small">Restricted Access: Administrators Only</p>
+        </div>
+        <div class="card-body p-4 pt-0">
+            <div class="card-body p-4 pt-0">
+                <!-- Messages handled centrally in base.html -->
+
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-danger btn-lg shadow-sm">Secure Login</button>
+                    </div>
+                </form>
+
+                <div class="text-center mt-3">
+                    <small class="text-muted">Unauthorized access is prohibited.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}

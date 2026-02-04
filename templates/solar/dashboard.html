@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h2 class="fw-bold text-gradient"><i class="bi bi-sun-fill text-warning me-2"></i>Master Tracker</h2>
+            <p class="text-muted mb-0">Total active projects: <span class="badge bg-primary rounded-pill">{{all_data.count }}</span></p>
+        </div>
+        <div class="btn-group shadow-md rounded-3 overflow-hidden">
+            <a href="{% url 'create_survey' %}" class="btn btn-white border-end border-light"><i
+                    class="bi bi-plus-circle text-success"></i> Survey</a>
+            <a href="{% url 'installation_entry' %}" class="btn btn-white border-end border-light"><i
+                    class="bi bi-tools text-info"></i> Install</a>
+            <a href="{% url 'bank_entry' %}" class="btn btn-white border-end border-light"><i
+                    class="bi bi-bank text-warning"></i> Finance</a>
+            <a href="{% url 'export_solar_data' %}" class="btn btn-white"><i class="bi bi-download text-dark"></i>
+                CSV</a>
+        </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="card glass-card mb-4 border-0">
+        <div class="card-body py-3">
+            <div class="row align-items-center">
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-end-0 border-light text-muted"><i
+                                class="bi bi-search"></i></span>
+                        <input type="text" id="dashboardSearch"
+                            class="form-control bg-transparent border-start-0 border-light text-dark"
+                            placeholder="Search by Name, SC No, or Aadhar...">
+                    </div>
+                </div>
+                <div class="col text-end">
+                    <small class="text-muted"><i class="bi bi-info-circle me-1"></i> Use keywords to filter results
+                        instantly.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="card glass-card border-0 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="projectTable">
+                <thead class="text-uppercase small text-muted bg-light">
+                    <tr>
+                        <th class="py-3 bg-light text-secondary border-0">Customer Name</th>
+                        <th class="py-3 bg-light text-secondary border-0">SC No</th>
+                        {% if user.is_staff or user.groups.all.0.name == 'Office' %}
+                        <th class="py-3 bg-light text-secondary border-0">Submitted By</th>
+                        {% endif %}
+                        <th class="py-3 bg-light text-secondary border-0">Status</th>
+                        <th>Finance Tracking</th>
+                        <th class="text-center pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in all_data %}
+                    <tr>
+                        <td class="ps-4">
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold text-dark fs-6">{{ item.customer_name }}</span>
+                                <small class="text-info-emphasis">SC: {{ item.sc_no }}</small>
+                                <small class="text-muted"><i class="bi bi-shield-lock me-1"></i>ID: {{
+                                    item.masked_aadhar }}</small>
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="d-flex align-items-center">
+                                {% if item.registration_status %}
+                                <span
+                                    class="badge bg-success-subtle text-success border border-success rounded-pill px-3">Registered</span>
+                                {% else %}
+                                <span
+                                    class="badge bg-warning-subtle text-warning border border-warning rounded-pill px-3">Pending
+                                    Admin</span>
+                                {% endif %}
+
+                                {% if user.is_staff %}
+                                <form action="{% url 'toggle_registration' item.pk %}" method="post" class="ms-2">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                        class="btn btn-link p-0 text-decoration-none small text-muted hover-lift"
+                                        title="Toggle Status">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </td>
+
+                        <td>
+                            {% if item.installation %}
+                            <div class="d-flex flex-column">
+                                <span class="text-info fw-bold"><i class="bi bi-check-circle-fill me-1"></i>
+                                    Installed</span>
+                                <small class="text-muted">{{ item.installation.inverter_make }}</small>
+                                <small class="text-secondary font-monospace">{{ item.installation.ac_cable_used }}m AC
+                                    Cable</small>
+                            </div>
+                            {% else %}
+                            <span class="text-muted small italic"><i class="bi bi-clock me-1"></i> Waiting for
+                                Installer</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if item.bank_details %}
+                            <div class="p-2 rounded bg-light border-start border-success border-4 shadow-sm"
+                                style="max-width: 180px;">
+                                <small class="d-block text-truncate text-secondary"><strong>UTR:</strong> {{
+                                    item.bank_details.first_loan_utr }}</small>
+                                <small class="d-block text-success fw-bold">₹{{ item.bank_details.first_loan_amount
+                                    }}</small>
+                            </div>
+                            {% else %}
+                            <span class="text-danger small fw-semibold"><i class="bi bi-cash-stack me-1"></i> Pending
+                                UTR</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="text-center pe-4">
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-premium-outline dropdown-toggle" type="button"
+                                    data-bs-toggle="dropdown">
+                                    Manage
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-lg border-light">
+                                    <li><a class="dropdown-item hover-bg-light"
+                                            href="{% url 'site_detail' item.pk %}"><i class="bi bi-eye me-2"></i> View
+                                            Full Site</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item text-danger"
+                                            href="{% url 'delete_and_restart' item.pk %}"
+                                            onclick="return confirm('Client Rule: Data must be deleted to be changed. Are you sure you want to delete this record?')">
+                                            <i class="bi bi-trash me-2"></i> Delete & Restart
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <div class="py-5">
+                                <i class="bi bi-stars display-1 text-muted opacity-25"></i>
+                                <h4 class="mt-4 text-muted">Awaiting Stardom</h4>
+                                <p class="text-secondary">No solar projects currently in the pipeline.</p>
+                                <a href="{% url 'create_survey' %}" class="btn btn-premium mt-3">Add First Customer</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Local Overrides */
+    .btn-white {
+        background: white;
+        color: var(--text-primary);
+        border: 1px solid #e2e8f0;
+    }
+
+    .btn-white:hover {
+        background: #f8fafc;
+    }
+</style>
+
+<script>
+    document.getElementById('dashboardSearch').addEventListener('keyup', function () {
+        let filter = this.value.toUpperCase();
+        let rows = document.querySelector("#projectTable tbody").rows;
+        for (let i = 0; i < rows.length; i++) {
+            let rowContent = rows[i].textContent.toUpperCase();
+            if (rowContent.indexOf(filter) > -1) {
+                rows[i].style.display = "";
+            } else {
+                rows[i].style.display = "none";
+            }
+        }
+    });
+</script>
+{% endblock %}
