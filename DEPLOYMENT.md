@@ -98,7 +98,7 @@ We will add a **new** server block instead of modifying the default one.
        location = /favicon.ico { access_log off; log_not_found off; }
        
        location /static/ {
-           root /var/www/wesolar;
+           alias /var/www/wesolar/staticfiles/;
        }
 
        location /media/ {
