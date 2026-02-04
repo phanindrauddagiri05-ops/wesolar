@@ -49,9 +49,9 @@ Ensure these are installed on the server:
 
 ## 3. Gunicorn Setup
 
-Test it first to make sure it runs:
+Test it first to make sure it runs (we use port **8005** to be safe):
 ```bash
-gunicorn --bind 0.0.0.0:8001 wesolar_web.wsgi
+gunicorn --bind 0.0.0.0:8005 wesolar_web.wsgi
 ```
 *Press Ctrl+C to stop.*
 
@@ -60,18 +60,23 @@ Create a service file so the app stays running: `sudo nano /etc/systemd/system/w
 
 ```ini
 [Unit]
-Description=WeSolar Gunicorn daemon
+Description=WeSolar Gunicorn Daemon
 After=network.target
 
 [Service]
 User=www-data
 Group=www-data
 WorkingDirectory=/var/www/wesolar
-ExecStart=/var/www/wesolar/venv/bin/gunicorn --access-logfile - --workers 3 --bind unix:/var/www/wesolar/wesolar.sock wesolar_web.wsgi:application
+ExecStart=/var/www/wesolar/venv/bin/gunicorn \
+          --access-logfile - \
+          --workers 3 \
+          --bind unix:/var/www/wesolar/wesolar.sock \
+          wesolar_web.wsgi:application
 
 [Install]
 WantedBy=multi-user.target
 ```
+*Note: The socket file `wesolar.sock` handles the connection, so the port is only needed if you run Gunicorn manually without a socket. If using the service above, we use a socket file which avoids port conflicts entirely!* 
 
 Start it:
 ```bash
