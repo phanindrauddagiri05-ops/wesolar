@@ -5,14 +5,19 @@
 <div class="container d-flex align-items-center justify-content-center" style="min-height: 80vh;">
     <div class="card glass-card shadow-lg" style="max-width: 400px; width: 100%;">
         <div class="card-header text-center py-4 border-0">
-            <h2 class="mb-0 text-gradient">{% if role_name %}{{ role_name }}{% else %}User{% endif %} Login</h2>
-            <p class="text-muted small">Welcome back to WeSolar</p>
+            <h2 class="mb-0 text-gradient">Login</h2>
+            <p class="text-muted small">Select your role and enter credentials</p>
         </div>
         <div class="card-body p-4 pt-0">
             {% if messages %}
             {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show d-flex align-items-center shadow-sm"
+                role="alert">
+                <i
+                    class="bi {% if message.tags == 'error' %}bi-exclamation-triangle-fill{% else %}bi-check-circle-fill{% endif %} me-2 fs-5"></i>
+                <div class="fw-medium">
+                    {{ message }}
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
             {% endfor %}
@@ -20,7 +25,69 @@
 
             <form method="post">
                 {% csrf_token %}
-                {{ form|crispy }}
+                <style>
+                    /* Force dropdown visibility and styling */
+                    select.form-select {
+                        background-color: white !important;
+                        /* Ensure high contrast */
+                        color: #333 !important;
+                        cursor: pointer;
+                        border: 1px solid #ced4da;
+                        appearance: auto;
+                        /* Ensure OS default arrow is visible if bootstrap fails */
+                        -webkit-appearance: menulist;
+                        /* Fallback for Safari/Chrome */
+                    }
+
+                    .input-group-text {
+                        background-color: #f8f9fa !important;
+                        border-right: 0;
+                    }
+
+                    .form-control,
+                    .form-select {
+                        border-left: 0;
+                    }
+                </style>
+
+                <!-- Login Type -->
+                <div class="mb-4">
+                    <label for="{{ form.login_type.id_for_label }}"
+                        class="form-label fw-bold text-uppercase small text-muted">Select Login Type <span
+                            class="text-danger">*</span></label>
+                    <div class="input-group shadow-sm">
+                        <span class="input-group-text">
+                            <i class="bi bi-list-ul text-primary"></i>
+                        </span>
+                        {{ form.login_type }}
+                    </div>
+                </div>
+
+                <!-- Mobile Number -->
+                <div class="mb-4">
+                    <label for="{{ form.mobile_number.id_for_label }}"
+                        class="form-label fw-bold text-uppercase small text-muted">Mobile Number <span
+                            class="text-danger">*</span></label>
+                    <div class="input-group shadow-sm">
+                        <span class="input-group-text">
+                            <i class="bi bi-phone text-primary"></i>
+                        </span>
+                        {{ form.mobile_number }}
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div class="mb-4">
+                    <label for="{{ form.password.id_for_label }}"
+                        class="form-label fw-bold text-uppercase small text-muted">Password <span
+                            class="text-danger">*</span></label>
+                    <div class="input-group shadow-sm">
+                        <span class="input-group-text">
+                            <i class="bi bi-lock text-primary"></i>
+                        </span>
+                        {{ form.password }}
+                    </div>
+                </div>
                 <div class="d-grid gap-2 mt-4">
                     <button type="submit" class="btn btn-premium btn-lg">Login</button>
                 </div>

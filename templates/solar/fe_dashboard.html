@@ -12,7 +12,6 @@
         </a>
     </div>
 
-    <!-- Basic Details Table -->
     <div class="card glass-card border-0 shadow-sm">
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -31,13 +30,12 @@
                         <tr>
                             <td class="ps-4 fw-bold text-dark" data-label="Customer Name">{{ item.customer_name }}</td>
                             <td class="text-muted" data-label="SC No">{{ item.sc_no }}</td>
-                            <td data-label="Feasibility"><span
-                                    class="badge bg-soft-success text-success">{{item.feasibility_kw }} KW</span>
+                            <td data-label="Feasibility">
+                                <span class="badge bg-soft-success text-success">{{ item.feasibility_kw }} KW</span>
                             </td>
                             <td class="text-muted small" data-label="Applied On">
                                 <div>{{ item.created_at|date:"M d, Y" }}</div>
-                                <div class="text-secondary" style="font-size: 0.85em;">{{ item.created_at|date:"H:i:s"}}
-                                </div>
+                                <div class="text-secondary" style="font-size: 0.85em;">{{ item.created_at|date:"H:i:s" }}</div>
                             </td>
                             <td class="text-center" data-label="Action">
                                 <a href="{% url 'site_detail' item.id %}" class="btn btn-sm btn-outline-primary">

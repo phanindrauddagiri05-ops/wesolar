@@ -17,9 +17,9 @@
 <body>
 
     <div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 1050;">
-        {% if messages %}
+        {% if messages and not hide_toast %}
         {% for message in messages %}
-        <div class="toast align-items-center text-white bg-{{ message.tags|default:'primary' }} border-0 show"
+        <div class="toast align-items-center text-white bg-{% if message.tags == 'error' %}danger{% else %}{{ message.tags|default:'primary' }}{% endif %} border-0 show"
             role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
                 <div class="toast-body">
@@ -48,65 +48,60 @@
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
-                <div class="navbar-nav me-auto">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    {# SINGLE LINE IF STATEMENT TO PREVENT SYNTAX ERROR #}
                     {% if request.resolver_match.url_name == 'login' or request.resolver_match.url_name == 'office_login' %}
-                    <a class="nav-link" href="{% url 'landing' %}"><i class="bi bi-house-door me-1"></i>Home</a>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'landing' %}"><i class="bi bi-house-door me-1"></i>Home</a>
+                    </li>
                     {% endif %}
 
                     {% if user.is_authenticated %}
                         {% if user.is_staff %}
-                        <a class="nav-link" href="{% url 'office_dashboard' %}">Office Dashboard</a>
-                        <a class="nav-link" href="{% url 'office_fe_data' %}">Field Engineer</a>
-                        <a class="nav-link" href="{% url 'office_installer_data' %}">Installation</a>
-                        <a class="nav-link" href="{% url 'enquiry_list' %}">Enquiries</a>
-                        <a class="nav-link" href="{% url 'office_workers_profiles' %}">Workers Profiles</a>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'office_dashboard' %}">Office Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'office_fe_data' %}">Field Engineer</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'office_installer_data' %}">Installation</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'enquiry_list' %}">Enquiries</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'office_workers_profiles' %}">Workers Profiles</a></li>
                         {% else %}
-                        <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a></li>
 
                         {% if user.groups.all.0.name == 'Field_Engineers' %}
-                        <a class="nav-link" href="{% url 'create_survey' %}">New Survey</a>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'create_survey' %}">New Survey</a></li>
                         {% endif %}
 
                         {% if user.groups.all.0.name == 'Installers' %}
-                        <a class="nav-link" href="{% url 'dashboard' %}">Installation</a>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Installation</a></li>
                         {% endif %}
 
-                        <a class="nav-link" href="{% url 'enquiry_list' %}">Enquiries</a>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'enquiry_list' %}">Enquiries</a></li>
                         {% endif %}
                     {% endif %}
-                </div>
+                </ul>
 
-                <div class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
                     {% if user.is_authenticated %}
-                    <div class="d-flex align-items-center me-3">
+                    <li class="nav-item d-flex align-items-center me-3 mb-2 mb-lg-0">
                         <i class="bi bi-person-circle text-primary me-2"></i>
                         <span class="navbar-text text-dark fw-bold">{{ user.username }}</span>
-                    </div>
-                    <a class="btn btn-premium-outline btn-sm" href="{% url 'logout' %}">Logout</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-premium-outline btn-sm w-100 w-lg-auto" href="{% url 'logout' %}">Logout</a>
+                    </li>
                     {% else %}
-                    <a class="btn btn-premium-outline btn-sm dropdown-toggle" href="#" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        Login
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="{% url 'login' %}?role=field_engineer"><i
-                                    class="bi bi-people me-2"></i>Field Engineer</a></li>
-                        <li><a class="dropdown-item" href="{% url 'login' %}?role=installer"><i
-                                    class="bi bi-tools me-2"></i>Installer</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="{% url 'office_login' %}"><i
-                                    class="bi bi-building me-2"></i>Office</a></li>
-                    </ul>
+                    <li class="nav-item">
+                        <a class="btn btn-premium-outline btn-sm w-100 w-lg-auto" href="{% url 'login' %}">Login</a>
+                    </li>
                     {% endif %}
-                </div>
+                </ul>
             </div>
         </div>
     </nav>
 
     <main class="py-4">
-        {% block content %}{% endblock %}
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
     </main>
 
     <footer class="mt-auto py-3 text-center text-muted" style="border-top: 1px solid var(--solar-border);">

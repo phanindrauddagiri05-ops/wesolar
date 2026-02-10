@@ -109,8 +109,18 @@ class SignUpForm(forms.ModelForm):
         return cleaned_data
 
 class LoginForm(forms.Form):
-    mobile_number = forms.CharField(max_length=15, required=True)
-    password = forms.CharField(widget=forms.PasswordInput, required=True)
+    LOGIN_TYPE_CHOICES = [
+        ('', 'Select Login Type'),
+        ('field_engineer', 'Field Engineer'),
+        ('installer', 'Installer'),
+        ('office', 'Office'),
+    ]
+    login_type = forms.ChoiceField(
+        choices=LOGIN_TYPE_CHOICES, 
+        widget=forms.Select(attrs={'class': 'form-select form-select-lg', 'style': 'cursor: pointer;'})
+    )
+    mobile_number = forms.CharField(max_length=15, required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), required=True)
 
 class EnquiryForm(forms.ModelForm):
     class Meta:

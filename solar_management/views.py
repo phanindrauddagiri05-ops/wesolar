@@ -10,6 +10,8 @@ from django.contrib.auth.models import Group, User
 
 from .models import CustomerSurvey, Installation, BankDetails, UserProfile, Enquiry
 from .forms import SurveyForm, InstallationForm, BankDetailsForm, SignUpForm, LoginForm, EnquiryForm
+from django.core.mail import send_mail
+from django.conf import settings
 
 # ==========================================
 # 0. AUTHENTICATION & LANDING
@@ -22,72 +24,90 @@ def landing_page(request):
     return render(request, 'solar/landing.html')
 
 def custom_login_view(request):
-    # Get role from query params to customize UI (Hoisted for scope availability)
-    role = request.GET.get('role', 'User')
-    role_name = role.replace('_', ' ').title()
+    """Unified login view for Field Engineer, Installer, and Office."""
+    if request.user.is_authenticated:
+         # Redirect if already logged in based on role
+         if request.user.is_staff:
+             return redirect('office_dashboard')
+         try:
+             # Try to find profile role
+            profile = request.user.userprofile
+            if 'Field Engineer' in profile.role:
+                return redirect('dashboard')
+            elif 'Installer' in profile.role:
+                return redirect('dashboard')
+         except:
+             pass 
+         return redirect('dashboard') # Default fallback
 
+    # Pre-select dropdown if role checks fail or coming from specific link
+    initial_data = {}
+    role_param = request.GET.get('role', '')
+    if role_param:
+        initial_data['login_type'] = role_param
+    
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
+            login_type = form.cleaned_data['login_type']
             mobile = form.cleaned_data['mobile_number']
             password = form.cleaned_data['password']
             
-            profile = None # Initialize to avoid UnboundLocalError
-            
-            # 1. Try to look up profile first (Standard Flow)
-            try:
-                profile = UserProfile.objects.get(mobile_number=mobile)
-            except UserProfile.DoesNotExist:
-                profile = None
-
             user = None
-            if profile:
-                # If profile exists, authenticate using linked user
+            profile = None
+            
+            # --- 1. Authenticate User ---
+            # Try finding user by Profile first (Mobile -> User -> Auth)
+            try:
+                profile = UserProfile.objects.select_related('user').get(mobile_number=mobile)
                 user = authenticate(username=profile.user.username, password=password)
-
-            # 2. If no user found via Profile, try direct auth (Superusers/Staff bypass)
-            if not user:
-                 user = authenticate(username=mobile, password=password)
+            except UserProfile.DoesNotExist:
+                # Fallback: Try direct mobile auth (for Superusers/Office who might use mobile as username)
+                user = authenticate(username=mobile, password=password)
 
             if user:
-                 # 1. Admin/Staff Bypass (Always Allowed if on Office/Generic login)
-                if user.is_staff:
-                    if role == 'office' or role == 'User':
+                 # --- 2. Role Validation ---
+                
+                # A. OFFICE LOGIN
+                if login_type == 'office':
+                    # Staff/Superusers OR Users with 'Office' role
+                    if user.is_staff or (profile and profile.role == 'Office'):
                         login(request, user)
                         return redirect('office_dashboard')
                     else:
-                         messages.error(request, "Admins should use the Office Login.")
-                         return render(request, 'solar/login.html', {'form': form, 'role_name': role_name, 'role_slug': role})
+                         messages.error(request, "Access Denied: You do not have Office permissions.")
 
-                # 2. Standard User Check (Requires Profile)
-                if not profile:
-                     messages.error(request, "User Profile not found.")
-                else:
-                    # Strict Role Check
-                    user_role = profile.role
-                    role_map = {
-                        'field_engineer': 'Field Engineer',
-                        'installer': 'Installer',
-                        'office': 'Office'
-                    }
-
-                    if role in role_map:
-                        expected_role = role_map[role]
-                        if user_role != expected_role:
-                            messages.error(request, f"Access Denied: This form is strictly for {expected_role}s.")
-                            return render(request, 'solar/login.html', {'form': form, 'role_name': role_name, 'role_slug': role})
-
-                    if profile.is_approved:
-                        login(request, user)
-                        return redirect('dashboard')
+                # B. FIELD ENGINEER LOGIN
+                elif login_type == 'field_engineer':
+                    if profile and 'Field Engineer' in profile.role:
+                        if profile.is_approved:
+                            login(request, user)
+                            return redirect('dashboard')
+                        else:
+                            messages.error(request, "Account pending admin approval.")
                     else:
-                        messages.error(request, "Your account is pending admin verification.")
+                        messages.error(request, "This account is not registered as a Field Engineer.")
+
+                # C. INSTALLER LOGIN
+                elif login_type == 'installer':
+                    if profile and 'Installer' in profile.role:
+                        if profile.is_approved:
+                            login(request, user)
+                            return redirect('dashboard')
+                        else:
+                            messages.error(request, "Account pending admin approval.")
+                    else:
+                        messages.error(request, "This account is not registered as an Installer.")
+                
+                else:
+                    messages.error(request, "Invalid login type selected.")
+
             else:
-                messages.error(request, "Invalid credentials.")
+                messages.error(request, "Invalid mobile number or password.")
     else:
-        form = LoginForm()
+        form = LoginForm(initial=initial_data)
     
-    return render(request, 'solar/login.html', {'form': form, 'role_name': role_name, 'role_slug': role})
+    return render(request, 'solar/login.html', {'form': form, 'hide_toast': True})
 
 def office_login_view(request):
     """Dedicated login view for Office/Admin users only."""
@@ -128,7 +148,7 @@ def office_login_view(request):
     else:
         form = LoginForm()
         
-    return render(request, 'solar/office_login.html', {'form': form})
+    return render(request, 'solar/office_login.html', {'form': form, 'hide_toast': True})
     
     return render(request, 'solar/login.html', {'form': form, 'role_name': role_name, 'role_slug': role})
 
@@ -152,6 +172,31 @@ def signup_view(request):
                 role=form.cleaned_data['role'],
                 is_approved=False
             )
+
+            # Send Email Notification
+            subject = 'Welcome to WeSolar - Account Created'
+            message = f"""
+            Hi {user.first_name},
+
+            Thank you for registering with WeSolar.
+            
+            Your account has been created successfully and is currently pending admin approval.
+            You will receive another notification once your account is approved.
+
+            Username: {user.username}
+            Role: {UserProfile.objects.get(user=user).role}
+
+            Best regards,
+            The WeSolar Team
+            """
+            from_email = settings.EMAIL_HOST_USER if hasattr(settings, 'EMAIL_HOST_USER') else 'noreply@wesolar.com'
+            recipient_list = [user.email]
+            
+            try:
+                send_mail(subject, message, from_email, recipient_list)
+            except Exception as e:
+                # Log error but don't fail the signup
+                print(f"Failed to send email: {e}")
             
             messages.success(request, "your account will be conform by the admin")
             return redirect('login')
