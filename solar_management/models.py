@@ -22,6 +22,7 @@ class CustomerSurvey(models.Model):
     STRUCTURE_CHOICES = [('Normal', 'Normal'), ('Vertical', 'Vertical'), ('Horizontal', 'Horizontal')]
 
     customer_name = models.CharField(max_length=255)
+    connection_type = models.CharField(max_length=50, blank=True) # New Field
     sc_no = models.CharField(max_length=16)
     phase = models.CharField(max_length=20, choices=[('Single', 'Single'), ('Three', 'Three')])
     feasibility_kw = models.FloatField()
@@ -38,14 +39,19 @@ class CustomerSurvey(models.Model):
     structure_type = models.CharField(max_length=100, choices=STRUCTURE_CHOICES)
     structure_height = models.FloatField(help_text="in Feet")
     gps_coordinates = models.CharField(max_length=100)
+    area = models.CharField(max_length=255, blank=True) # New Field
     
     # Pricing & Status
     agreed_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    advance_paid = models.DecimalField(max_digits=10, decimal_places=2, default=0.0) # New Field
     mefma_status = models.BooleanField(default=False, help_text="Is MEFMA approved?")
     rp_name = models.CharField(max_length=255, blank=True, null=True)
     rp_phone_number = models.CharField(max_length=15, blank=True, null=True)
     
     fe_remarks = models.TextField(blank=True)
+    reference_name = models.CharField(max_length=255, blank=True) # New Field
+    pms_registration_number = models.CharField(max_length=50, blank=True) # New Field
+    division = models.CharField(max_length=100, blank=True) # New Field
     registration_status = models.BooleanField(default=False) # Editable only by Admin
     
     WORKFLOW_STATUS_CHOICES = [('Pending', 'Pending'), ('Completed', 'Completed')]
@@ -99,6 +105,11 @@ class Installation(models.Model):
     
     installer_remarks = models.TextField(blank=True)
     customer_remarks = models.TextField(blank=True)
+    
+    # Electrical Readings
+    dc_voltage = models.FloatField(default=0.0, help_text="in Volts") # New Field
+    ac_voltage = models.FloatField(default=0.0, help_text="in Volts") # New Field
+    earthing_resistance = models.FloatField(default=0.0, help_text="in Ohms") # New Field
     
     timestamp = models.DateTimeField(auto_now_add=True)
     updated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)

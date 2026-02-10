@@ -85,6 +85,13 @@
                         {{ form.fe_remarks|as_crispy_field }}
                     </div>
 
+                    <div class="test-primary border-bottom pb-2 mb-3">
+                        <h5 class="text-primary"><i class="bi bi-bank2 me-2"></i>Bank Details</h5>
+                    </div>
+                    <div class="mb-4">
+                        {{ bank_form|crispy }}
+                    </div>
+
                     <div class="d-grid gap-2 mt-4">
                         <button type="submit" class="btn btn-premium btn-lg">Submit Survey Data</button>
                     </div>

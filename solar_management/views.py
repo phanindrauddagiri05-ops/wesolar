@@ -324,15 +324,26 @@ def create_survey(request):
     """Initial data entry for Field Engineers with role restriction."""
     if request.method == "POST":
         form = SurveyForm(request.POST, request.FILES)
-        if form.is_valid():
+        bank_form = BankDetailsForm(request.POST)
+
+        if form.is_valid() and bank_form.is_valid():
             survey = form.save(commit=False)
             survey.created_by = request.user
             survey.save()
+            
+            bank_details = bank_form.save(commit=False)
+            bank_details.survey = survey
+            # Default tracking status for new entries
+            bank_details.loan_pending_status = 'Pending' 
+            bank_details.save()
+
             messages.success(request, f"Project for {survey.customer_name} created.")
             return redirect('dashboard')
     else:
         form = SurveyForm()
-    return render(request, 'solar/survey_form.html', {'form': form})
+        bank_form = BankDetailsForm()
+    
+    return render(request, 'solar/survey_form.html', {'form': form, 'bank_form': bank_form})
 
 @login_required
 @user_passes_test(is_field_engineer)

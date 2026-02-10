@@ -8,7 +8,19 @@ class SurveyForm(forms.ModelForm):
 
     class Meta:
         model = CustomerSurvey
-        exclude = ['created_by', 'created_at']
+        model = CustomerSurvey
+        fields = [
+            'customer_name', 'connection_type', 'sc_no', 'phase', 'feasibility_kw',
+            'aadhar_no', 'pan_card', 'email', 'aadhar_linked_phone', 'phone_number',
+            'bank_account_no', # Field in CustomerSurvey
+            'area', 'gps_coordinates', 'roof_type', 'roof_photo', 'structure_type',
+            'structure_height', 'agreed_amount', 'advance_paid', 'mefma_status',
+            'rp_name', 'rp_phone_number', 'fe_remarks', 'reference_name', 
+            'pms_registration_number', 'division'
+        ]
+        widgets = {
+             'gps_coordinates': forms.TextInput(attrs={'placeholder': 'Latitude, Longitude'}),
+        }
 
     def clean_sc_no(self):
         sc_no = self.cleaned_data.get('sc_no')
