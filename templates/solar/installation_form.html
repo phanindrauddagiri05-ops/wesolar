@@ -1,44 +1,54 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 
+
 {% block content %}
 <div class="container mt-4">
     <div class="row">
-        <!-- Survey Details (Read Only) -->
+        <!-- Survey Details (Auto-fetched / Read Only) -->
         <div class="col-12 mb-4">
             <div class="card glass-card border-0">
                 <div class="card-header bg-transparent border-bottom">
-                    <h5 class="mb-0 text-dark"><i class="bi bi-info-circle me-2"></i>Field Engineer Data</h5>
+                    <h5 class="mb-0 text-dark fw-bold"><i class="bi bi-info-circle-fill text-primary me-2"></i>Site
+                        Details (Auto-fetched)</h5>
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-md-3">
-                            <small class="text-muted d-block">Customer</small>
-                            <span class="fw-bold">{{ survey.customer_name }}</span>
+                            <label class="small text-muted text-uppercase fw-bold">Customer Name</label>
+                            <input type="text" class="form-control bg-light" value="{{ survey.customer_name }}"
+                                readonly>
                         </div>
                         <div class="col-md-3">
-                            <small class="text-muted d-block">Phone</small>
-                            <span class="fw-bold">{{ survey.phone_number }}</span>
+                            <label class="small text-muted text-uppercase fw-bold">Phone Number</label>
+                            <input type="text" class="form-control bg-light" value="{{ survey.phone_number }}" readonly>
                         </div>
                         <div class="col-md-3">
-                            <small class="text-muted d-block">SC No</small>
-                            <span class="fw-bold">{{ survey.sc_no }}</span>
+                            <label class="small text-muted text-uppercase fw-bold">SC No</label>
+                            <input type="text" class="form-control bg-light" value="{{ survey.sc_no }}" readonly>
                         </div>
                         <div class="col-md-3">
-                            <small class="text-muted d-block">Phase</small>
-                            <span class="fw-bold">{{ survey.phase }}</span>
+                            <label class="small text-muted text-uppercase fw-bold">Phase</label>
+                            <input type="text" class="form-control bg-light" value="{{ survey.phase }}" readonly>
                         </div>
                         <div class="col-md-3">
-                            <small class="text-muted d-block">Feasibility</small>
-                            <span class="fw-bold">{{ survey.feasibility_kw }} KW</span>
+                            <label class="small text-muted text-uppercase fw-bold">Feasibility (KW)</label>
+                            <input type="text" class="form-control bg-light" value="{{ survey.feasibility_kw }}"
+                                readonly>
                         </div>
                         <div class="col-md-3">
-                            <small class="text-muted d-block">Roof Type</small>
-                            <span class="fw-bold">{{ survey.roof_type }}</span>
+                            <label class="small text-muted text-uppercase fw-bold">Type of Roof</label>
+                            <input type="text" class="form-control bg-light" value="{{ survey.roof_type }}" readonly>
                         </div>
                         <div class="col-md-3">
-                            <small class="text-muted d-block">Structure</small>
-                            <span class="fw-bold">{{ survey.structure_type }} ({{ survey.structure_height }} ft)</span>
+                            <label class="small text-muted text-uppercase fw-bold">Structure Type</label>
+                            <input type="text" class="form-control bg-light" value="{{ survey.structure_type }}"
+                                readonly>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="small text-muted text-uppercase fw-bold">Structure Height</label>
+                            <input type="text" class="form-control bg-light" value="{{ survey.structure_height }} ft"
+                                readonly>
                         </div>
                     </div>
                 </div>
@@ -48,77 +58,115 @@
         <!-- Installation Form -->
         <div class="col-12">
             <div class="card shadow-lg border-0 p-4">
-                <h2 class="fw-bold text-dark mb-4"><i class="bi bi-tools"></i> Installation Entry Portal</h2>
+                <h2 class="fw-bold text-dark mb-4"><i class="bi bi-tools text-warning me-2"></i> Installation Entry</h2>
 
-                <form method="post" enctype="multipart/form-data">
+                <form method="post" enctype="multipart/form-data" novalidate>
                     {% csrf_token %}
 
                     {% if form.errors %}
-                    <div class="alert alert-danger">
-                        <h5>Please correct the errors below:</h5>
-                        <ul>
+                    <div class="alert alert-danger shadow-sm border-0">
+                        <h5 class="alert-heading"><i class="bi bi-exclamation-triangle-fill me-2"></i>Please correct
+                            errors:</h5>
+                        <ul class="mb-0">
                             {% for field, errors in form.errors.items %}
                             <li><strong>{{ field|title }}:</strong> {{ errors|join:", " }}</li>
                             {% endfor %}
                         </ul>
                     </div>
                     {% endif %}
-                    <!-- Hiding Survey Selection as it's pre-filled -->
-                    <!-- Survey is handled automatically by the backend -->
 
-                    <h5 class="text-primary border-bottom pb-2 mt-3 mb-3"><i class="bi bi-cpu me-2"></i>Hardware</h5>
-                    <div class="row">
-                        <div class="col-md-6">{{ form.inverter_make|as_crispy_field }}</div>
-                        <div class="col-md-6">{{ form.inverter_phase|as_crispy_field }}</div>
-
+                    <!-- Hardware Section -->
+                    <h5 class="text-primary border-bottom pb-2 mt-3 mb-3 fw-bold"><i class="bi bi-cpu me-2"></i>Hardware
+                        Details</h5>
+                    <div class="row g-3">
+                        <div class="col-md-4">{{ form.inverter_make|as_crispy_field }}</div>
+                        <div class="col-md-4">{{ form.inverter_phase|as_crispy_field }}</div>
+                        <!-- Inverter Serial is a Photo Upload as per requirement -->
                         <div class="col-md-4">{{ form.inverter_serial_photo|as_crispy_field }}</div>
-                        <div class="col-md-4">{{ form.inverter_acdb_photo|as_crispy_field }}</div>
-                        <div class="col-md-4">{{ form.panel_serial_photo|as_crispy_field }}</div>
+
+                        <div class="col-md-6">{{ form.inverter_acdb_photo|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.panel_serial_photo|as_crispy_field }}</div>
                     </div>
 
-                    <h5 class="text-primary border-bottom pb-2 mt-3 mb-3"><i
-                            class="bi bi-gear-wide-connected me-2"></i>Logistics & Materials</h5>
-                    <div class="row">
+                    <!-- Cables & Materials -->
+                    <h5 class="text-primary border-bottom pb-2 mt-4 mb-3 fw-bold"><i
+                            class="bi bi-gear-wide-connected me-2"></i>Cables & Materials</h5>
+                    <div class="row g-3">
                         <div class="col-md-3">{{ form.ac_cable_used|as_crispy_field }}</div>
                         <div class="col-md-3">{{ form.dc_cable_used|as_crispy_field }}</div>
                         <div class="col-md-3">{{ form.la_cable_used|as_crispy_field }}</div>
                         <div class="col-md-3">{{ form.pipes_used|as_crispy_field }}</div>
-                        <div class="col-md-12">{{ form.leftover_materials|as_crispy_field }}</div>
+                        <div class="col-12">{{ form.leftover_materials|as_crispy_field }}</div>
                     </div>
 
-                    <h5 class="text-primary border-bottom pb-2 mt-3 mb-3"><i
+                    <!-- Readings -->
+                    <h5 class="text-primary border-bottom pb-2 mt-4 mb-3 fw-bold"><i
                             class="bi bi-lightning-charge me-2"></i>Electrical Readings</h5>
-                    <div class="row">
+                    <div class="row g-3">
                         <div class="col-md-4">{{ form.dc_voltage|as_crispy_field }}</div>
                         <div class="col-md-4">{{ form.ac_voltage|as_crispy_field }}</div>
                         <div class="col-md-4">{{ form.earthing_resistance|as_crispy_field }}</div>
                     </div>
 
-                    <h5 class="text-primary border-bottom pb-2 mt-3 mb-3"><i
-                            class="bi bi-check-circle me-2"></i>Completion</h5>
-                    <div class="row">
-                        <div class="col-md-4 pt-4">
-                            {{ form.warranty_claimed|as_crispy_field }}
+                    <!-- Completion & Remarks -->
+                    <h5 class="text-primary border-bottom pb-2 mt-4 mb-3 fw-bold"><i
+                            class="bi bi-check-circle me-2"></i>Status & Remarks</h5>
+                    <div class="row g-3">
+                        <div class="col-md-3 pt-4">
+                            <div class="form-check form-switch">
+                                {{ form.warranty_claimed }}
+                                <label class="form-check-label fw-bold"
+                                    for="{{ form.warranty_claimed.id_for_label }}">Warranty Claimed?</label>
+                            </div>
                         </div>
-                        <div class="col-md-4 pt-4">
-                            {{ form.app_installation_status|as_crispy_field }}
+                        <div class="col-md-3 pt-4">
+                            <div class="form-check form-switch">
+                                {{ form.app_installation_status }}
+                                <label class="form-check-label fw-bold"
+                                    for="{{ form.app_installation_status.id_for_label }}">App Installed?</label>
+                            </div>
                         </div>
-                        <div class="col-md-4">{{ form.site_photos_with_customer|as_crispy_field }}</div>
-                    </div>
+                        <div class="col-md-6">{{ form.site_photos_with_customer|as_crispy_field }}</div>
 
-                    <div class="row mt-3">
-                        <div class="col-md-6">{{ form.installer_remarks|as_crispy_field }}</div>
                         <div class="col-md-6">{{ form.customer_remarks|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.installer_remarks|as_crispy_field }}</div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary w-100 mt-3 py-2 fw-bold">Submit Installation
-                        Report</button>
+                    <div class="d-grid gap-2 mt-5">
+                        <button type="submit" class="btn btn-premium btn-lg shadow hover-lift fw-bold">
+                            <i class="bi bi-send-fill me-2"></i> Submit Installation Report
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
 <script>
-    // No client-side fetch needed; data is passed via context
+    document.addEventListener('DOMContentLoaded', function () {
+        // Real-time Numeric Validation
+        function setNumericOnly(fieldId) {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.addEventListener('input', function (e) {
+                    // Allow digits and one decimal point
+                    this.value = this.value.replace(/[^0-9.]/g, '');
+                    if ((this.value.match(/\./g) || []).length > 1) {
+                        this.value = this.value.replace(/\.$/, ""); // Remove second decimal
+                    }
+                });
+            }
+        }
+
+        // Apply to Cable/Voltage/Resistance fields based on ID generated by Django
+        // Django generated IDs are usually id_fieldname
+        const numericFields = [
+            'id_ac_cable_used', 'id_dc_cable_used', 'id_la_cable_used', 'id_pipes_used',
+            'id_dc_voltage', 'id_ac_voltage', 'id_earthing_resistance'
+        ];
+
+        numericFields.forEach(id => setNumericOnly(id));
+    });
 </script>
 {% endblock %}

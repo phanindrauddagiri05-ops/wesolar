@@ -3,8 +3,8 @@ from . import views
 
 urlpatterns = [
     # Auth & Landing
-    path('', views.landing_page, name='landing'),
-    path('login/', views.custom_login_view, name='login'),
+    path('', views.custom_login_view, name='login'), # Login is now Home
+    # path('login/', views.custom_login_view, name='login'), # Removed redundant path
     path('admin-portal/login/', views.admin_login_view, name='admin_login'),
     path('signup/', views.signup_view, name='signup'),
     path('admin-portal/approve/<int:pk>/', views.approve_user, name='approve_user'),
@@ -17,13 +17,14 @@ urlpatterns = [
 
     # New Office Portal
     path('office-dashboard/', views.office_dashboard, name='office_dashboard'),
+    path('office/update-status/<int:pk>/', views.office_update_status, name='office_update_status'),
 
     # Master Dashboard
     path('dashboard/', views.master_dashboard, name='dashboard'),
     
     # Survey (Field Engineer)
 
-    path('survey/new/', views.create_survey, name='create_survey'),
+    path('survey/new/', views.survey_form_view, name='create_survey'),
     path('survey/update/<int:pk>/', views.update_survey, name='update_survey'),
     path('survey/restart/<int:pk>/', views.delete_and_restart, name='delete_and_restart'),
     

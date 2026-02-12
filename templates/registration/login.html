@@ -1,16 +1,93 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="row justify-content-center mt-5">
-    <div class="col-md-4">
-        <div class="card p-4 shadow">
-            <h3 class="text-center">WeSolar Login</h3>
-            <form method="post">
+<div class="row justify-content-center align-items-center min-vh-75" style="min-height: 80vh;">
+    <div class="col-md-5 col-lg-4">
+        <!-- Main Card -->
+        <div class="glass-card p-4 p-md-5 shadow-lg border-0">
+
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <div class="icon-box mx-auto mb-3 shadow-sm bg-white text-primary rounded-circle"
+                    style="width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; font-size: 2rem;">
+                    <i class="bi bi-person-lock"></i>
+                </div>
+                <h2 class="fw-bold text-gradient mb-1">Welcome Back</h2>
+                <p class="text-muted">Sign in to your WeSolar account</p>
+            </div>
+
+            <!-- Form -->
+            <form method="post" class="needs-validation" novalidate>
                 {% csrf_token %}
-                {{ form|crispy }}
-                <button type="submit" class="btn btn-primary w-100 mt-3">Login</button>
+
+                <!-- Login Type -->
+                <div class="mb-4">
+                    <label for="{{ form.login_type.id_for_label }}"
+                        class="form-label small text-uppercase fw-bold text-secondary">
+                        <i class="bi bi-grid-fill me-1 text-primary"></i> Select Login Type
+                    </label>
+                    {{ form.login_type }}
+                    {% if form.login_type.errors %}
+                    <div class="text-danger small mt-1">{{ form.login_type.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Mobile Number -->
+                <div class="mb-4">
+                    <label for="{{ form.mobile_number.id_for_label }}"
+                        class="form-label small text-uppercase fw-bold text-secondary">
+                        <i class="bi bi-phone-fill me-1 text-primary"></i> Mobile Number
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0 text-muted"><i
+                                class="bi bi-telephone"></i></span>
+                        {{ form.mobile_number }}
+                    </div>
+                    {% if form.mobile_number.errors %}
+                    <div class="text-danger small mt-1">{{ form.mobile_number.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Password -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <label for="{{ form.password.id_for_label }}"
+                            class="form-label small text-uppercase fw-bold text-secondary">
+                            <i class="bi bi-shield-lock-fill me-1 text-primary"></i> Password
+                        </label>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-key"></i></span>
+                        {{ form.password }}
+                    </div>
+                    {% if form.password.errors %}
+                    <div class="text-danger small mt-1">{{ form.password.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-grid gap-2 mt-5">
+                    <button type="submit" class="btn btn-premium btn-lg shadow-sm hover-lift">
+                        <i class="bi bi-box-arrow-in-right me-2"></i> Secure Login
+                    </button>
+                </div>
             </form>
+
+            <!-- Footer Links -->
+            <div class="text-center mt-4 pt-3 border-top border-light">
+                <p class="text-muted mb-0">Don't have an account?</p>
+                <a href="{% url 'signup' %}"
+                    class="fw-bold text-primary text-decoration-none hover-lift d-inline-block mt-1">
+                    Create New Account <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Footer Note -->
+        <div class="text-center mt-4 text-muted small opacity-75">
+            <i class="bi bi-shield-check me-1"></i> Secure Connection &bull; WeSolar Inc.
         </div>
     </div>
 </div>

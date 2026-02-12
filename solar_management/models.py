@@ -29,13 +29,13 @@ class CustomerSurvey(models.Model):
     connection_type = models.CharField(max_length=50, choices=CONNECTION_CHOICES)
     sc_no = models.CharField(max_length=16, help_text="16 Digits")
     phase = models.CharField(max_length=20, choices=PHASE_CHOICES)
-    feasibility_kw = models.FloatField(help_text="Applied Solar Load (KW)")
+    feasibility_kw = models.FloatField(help_text="Maximum KW (Applied Solar Load)")
     aadhar_no = models.CharField(max_length=12, help_text="12 Digits") 
     pan_card = models.CharField(max_length=10, help_text="10 Digits")
     email = models.EmailField()
     aadhar_linked_phone = models.CharField(max_length=10, default="0000000000", help_text="10 Digits")
-    bank_account_no = models.CharField(max_length=30, blank=True) # Kept blank=True as logic might be in form/bank model
-    phone_number = models.CharField(max_length=10, help_text="10 Digits")
+    bank_account_no = models.CharField(max_length=30, blank=True) 
+    phone_number = models.CharField(max_length=15, unique=True, null=True, blank=True) # Restored for Office Search
     
     # Roof & Structure
     roof_type = models.CharField(max_length=100, choices=ROOF_CHOICES)
@@ -53,13 +53,16 @@ class CustomerSurvey(models.Model):
     rp_phone_number = models.CharField(max_length=15, blank=True, null=True)
     
     fe_remarks = models.TextField(blank=True)
-    reference_name = models.CharField(max_length=255, blank=True) # New Field
-    pms_registration_number = models.CharField(max_length=50, blank=True) # New Field
-    division = models.CharField(max_length=100, blank=True) # New Field
-    registration_status = models.BooleanField(default=False) # Editable only by Admin
+    reference_name = models.CharField(max_length=255, blank=True) 
+    pms_registration_number = models.CharField(max_length=50, blank=True) 
+    division = models.CharField(max_length=100, blank=True) 
+    registration_status = models.BooleanField(default=False) 
     
     # Office Tracking Fields
-    STATUS_CHOICES = [('Pending', 'Pending'), ('Applied', 'Applied'), ('Approved', 'Approved'), ('Rejected', 'Rejected')]
+    STATUS_CHOICES = [('Pending', 'Pending'), ('Completed', 'Completed')]
+    
+    installation_date = models.DateField(null=True, blank=True) # New Field
+    
     discom_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
     net_metering_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
     subsidy_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')

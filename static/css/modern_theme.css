@@ -172,11 +172,16 @@ a {
    ========================================= */
 .form-control,
 .form-select {
-    background: #ffffff;
+    background-color: #ffffff;
     border: 1px solid #cbd5e1;
     color: var(--text-primary);
     border-radius: 8px;
     padding: 12px;
+}
+
+.form-select {
+    /* Ensure we don't accidentally override the Bootstrap background-image (arrow) */
+    background-color: #ffffff;
 }
 
 .form-control:focus,
@@ -377,5 +382,21 @@ a {
     .btn-mobile-full {
         width: 100%;
         display: block;
+    }
+
+    /* Fix for empty state / centered cells on mobile */
+    .table td.text-center {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .table td.text-center::before {
+        content: none;
+        display: none;
+    }
+
+    /* Reset padding for desktop-specific spacing classes */
+    .table td.ps-4 {
+        padding-left: 0 !important;
     }
 }

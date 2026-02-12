@@ -10,7 +10,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group, User
 
 from .models import CustomerSurvey, Installation, BankDetails, UserProfile, Enquiry
-from .forms import SurveyForm, InstallationForm, BankDetailsForm, SignUpForm, LoginForm, EnquiryForm
+from .forms import SurveyForm, InstallationForm, BankDetailsForm, SignUpForm, LoginForm, EnquiryForm, OfficeStatusForm
+import json
+
 from django.core.mail import send_mail
 from django.conf import settings
 
@@ -18,11 +20,11 @@ from django.conf import settings
 # 0. AUTHENTICATION & LANDING
 # ==========================================
 
-def landing_page(request):
-    """Landing page with 3 options: Field Engineer, Installer, Office."""
-    if request.user.is_authenticated:
-        return redirect('dashboard')
-    return render(request, 'solar/landing.html')
+# def landing_page(request):
+#     """Landing page with 3 options: Field Engineer, Installer, Office."""
+#     if request.user.is_authenticated:
+#         return redirect('dashboard')
+#     return render(request, 'solar/landing.html')
 
 def custom_login_view(request):
     """Unified login view for Field Engineer, Installer, and Office."""
@@ -245,7 +247,7 @@ def approve_user(request, pk):
 
 def logout_view(request):
     logout(request)
-    return redirect('landing')
+    return redirect('login')
 
 # ==========================================
 # 0. ROLE CHECK HELPERS (Existing)
@@ -285,7 +287,7 @@ def master_dashboard(request):
         # Superusers/Staff go to Admin Dashboard (Pending approvals + Master Lists)
         return redirect('admin_dashboard') # Reuse existing view logic but expand it
     
-    return render(request, 'solar/landing.html')
+    return redirect('login')
 
 @login_required
 @user_passes_test(is_field_engineer)
@@ -349,37 +351,68 @@ def admin_dashboard(request):
 def office_dashboard(request):
     """
     Office Staff Dashboard:
-    - Lists all surveys with status tracking.
+    - Lists surveys with Status Tracking.
+    - Search by Phone Number.
     """
-    surveys = CustomerSurvey.objects.all().select_related('installation').order_by('-created_at')
-    return render(request, 'solar/office_dashboard.html', {'surveys': surveys})
+    query = request.GET.get('q', '')
+    if query:
+        surveys = CustomerSurvey.objects.filter(
+            models.Q(phone_number__icontains=query) | 
+            models.Q(customer_name__icontains=query) |
+            models.Q(sc_no__icontains=query)
+        ).select_related('installation').order_by('-created_at')
+    else:
+        surveys = CustomerSurvey.objects.all().select_related('installation').order_by('-created_at')
+        
+    return render(request, 'solar/office_dashboard.html', {'surveys': surveys, 'query': query})
+
+@login_required
+@user_passes_test(is_office_staff)
+def office_update_status(request, pk):
+    """View for Office Staff to update project status."""
+    survey = get_object_or_404(CustomerSurvey, pk=pk)
+    
+    if request.method == 'POST':
+        form = OfficeStatusForm(request.POST, instance=survey)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Status updated for {survey.customer_name}.")
+            return redirect('office_dashboard')
+    else:
+        form = OfficeStatusForm(instance=survey)
+    
+    return render(request, 'solar/office_status_form.html', {'form': form, 'survey': survey})
 
 @login_required
 @user_passes_test(is_field_engineer)
-def create_survey(request):
-    """Initial data entry for Field Engineers with role restriction."""
-    if request.method == "POST":
+def survey_form_view(request):
+    if request.method == 'POST':
         form = SurveyForm(request.POST, request.FILES)
-        bank_form = BankDetailsForm(request.POST, request.FILES)
-
-        if form.is_valid() and bank_form.is_valid():
+        bank_form = BankDetailsForm(request.POST) # Initialize Bank Form
+        
+        if form.is_valid() and bank_form.is_valid(): # Check both
             survey = form.save(commit=False)
             survey.created_by = request.user
             survey.save()
             
+            # Save Bank Details
             bank_details = bank_form.save(commit=False)
             bank_details.survey = survey
-            # Default tracking status for new entries
-            bank_details.loan_pending_status = 'Pending' 
+            bank_details.loan_pending_status = 'Pending' # Default
             bank_details.save()
 
-            messages.success(request, f"Project for {survey.customer_name} created.")
+            messages.success(request, 'Survey and Bank Details submitted successfully!')
             return redirect('dashboard')
+        else:
+            messages.error(request, 'Please correct the errors below.')
     else:
         form = SurveyForm()
-        bank_form = BankDetailsForm()
-    
-    return render(request, 'solar/survey_form.html', {'form': form, 'bank_form': bank_form})
+        bank_form = BankDetailsForm() # Initialize empty
+
+    return render(request, 'solar/survey_form.html', {
+        'form': form, 
+        'bank_form': bank_form
+    })
 
 @login_required
 @user_passes_test(is_field_engineer)
@@ -551,10 +584,10 @@ def create_enquiry(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Thank you! Your enquiry has been submitted successfully.")
-            return redirect('landing')
+            return redirect('login')
         else:
             messages.error(request, "Please correct the errors in the enquiry form.")
-    return redirect('landing')
+    return redirect('login')
 
 @login_required
 def enquiry_list(request):

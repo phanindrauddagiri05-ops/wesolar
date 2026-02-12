@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card glass-card border-0 shadow-lg">
+                <div class="card-header bg-transparent border-0 p-4">
+                    <h4 class="fw-bold text-dark mb-0">Update Project Status</h4>
+                    <p class="text-muted small mb-0">Update installation and tracking details</p>
+                </div>
+
+                <div class="card-body p-4 pt-0">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <!-- Read-only Project Info -->
+                        <div class="alert alert-light border mb-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">Customer Name</span>
+                                <span class="fw-bold text-dark">{{ survey.customer_name }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted small">SC Number</span>
+                                <span class="fw-bold text-dark">{{ survey.sc_no }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Form Fields -->
+                        <div class="mb-3">
+                            {{ form.installation_date|as_crispy_field }}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.workflow_status|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.discom_status|as_crispy_field }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.net_metering_status|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.subsidy_status|as_crispy_field }}
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form.office_remarks|as_crispy_field }}
+                        </div>
+
+                        <!-- Hidden / Readonly Fields (rendered by crispy but we want to ensure style) -->
+                        <div class="d-none">
+                            {{ form.customer_name }}
+                            {{ form.phone_number }}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-premium btn-lg">Update Status</button>
+                            <a href="{% url 'office_dashboard' %}" class="btn btn-light btn-lg">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
