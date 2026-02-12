@@ -1,17 +1,12 @@
 # Deployment Guide for WeSolar
 
-This guide covers how to deploy the WeSolar project to a Linux server (Ubuntu/Debian) that **already hosts other websites**.
-
-> [!IMPORTANT]
-> **Safety First**: Since other sites are running, we will:
-> 1. Use a **unique port** (e.g., 8001) for this application.
-> 2. Use `nginx -s reload` instead of restart to avoid downtime for other sites.
+This guide covers how to deploy the WeSolar project to a Linux server (Ubuntu/Debian).
 
 ## 1. Prerequisites
 
 Ensure these are installed on the server:
 - Python 3.10+
-- Supervisor (optional but recommended for managing Gunicorn)
+- Gunicorn
 - Nginx
 
 ## 2. Project Setup on Server
@@ -35,10 +30,12 @@ Ensure these are installed on the server:
    ```bash
    nano .env
    ```
-   Add:
+   Add the following (Replace with your actual values):
    ```ini
    DJANGO_DEBUG=False
    DJANGO_SECRET_KEY=your-secure-secret-key-here
+   DJANGO_ALLOWED_HOSTS=wesolar.fastcopies.in,localhost,127.0.0.1
+   DJANGO_CSRF_TRUSTED_ORIGINS=https://wesolar.fastcopies.in
    ```
 
 4. **Database & Static Files**:
@@ -49,14 +46,14 @@ Ensure these are installed on the server:
 
 ## 3. Gunicorn Setup
 
-Test it first to make sure it runs (we use port **8005** to be safe):
+Test it first:
 ```bash
 gunicorn --bind 0.0.0.0:8005 wesolar_web.wsgi
 ```
 *Press Ctrl+C to stop.*
 
-### Create a Systemd Service (Recommended)
-Create a service file so the app stays running: `sudo nano /etc/systemd/system/wesolar.service`
+### Create a Systemd Service
+`sudo nano /etc/systemd/system/wesolar.service`
 
 ```ini
 [Unit]
@@ -76,7 +73,6 @@ ExecStart=/var/www/wesolar/venv/bin/gunicorn \
 [Install]
 WantedBy=multi-user.target
 ```
-*Note: The socket file `wesolar.sock` handles the connection, so the port is only needed if you run Gunicorn manually without a socket. If using the service above, we use a socket file which avoids port conflicts entirely!* 
 
 Start it:
 ```bash
@@ -84,78 +80,47 @@ sudo systemctl start wesolar
 sudo systemctl enable wesolar
 ```
 
-## 4. Nginx Configuration (Safe Deployment)
+## 4. Nginx Configuration
 
-We will add a **new** server block instead of modifying the default one.
+`sudo nano /etc/nginx/sites-available/wesolar`
 
-1. **Create Config**: `sudo nano /etc/nginx/sites-available/wesolar`
+```nginx
+server {
+    listen 80;
+    server_name wesolar.fastcopies.in;
 
-   ```nginx
-   server {
-       listen 80;
-       server_name wesolar.fastcopies.in;
+    location = /favicon.ico { access_log off; log_not_found off; }
 
-       location = /favicon.ico { access_log off; log_not_found off; }
-       
-       location /static/ {
-           alias /var/www/wesolar/staticfiles/;
-       }
+    # Static files are handled by WhiteNoise, but Nginx can serve media
+    location /media/ {
+        root /var/www/wesolar;
+    }
 
-       location /media/ {
-           root /var/www/wesolar;
-       }
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/var/www/wesolar/wesolar.sock;
+    }
+}
+```
 
-       location / {
-           include proxy_params;
-           proxy_pass http://unix:/var/www/wesolar/wesolar.sock;
-       }
-   }
-   ```
-
-2. **Enable Site**:
-   ```bash
-   sudo ln -s /etc/nginx/sites-available/wesolar /etc/nginx/sites-enabled/
-   ```
-
-3. **Test Configuration** (Crucial step!):
-   ```bash
-   sudo nginx -t
-   ```
-   *Only proceed if this says "syntax is ok" and "test is successful".*
-
-4. **Reload Nginx** (Safe):
-   ```bash
-   sudo nginx -s reload
-   ```
-   *This will load the new config without dropping connections for other sites.*
+Enable Site:
+```bash
+sudo ln -s /etc/nginx/sites-available/wesolar /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo nginx -s reload
+```
 
 ## 5. HTTPS Setup (Let's Encrypt)
-
-Secure your site with a free SSL certificate.
-
-1.  **Install Certbot**:
-    ```bash
-    sudo apt install certbot python3-certbot-nginx
-    ```
-
-2.  **Obtain Certificate**:
-    ```bash
-    sudo certbot --nginx -d wesolar.fastcopies.in
-    ```
-    - Enter your email when asked.
-    - Agree to terms (type 'Y').
-    - Choose to **redirect HTTP to HTTPS** (usually option 2) if asked.
-
-3.  **Verify**:
-    Visit https://wesolar.fastcopies.in
+```bash
+sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d wesolar.fastcopies.in
+```
 
 ## 6. Updating Code Later
-
-When you need to update the version:
-
 1. `cd /var/www/wesolar`
 2. `git pull`
-3. `source venv/bin/activate && pip install -r requirements.txt` (only if requirements changed)
-4. `python manage.py migrate` (only if DB models changed)
+3. `source venv/bin/activate && pip install -r requirements.txt`
+4. `python manage.py migrate`
 5. `python manage.py collectstatic --noinput`
-6. `sudo systemctl restart wesolar` (Restart the Python app only, Nginx stays up)
+6. `sudo systemctl restart wesolar`
+
