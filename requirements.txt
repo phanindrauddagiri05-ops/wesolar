@@ -26,4 +26,3 @@ virtualenv==20.35.3
 waitress==3.0.2
 whitenoise==6.11.0
 PyPDF2==3.0.1
-whitenoise==6.6.0
