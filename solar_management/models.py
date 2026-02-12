@@ -7,6 +7,8 @@ class UserProfile(models.Model):
     ROLE_CHOICES = [
         ('Field Engineer', 'Field Engineer'),
         ('Installer', 'Installer'),
+        ('Office', 'Office'),
+        ('Admin', 'Admin'),
     ]
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     mobile_number = models.CharField(max_length=15, unique=True)
@@ -18,32 +20,34 @@ class UserProfile(models.Model):
 
 class CustomerSurvey(models.Model):
     # --- Field Engineer Section ---
+    CONNECTION_CHOICES = [('Domestic', 'Domestic'), ('Commercial', 'Commercial'), ('GHS', 'GHS')]
+    PHASE_CHOICES = [('Single Phase', 'Single Phase'), ('Three Phase', 'Three Phase')]
     ROOF_CHOICES = [('Normal', 'Normal'), ('Plastic shed', 'Plastic shed'), ('Cement shed', 'Cement shed')]
     STRUCTURE_CHOICES = [('Normal', 'Normal'), ('Vertical', 'Vertical'), ('Horizontal', 'Horizontal')]
 
     customer_name = models.CharField(max_length=255)
-    connection_type = models.CharField(max_length=50, blank=True) # New Field
-    sc_no = models.CharField(max_length=16)
-    phase = models.CharField(max_length=20, choices=[('Single', 'Single'), ('Three', 'Three')])
-    feasibility_kw = models.FloatField()
-    aadhar_no = models.CharField(max_length=12) 
-    pan_card = models.CharField(max_length=10)
+    connection_type = models.CharField(max_length=50, choices=CONNECTION_CHOICES)
+    sc_no = models.CharField(max_length=16, help_text="16 Digits")
+    phase = models.CharField(max_length=20, choices=PHASE_CHOICES)
+    feasibility_kw = models.FloatField(help_text="Applied Solar Load (KW)")
+    aadhar_no = models.CharField(max_length=12, help_text="12 Digits") 
+    pan_card = models.CharField(max_length=10, help_text="10 Digits")
     email = models.EmailField()
-    aadhar_linked_phone = models.CharField(max_length=10, default="0000000000")
-    bank_account_no = models.CharField(max_length=30, blank=True)
-    phone_number = models.CharField(max_length=10)
+    aadhar_linked_phone = models.CharField(max_length=10, default="0000000000", help_text="10 Digits")
+    bank_account_no = models.CharField(max_length=30, blank=True) # Kept blank=True as logic might be in form/bank model
+    phone_number = models.CharField(max_length=10, help_text="10 Digits")
     
     # Roof & Structure
     roof_type = models.CharField(max_length=100, choices=ROOF_CHOICES)
-    roof_photo = models.ImageField(upload_to='surveys/roofs/', null=True, blank=True)
+    roof_photo = models.ImageField(upload_to='surveys/roofs/', null=True, blank=True, help_text="Mandatory if critical site")
     structure_type = models.CharField(max_length=100, choices=STRUCTURE_CHOICES)
     structure_height = models.FloatField(help_text="in Feet")
     gps_coordinates = models.CharField(max_length=100)
-    area = models.CharField(max_length=255, blank=True) # New Field
+    area = models.CharField(max_length=255)
     
     # Pricing & Status
     agreed_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    advance_paid = models.DecimalField(max_digits=10, decimal_places=2, default=0.0) # New Field
+    advance_paid = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     mefma_status = models.BooleanField(default=False, help_text="Is MEFMA approved?")
     rp_name = models.CharField(max_length=255, blank=True, null=True)
     rp_phone_number = models.CharField(max_length=15, blank=True, null=True)

@@ -1,5 +1,6 @@
 import csv
 import re
+import sys
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponse
@@ -36,8 +37,14 @@ def custom_login_view(request):
                 return redirect('dashboard')
             elif 'Installer' in profile.role:
                 return redirect('dashboard')
+            elif 'Office' in profile.role:
+                return redirect('office_dashboard')
          except:
              pass 
+         
+         if request.user.is_staff: # Admin/Superuser
+             return redirect('admin_dashboard')
+
          return redirect('dashboard') # Default fallback
 
     # Pre-select dropdown if role checks fail or coming from specific link
@@ -68,14 +75,25 @@ def custom_login_view(request):
             if user:
                  # --- 2. Role Validation ---
                 
-                # A. OFFICE LOGIN
-                if login_type == 'office':
-                    # Staff/Superusers OR Users with 'Office' role
-                    if user.is_staff or (profile and profile.role == 'Office'):
+                # A. ADMIN LOGIN (Formerly Office)
+                if login_type == 'admin':
+                    # Staff/Superusers OR Users with 'Admin' role
+                    if user.is_staff or (profile and profile.role == 'Admin'):
                         login(request, user)
-                        return redirect('office_dashboard')
+                        return redirect('admin_dashboard')
                     else:
-                         messages.error(request, "Access Denied: You do not have Office permissions.")
+                         messages.error(request, "Access Denied: You do not have Admin permissions.")
+
+                # B. OFFICE LOGIN (New Role)
+                elif login_type == 'office':
+                    if profile and profile.role == 'Office':
+                        if profile.is_approved:
+                            login(request, user)
+                            return redirect('office_dashboard')
+                        else:
+                            messages.error(request, "Account pending admin approval.")
+                    else:
+                        messages.error(request, "This account is not registered as Office Staff.")
 
                 # B. FIELD ENGINEER LOGIN
                 elif login_type == 'field_engineer':
@@ -109,7 +127,7 @@ def custom_login_view(request):
     
     return render(request, 'solar/login.html', {'form': form, 'hide_toast': True})
 
-def office_login_view(request):
+def admin_login_view(request):
     """Dedicated login view for Office/Admin users only."""
     if request.method == 'POST':
         form = LoginForm(request.POST)
@@ -127,7 +145,7 @@ def office_login_view(request):
             # 2. If valid superuser, let them in immediately
             if user and user.is_staff:
                 login(request, user)
-                return redirect('office_dashboard')
+                return redirect('admin_dashboard')
 
             # 3. If not, try looking up via UserProfile (for regular Office staff)
             try:
@@ -137,18 +155,18 @@ def office_login_view(request):
                 pass
                 
             if user:
-                # STRICT Office Check
-                if user.is_staff or (profile and profile.role == 'Office'):
+                # STRICT Admin Check
+                if user.is_staff or (profile and profile.role == 'Admin'):
                         login(request, user)
-                        return redirect('office_dashboard')
+                        return redirect('admin_dashboard')
                 else:
-                        messages.error(request, "Access Denied: This portal is for Office Staff only.")
+                        messages.error(request, "Access Denied: This portal is for Admins only.")
             else:
                 messages.error(request, "Invalid credentials.")
     else:
         form = LoginForm()
         
-    return render(request, 'solar/office_login.html', {'form': form, 'hide_toast': True})
+    return render(request, 'solar/admin_login.html', {'form': form, 'hide_toast': True})
     
     return render(request, 'solar/login.html', {'form': form, 'role_name': role_name, 'role_slug': role})
 
@@ -218,9 +236,12 @@ def approve_user(request, pk):
     elif profile.role == 'Installer':
         group, _ = Group.objects.get_or_create(name='Installers')
         profile.user.groups.add(group)
+    elif profile.role == 'Office':
+        group, _ = Group.objects.get_or_create(name='Office_Staff')
+        profile.user.groups.add(group)
         
     messages.success(request, f"User {profile.user.get_full_name()} approved.")
-    return redirect('office_dashboard')
+    return redirect('admin_dashboard')
 
 def logout_view(request):
     logout(request)
@@ -238,6 +259,9 @@ def is_installer(user):
 def is_bank_user(user):
     return user.groups.filter(name='Bank_Users').exists() or user.is_staff
 
+def is_office_staff(user):
+    return user.groups.filter(name='Office_Staff').exists()
+
 # ==========================================
 # 1. MASTER DASHBOARD
 # ==========================================
@@ -253,11 +277,11 @@ def master_dashboard(request):
     
     if is_field_engineer(user):
         return fe_dashboard(request)
-    elif is_installer(user):
-        return installer_dashboard(request)
+    elif is_office_staff(user):
+        return redirect('office_dashboard')
     elif user.is_staff: 
-        # Superusers/Staff go to Office Dashboard (Pending approvals + Master Lists)
-        return redirect('office_dashboard') # Reuse existing view logic but expand it
+        # Superusers/Staff go to Admin Dashboard (Pending approvals + Master Lists)
+        return redirect('admin_dashboard') # Reuse existing view logic but expand it
     
     return render(request, 'solar/landing.html')
 
@@ -295,9 +319,9 @@ def installer_dashboard(request):
     })
 
 @staff_member_required
-def office_dashboard(request):
+def admin_dashboard(request):
     """
-    Office/Admin Dashboard: 3 Sections
+    Admin Dashboard: 3 Sections
     1. Account Confirmation (Pending Users)
     2. Field Engineer Data (Master List)
     3. Installer Data (Master List)
@@ -316,6 +340,24 @@ def office_dashboard(request):
         'fe_data': fe_data,
         'installer_data': installer_data,
     }
+    return render(request, 'solar/admin_dashboard.html', context)
+
+@login_required
+@user_passes_test(is_office_staff)
+def office_dashboard(request):
+    """
+    Office Staff Dashboard:
+    - View API Data / Master Lists
+    - No Approvals
+    """
+    # Read-only lists
+    fe_data = CustomerSurvey.objects.all().select_related('created_by').order_by('-created_at')
+    installer_data = Installation.objects.all().select_related('survey', 'updated_by').order_by('-timestamp')
+    
+    context = {
+        'fe_data': fe_data,
+        'installer_data': installer_data,
+    }
     return render(request, 'solar/office_dashboard.html', context)
 
 @login_required
@@ -324,7 +366,7 @@ def create_survey(request):
     """Initial data entry for Field Engineers with role restriction."""
     if request.method == "POST":
         form = SurveyForm(request.POST, request.FILES)
-        bank_form = BankDetailsForm(request.POST)
+        bank_form = BankDetailsForm(request.POST, request.FILES)
 
         if form.is_valid() and bank_form.is_valid():
             survey = form.save(commit=False)

@@ -2,108 +2,154 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-9">
-        <div class="card glass-card border-0">
-            <div class="card-header border-bottom border-light bg-transparent py-3">
-                <h2 class="text-center mb-0 text-gradient">Field Engineer - Site Survey</h2>
-                <p class="text-center text-muted small mb-0">Capture inaccurate site details for solar feasibility</p>
-            </div>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card glass-card border-0 mb-5">
+                <div class="card-header bg-transparent border-0 pt-4 pb-0">
+                    <h2 class="fw-bold text-gradient mb-0"><i class="bi bi-ui-checks text-primary me-2"></i>New Site
+                        Survey</h2>
+                    <p class="text-muted">Enter site details for feasibility check.</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
 
-            <div class="card-body p-4">
-                <form method="post" class="needs-validation" novalidate enctype="multipart/form-data">
-                    {% csrf_token %}
-
-                    <h5 class="text-primary border-bottom pb-2 mb-3"><i class="bi bi-person-fill me-2"></i>Customer
-                        Details</h5>
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-6">{{ form.customer_name|as_crispy_field }}</div>
-                        <div class="col-md-6">{{ form.sc_no|as_crispy_field }}</div>
-                        <div class="col-md-4">{{ form.phase|as_crispy_field }}</div>
-                        <div class="col-md-4">{{ form.feasibility_kw|as_crispy_field }}</div>
-                        <div class="col-md-4">{{ form.phone_number|as_crispy_field }}</div>
-                        <div class="col-md-6">{{ form.email|as_crispy_field }}</div>
-                        <div class="col-md-6">{{ form.aadhar_linked_phone|as_crispy_field }}</div>
-                    </div>
-
-                    <h5 class="text-primary border-bottom pb-2 mb-3"><i class="bi bi-bank me-2"></i>Financial & Identity
-                    </h5>
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-4">{{ form.aadhar_no|as_crispy_field }}</div>
-                        <div class="col-md-4">{{ form.pan_card|as_crispy_field }}</div>
-                        <div class="col-md-4">{{ form.bank_account_no|as_crispy_field }}</div>
-                    </div>
-
-                    <h5 class="text-primary border-bottom pb-2 mb-3"><i class="bi bi-geo-alt-fill me-2"></i>Site Details
-                    </h5>
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-4">{{ form.roof_type|as_crispy_field }}</div>
-                        <div class="col-md-4">{{ form.structure_type|as_crispy_field }}</div>
-                        <div class="col-md-4">{{ form.structure_height|as_crispy_field }}</div>
-                    </div>
-
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-4 pt-4">
-                            {{ form.is_critical_site|as_crispy_field }}
+                        {% if form.errors %}
+                        <div class="alert alert-danger">
+                            Please correct the errors below.
                         </div>
-                        <div class="col-md-8">
-                            {{ form.roof_photo|as_crispy_field }}
-                            <small class="text-muted fst-italic">* Mandatory if Critical Site is checked</small>
-                        </div>
-                    </div>
+                        {% endif %}
 
-                    <div class="mb-4">
-                        <div class="input-group">
-                            <span class="input-group-text bg-light text-primary"><i class="bi bi-crosshair"></i></span>
-                            {{ form.gps_coordinates|as_crispy_field }}
-                            <button type="button" class="btn btn-outline-primary" id="getLocationBtn"
-                                title="Get Current Location">
-                                <i class="bi bi-geo-fill"></i> Auto-Detect
-                            </button>
-                        </div>
-                        <small class="text-muted">Click Auto-Detect to capture coordinates.</small>
-                    </div>
-
-                    <h5 class="text-primary border-bottom pb-2 mb-3"><i class="bi bi-currency-rupee me-2"></i>Pricing &
-                        Approvals</h5>
-                    <div class="bg-light p-3 rounded mb-4 border">
-                        <div class="row">
-                            <div class="col-md-4">{{ form.agreed_amount|as_crispy_field }}</div>
-                            <div class="col-md-4">{{ form.registration_status|as_crispy_field }}</div>
-                            <div class="col-md-4 pt-4">
-                                {{ form.mefma_status|as_crispy_field }}
+                        <!-- Section 1: Customer Details -->
+                        <h5 class="text-primary border-bottom pb-2 mb-3"><i class="bi bi-person-fill me-2"></i>Customer
+                            Details</h5>
+                        <div class="bg-light p-3 rounded mb-4 border">
+                            <div class="row">
+                                <div class="col-md-6">{{ form.customer_name|as_crispy_field }}</div>
+                                <div class="col-md-6">{{ form.connection_type|as_crispy_field }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">{{ form.sc_no|as_crispy_field }}</div>
+                                <div class="col-md-4">{{ form.phase|as_crispy_field }}</div>
+                                <div class="col-md-4">{{ form.feasibility_kw|as_crispy_field }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">{{ form.aadhar_no|as_crispy_field }}</div>
+                                <div class="col-md-6">{{ form.pan_card|as_crispy_field }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">{{ form.email|as_crispy_field }}</div>
+                                <div class="col-md-4">{{ form.aadhar_linked_phone|as_crispy_field }}</div>
+                                <div class="col-md-4">{{ form.phone_number|as_crispy_field }}</div>
                             </div>
                         </div>
-                        <!-- MEFMA Dependent Fields -->
-                        <div class="row mt-2" id="mefmaFields" style="display:none;">
-                            <div class="col-md-6">{{ form.rp_name|as_crispy_field }}</div>
-                            <div class="col-md-6">{{ form.rp_phone_number|as_crispy_field }}</div>
+
+                        <!-- Section 2: Bank Details (Integrated from BankDetailsForm) -->
+                        <h5 class="text-primary border-bottom pb-2 mb-3"><i class="bi bi-bank me-2"></i>Bank Details
+                        </h5>
+                        <div class="bg-light p-3 rounded mb-4 border">
+                            <!-- Customer Survey Bank Account (If needed here, otherwise rely on BankForm) -->
+                            {# {{ form.bank_account_no|as_crispy_field }} #}
+
+                            <div class="row">
+                                <div class="col-md-6">{{ bank_form.parent_bank|as_crispy_field }}</div>
+                                <div class="col-md-6">{{ bank_form.parent_bank_ac_no|as_crispy_field }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">{{ bank_form.loan_applied_bank|as_crispy_field }}</div>
+                                <div class="col-md-4">{{ bank_form.loan_applied_ifsc|as_crispy_field }}</div>
+                                <div class="col-md-4">{{ bank_form.loan_applied_ac_no|as_crispy_field }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">{{ bank_form.loan_pending_status|as_crispy_field }}</div>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="mb-4">
-                        {{ form.fe_remarks|as_crispy_field }}
-                    </div>
+                        <!-- Section 3: Site Details -->
+                        <h5 class="text-primary border-bottom pb-2 mb-3"><i class="bi bi-geo-alt-fill me-2"></i>Site
+                            Details</h5>
+                        <div class="bg-light p-3 rounded mb-4 border">
+                            <div class="row">
+                                <div class="col-md-4">{{ form.area|as_crispy_field }}</div>
+                                <div class="col-md-8">
+                                    <div class="row">
+                                        <div class="col-9">
+                                            {{ form.gps_coordinates|as_crispy_field }}
+                                        </div>
+                                        <div class="col-3 pt-4">
+                                            <button type="button" class="btn btn-outline-primary w-100"
+                                                onclick="getLocation()">
+                                                <i class="bi bi-geo"></i> Detect
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">Click Auto-Detect to capture coordinates.</small>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-6">{{ form.roof_type|as_crispy_field }}</div>
+                                <div class="col-md-6">{{ form.roof_photo|as_crispy_field }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">{{ form.structure_type|as_crispy_field }}</div>
+                                <div class="col-md-6">{{ form.structure_height|as_crispy_field }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">{{ form.is_critical_site|as_crispy_field }}</div>
+                            </div>
+                        </div>
 
-                    <div class="test-primary border-bottom pb-2 mb-3">
-                        <h5 class="text-primary"><i class="bi bi-bank2 me-2"></i>Bank Details</h5>
-                    </div>
-                    <div class="mb-4">
-                        {{ bank_form|crispy }}
-                    </div>
+                        <!-- Section 4: Pricing & Approvals -->
+                        <h5 class="text-primary border-bottom pb-2 mb-3"><i
+                                class="bi bi-currency-rupee me-2"></i>Pricing &
+                            Approvals</h5>
+                        <div class="bg-light p-3 rounded mb-4 border">
+                            <div class="row">
+                                <div class="col-md-6">{{ form.agreed_amount|as_crispy_field }}</div>
+                                <div class="col-md-6">{{ form.advance_paid|as_crispy_field }}</div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-4 pt-4">
+                                    {{ form.mefma_status|as_crispy_field }}
+                                </div>
+                                <div class="col-md-4 pt-4">
+                                    <!-- Reference Name is dependent on MEFMA = No by logic, but field is just text -->
+                                    {{ form.reference_name|as_crispy_field }}
+                                </div>
+                                <div class="col-md-4 pt-4">
+                                    <!-- Division is separate -->
+                                    {{ form.division|as_crispy_field }}
+                                </div>
+                            </div>
+                            <!-- MEFMA Dependent Fields -->
+                            <div class="row mt-2" id="mefmaFields" style="display:none;">
+                                <div class="col-md-6">{{ form.rp_name|as_crispy_field }}</div>
+                                <div class="col-md-6">{{ form.rp_phone_number|as_crispy_field }}</div>
+                            </div>
 
-                    <div class="d-grid gap-2 mt-4">
-                        <button type="submit" class="btn btn-premium btn-lg">Submit Survey Data</button>
-                    </div>
-                </form>
+                            <div class="row mt-3">
+                                <div class="col-md-12">{{ form.fe_remarks|as_crispy_field }}</div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-premium btn-lg">
+                                <i class="bi bi-save me-2"></i>Submit Survey
+                            </button>
+                            <a href="{% url 'dashboard' %}" class="btn btn-light btn-lg border">Cancel</a>
+                        </div>
+
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    document.getElementById('getLocationBtn').addEventListener('click', function () {
-        const btn = this;
+    function getLocation() {
+        const btn = document.querySelector('button[onclick="getLocation()"]');
         const inputField = document.getElementById('id_gps_coordinates');
 
         if (navigator.geolocation) {
@@ -115,42 +161,55 @@
                 const long = position.coords.longitude.toFixed(6);
 
                 if (inputField) {
-                    inputField.value = `Lat: ${lat}, Long: ${long}`;
+                    inputField.value = lat + ", " + long;
+                    // Visual feedback
                     btn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Captured';
                     btn.classList.remove('btn-outline-primary');
                     btn.classList.add('btn-success');
+
                     setTimeout(() => {
                         btn.disabled = false;
-                        btn.innerHTML = '<i class="bi bi-geo-fill"></i> Update Location';
+                        btn.innerHTML = '<i class="bi bi-geo"></i> Detect';
                         btn.classList.remove('btn-success');
                         btn.classList.add('btn-outline-primary');
                     }, 3000);
                 }
             }, function (error) {
-                alert("Location access denied. Please enable GPS.");
-                btn.innerHTML = '<i class="bi bi-geo-alt"></i> Retry';
+                let msg = "Location error.";
+                switch (error.code) {
+                    case error.PERMISSION_DENIED: msg = "User denied the request for Geolocation."; break;
+                    case error.POSITION_UNAVAILABLE: msg = "Location information is unavailable."; break;
+                    case error.TIMEOUT: msg = "The request to get user location timed out."; break;
+                    case error.UNKNOWN_ERROR: msg = "An unknown error occurred."; break;
+                }
+                alert(msg);
+                btn.innerHTML = '<i class="bi bi-geo"></i> Detect';
                 btn.disabled = false;
             });
         } else {
             alert("Geolocation is not supported by this browser.");
         }
-    });
+    }
 
-    // MEFMA Toggle Logic
-    const mefmaCheckbox = document.getElementById('id_mefma_status');
-    const mefmaFields = document.getElementById('mefmaFields');
+    // Toggle MEFMA fields
+    document.addEventListener('DOMContentLoaded', function () {
+        const mefmaCheckbox = document.getElementById('id_mefma_status');
+        const mefmaFields = document.getElementById('mefmaFields');
 
-    function toggleMefma() {
-        if (mefmaCheckbox.checked) {
-            mefmaFields.style.display = 'flex';
-        } else {
-            mefmaFields.style.display = 'none';
+        function toggleMefma() {
+            if (mefmaCheckbox && mefmaFields) {
+                if (mefmaCheckbox.checked) {
+                    mefmaFields.style.display = 'flex';
+                } else {
+                    mefmaFields.style.display = 'none';
+                }
+            }
         }
-    }
 
-    if (mefmaCheckbox) {
-        mefmaCheckbox.addEventListener('change', toggleMefma);
-        toggleMefma(); // Run on load
-    }
+        if (mefmaCheckbox) {
+            mefmaCheckbox.addEventListener('change', toggleMefma);
+            toggleMefma(); // Initial state
+        }
+    });
 </script>
 {% endblock %}
