@@ -58,6 +58,13 @@ class CustomerSurvey(models.Model):
     division = models.CharField(max_length=100, blank=True) # New Field
     registration_status = models.BooleanField(default=False) # Editable only by Admin
     
+    # Office Tracking Fields
+    STATUS_CHOICES = [('Pending', 'Pending'), ('Applied', 'Applied'), ('Approved', 'Approved'), ('Rejected', 'Rejected')]
+    discom_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+    net_metering_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+    subsidy_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+    office_remarks = models.TextField(blank=True)
+
     WORKFLOW_STATUS_CHOICES = [('Pending', 'Pending'), ('Completed', 'Completed')]
     workflow_status = models.CharField(max_length=20, choices=WORKFLOW_STATUS_CHOICES, default='Pending')
     

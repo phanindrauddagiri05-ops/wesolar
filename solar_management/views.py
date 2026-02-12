@@ -277,6 +277,8 @@ def master_dashboard(request):
     
     if is_field_engineer(user):
         return fe_dashboard(request)
+    elif is_installer(user):
+        return installer_dashboard(request)
     elif is_office_staff(user):
         return redirect('office_dashboard')
     elif user.is_staff: 
@@ -347,18 +349,10 @@ def admin_dashboard(request):
 def office_dashboard(request):
     """
     Office Staff Dashboard:
-    - View API Data / Master Lists
-    - No Approvals
+    - Lists all surveys with status tracking.
     """
-    # Read-only lists
-    fe_data = CustomerSurvey.objects.all().select_related('created_by').order_by('-created_at')
-    installer_data = Installation.objects.all().select_related('survey', 'updated_by').order_by('-timestamp')
-    
-    context = {
-        'fe_data': fe_data,
-        'installer_data': installer_data,
-    }
-    return render(request, 'solar/office_dashboard.html', context)
+    surveys = CustomerSurvey.objects.all().select_related('installation').order_by('-created_at')
+    return render(request, 'solar/office_dashboard.html', {'surveys': surveys})
 
 @login_required
 @user_passes_test(is_field_engineer)

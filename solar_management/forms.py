@@ -8,7 +8,6 @@ class SurveyForm(forms.ModelForm):
 
     class Meta:
         model = CustomerSurvey
-        model = CustomerSurvey
         fields = [
             'customer_name', 'connection_type', 'sc_no', 'phase', 'feasibility_kw',
             'aadhar_no', 'pan_card', 'email', 'phone_number', 'aadhar_linked_phone', 
@@ -23,7 +22,20 @@ class SurveyForm(forms.ModelForm):
         widgets = {
              'gps_coordinates': forms.TextInput(attrs={'placeholder': 'Latitude, Longitude'}),
         }
-# ... (Validation methods remain same) ...
+    def clean(self):
+        cleaned_data = super().clean()
+        is_critical = cleaned_data.get('is_critical_site')
+        roof_photo = cleaned_data.get('roof_photo')
+
+        if is_critical and not roof_photo:
+            # Check if this is an update and photo already exists
+            if self.instance.pk and self.instance.roof_photo:
+                pass
+            else:
+                self.add_error('roof_photo', "Roof photo is mandatory for critical sites.")
+        
+        return cleaned_data
+
 
 class InstallationForm(forms.ModelForm):
     class Meta:
@@ -35,6 +47,9 @@ class InstallationForm(forms.ModelForm):
         # survey field is excluded, so we don't need to configure it here
 
 class BankDetailsForm(forms.ModelForm):
+    first_loan_amount = forms.DecimalField(required=False, initial=0.0)
+    second_loan_amount = forms.DecimalField(required=False, initial=0.0)
+
     class Meta:
         model = BankDetails
         exclude = ['survey'] 

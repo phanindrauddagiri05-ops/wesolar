@@ -15,9 +15,25 @@
                     <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
 
-                        {% if form.errors %}
+                        {% if form.errors or bank_form.errors %}
                         <div class="alert alert-danger">
-                            Please correct the errors below.
+                            <h5>Please correct the errors below:</h5>
+                            {% if form.errors %}
+                            <ul>
+                                {% for field, errors in form.errors.items %}
+                                <li><strong>{{ field|title }}:</strong> {{ errors|join:", " }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+
+                            {% if bank_form.errors %}
+                            <h6 class="mt-2">Bank Details Errors:</h6>
+                            <ul>
+                                {% for field, errors in bank_form.errors.items %}
+                                <li><strong>{{ field|title }}:</strong> {{ errors|join:", " }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
                         </div>
                         {% endif %}
 
@@ -63,6 +79,10 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-12">{{ bank_form.loan_pending_status|as_crispy_field }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">{{ bank_form.first_loan_amount|as_crispy_field }}</div>
+                                <div class="col-md-6">{{ bank_form.second_loan_amount|as_crispy_field }}</div>
                             </div>
                         </div>
 

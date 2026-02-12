@@ -52,6 +52,17 @@
 
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
+
+                    {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <h5>Please correct the errors below:</h5>
+                        <ul>
+                            {% for field, errors in form.errors.items %}
+                            <li><strong>{{ field|title }}:</strong> {{ errors|join:", " }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
                     <!-- Hiding Survey Selection as it's pre-filled -->
                     <!-- Survey is handled automatically by the backend -->
 
@@ -73,6 +84,14 @@
                         <div class="col-md-3">{{ form.la_cable_used|as_crispy_field }}</div>
                         <div class="col-md-3">{{ form.pipes_used|as_crispy_field }}</div>
                         <div class="col-md-12">{{ form.leftover_materials|as_crispy_field }}</div>
+                    </div>
+
+                    <h5 class="text-primary border-bottom pb-2 mt-3 mb-3"><i
+                            class="bi bi-lightning-charge me-2"></i>Electrical Readings</h5>
+                    <div class="row">
+                        <div class="col-md-4">{{ form.dc_voltage|as_crispy_field }}</div>
+                        <div class="col-md-4">{{ form.ac_voltage|as_crispy_field }}</div>
+                        <div class="col-md-4">{{ form.earthing_resistance|as_crispy_field }}</div>
                     </div>
 
                     <h5 class="text-primary border-bottom pb-2 mt-3 mb-3"><i

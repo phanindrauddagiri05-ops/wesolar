@@ -28,10 +28,9 @@
                     <tbody>
                         {% for item in installations %}
                         <tr>
-                            <td class="ps-4">
+                            <td class="ps-4" data-label="Ref Survey">
                                 <span class="fw-bold text-dark d-block">{{ item.survey.customer_name }}</span>
                                 <small class="text-muted">{{ item.survey.sc_no }}</small>
-                            <td class="ps-4 fw-bold text-dark" data-label="Ref Survey">{{ item.survey.customer_name }}
                             </td>
                             <td class="text-secondary small" data-label="Installer">{{ item.updated_by.get_full_name }}
                             </td>

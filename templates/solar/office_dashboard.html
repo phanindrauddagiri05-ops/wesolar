@@ -1,112 +1,210 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container-fluid mt-4">
+<style>
+    /* Premium Mobile Card Styling */
+    .mobile-card {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        margin-bottom: 16px;
+        transition: transform 0.2s;
+    }
+
+    .mobile-card:active {
+        transform: scale(0.98);
+    }
+
+    .mobile-label {
+        font-size: 0.85rem;
+        color: #6c757d;
+        font-weight: 500;
+    }
+
+    .mobile-value {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #212529;
+        text-align: right;
+    }
+
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+</style>
+
+<div class="container-fluid mt-4 px-3 px-md-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="fw-bold text-gradient"><i class="bi bi-building text-primary me-2"></i>Office Dashboard</h2>
-            <p class="text-muted mb-0">Staff Control Center</p>
-        </div>
-        <div>
-            <a href="{% url 'enquiry_list' %}" class="btn btn-outline-primary me-2">
-                <i class="bi bi-envelope me-2"></i>View Enquiries
-            </a>
+            <h2 class="fw-bold text-dark mb-0">Office Dashboard</h2>
+            <p class="text-muted small mb-0">Project Monitoring & Status Tracking</p>
         </div>
     </div>
 
-    <!-- Section 1: Field Engineer Data -->
-    <div class="card glass-card border-0 mb-4">
-        <div class="card-header bg-transparent border-0 pt-4">
-            <div class="d-flex justify-content-between align-items-center">
-                <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-people-fill text-primary me-2"></i>Field Engineer
-                    Data</h5>
-            </div>
-        </div>
+    <div class="card shadow-sm border-0 bg-transparent">
         <div class="card-body p-0">
-            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light sticky-top">
+            <!-- Desktop View: Table -->
+            <div class="table-responsive d-none d-md-block">
+                <table class="table table-hover align-middle mb-0 bg-white rounded-3 overflow-hidden shadow-sm">
+                    <thead class="bg-light">
                         <tr>
-                            <th class="ps-4 border-0">Customer</th>
-                            <th class="border-0">Engineer</th>
-                            <th class="border-0">Status</th>
-                            <th class="border-0">Date</th>
-                            <th class="border-0 text-end pe-4">Actions</th>
+                            <th class="py-3 px-4 text-secondary text-uppercase small"
+                                style="font-weight: 600; letter-spacing: 0.5px;">Customer Name</th>
+                            <th class="py-3 text-secondary text-uppercase small"
+                                style="font-weight: 600; letter-spacing: 0.5px;">Phone Number</th>
+                            <th class="py-3 text-secondary text-uppercase small"
+                                style="font-weight: 600; letter-spacing: 0.5px;">Installation Completed Date</th>
+                            <th class="py-3 text-secondary text-uppercase small"
+                                style="font-weight: 600; letter-spacing: 0.5px;">Installation Status</th>
+                            <th class="py-3 text-secondary text-uppercase small"
+                                style="font-weight: 600; letter-spacing: 0.5px;">Discom Status</th>
+                            <th class="py-3 text-secondary text-uppercase small"
+                                style="font-weight: 600; letter-spacing: 0.5px;">Net Metering</th>
+                            <th class="py-3 text-secondary text-uppercase small"
+                                style="font-weight: 600; letter-spacing: 0.5px;">Subsidy</th>
+                            <th class="py-3 px-4 text-secondary text-uppercase small"
+                                style="font-weight: 600; letter-spacing: 0.5px;">Remarks</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for item in fe_data %}
-                        <tr>
-                            <td class="ps-4 fw-bold text-dark" data-label="Customer">{{ item.customer_name }}</td>
-                            <td class="text-secondary small" data-label="Engineer">{{ item.created_by.get_full_name }}
-                            </td>
-                            <td data-label="Status">
-                                {% if item.workflow_status == 'Completed' %}
-                                <span class="badge bg-success-subtle text-success">Completed</span>
+                        {% for survey in surveys %}
+                        <tr class="border-bottom">
+                            <td class="fw-bold px-4 py-3 text-dark">{{ survey.customer_name }}</td>
+                            <td class="py-3 text-dark">{{ survey.phone_number }}</td>
+                            <td class="py-3 text-dark">
+                                {% if survey.installation %}
+                                {{ survey.installation.timestamp|date:"d M Y" }}
                                 {% else %}
-                                <span class="badge bg-warning-subtle text-warning">Pending</span>
+                                <span class="text-muted">-</span>
                                 {% endif %}
                             </td>
-                            <td class="text-muted small" data-label="Date">
-                                <div>{{ item.created_at|date:"M d, Y" }}</div>
+                            <td class="py-3">
+                                {% if survey.workflow_status == 'Completed' %}
+                                <span class="badge bg-warning text-dark status-badge">Completed</span>
+                                {% else %}
+                                <span class="badge bg-warning text-dark status-badge">Pending</span>
+                                {% endif %}
                             </td>
-                            <td class="text-end pe-4" data-label="Actions">
-                                <a href="{% url 'site_detail_fe_view' item.pk %}"
-                                    class="btn btn-sm btn-outline-info me-1" title="View Details">
-                                    <i class="bi bi-eye"></i> View
-                                </a>
+                            <td class="py-3">
+                                <span
+                                    class="badge {% if survey.discom_status == 'Approved' %}bg-success{% elif survey.discom_status == 'Rejected' %}bg-danger{% else %}bg-secondary{% endif %} status-badge">
+                                    {{ survey.discom_status }}
+                                </span>
+                            </td>
+                            <td class="py-3">
+                                <span
+                                    class="badge {% if survey.net_metering_status == 'Installed' %}bg-success{% else %}bg-secondary{% endif %} status-badge">
+                                    {{ survey.net_metering_status }}
+                                </span>
+                            </td>
+                            <td class="py-3">
+                                <span
+                                    class="badge {% if survey.subsidy_status == 'Received' %}bg-success{% else %}bg-secondary{% endif %} status-badge">
+                                    {{ survey.subsidy_status }}
+                                </span>
+                            </td>
+                            <td class="py-3 px-4 text-dark">
+                                {{ survey.office_remarks|default:"-" }}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox fs-1 d-block mb-3 opacity-50"></i>
+                                No records found.
                             </td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-        </div>
-    </div>
 
-    <!-- Section 2: Installer Data -->
-    <div class="card glass-card border-0 mb-4">
-        <div class="card-header bg-transparent border-0 pt-4">
-            <div class="d-flex justify-content-between align-items-center">
-                <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-tools text-warning me-2"></i>Installer Data</h5>
+            <!-- Mobile View: Premium Cards -->
+            <div class="d-md-none">
+                {% for survey in surveys %}
+                <div class="mobile-card">
+                    <div class="card-body p-4">
+                        <!-- Header -->
+                        <div class="d-flex justify-content-end mb-3">
+                            <h5 class="fw-bold text-dark mb-0">{{ survey.customer_name }}</h5>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light">
+                            <span class="mobile-label">Phone Number</span>
+                            <span class="mobile-value">{{ survey.phone_number }}</span>
+                        </div>
+
+                        <!-- Date -->
+                        <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light">
+                            <span class="mobile-label">Installation Completed Date</span>
+                            <span class="mobile-value">
+                                {% if survey.installation %}
+                                {{ survey.installation.timestamp|date:"d M Y" }}
+                                {% else %}
+                                -
+                                {% endif %}
+                            </span>
+                        </div>
+
+                        <!-- Installation Status -->
+                        <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light">
+                            <span class="mobile-label">Installation Status</span>
+                            <div>
+                                {% if survey.workflow_status == 'Completed' %}
+                                <span class="badge bg-warning text-dark status-badge">Completed</span>
+                                {% else %}
+                                <span class="badge bg-warning text-dark status-badge">Pending</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Discom Status -->
+                        <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light">
+                            <span class="mobile-label">Discom Status</span>
+                            <span
+                                class="badge {% if survey.discom_status == 'Approved' %}bg-success{% elif survey.discom_status == 'Rejected' %}bg-danger{% else %}bg-secondary{% endif %} status-badge">
+                                {{ survey.discom_status }}
+                            </span>
+                        </div>
+
+                        <!-- Net Metering -->
+                        <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light">
+                            <span class="mobile-label">Net Metering</span>
+                            <span
+                                class="badge {% if survey.net_metering_status == 'Installed' %}bg-success{% else %}bg-secondary{% endif %} status-badge">
+                                {{ survey.net_metering_status }}
+                            </span>
+                        </div>
+
+                        <!-- Subsidy -->
+                        <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light">
+                            <span class="mobile-label">Subsidy</span>
+                            <span
+                                class="badge {% if survey.subsidy_status == 'Received' %}bg-success{% else %}bg-secondary{% endif %} status-badge">
+                                {{ survey.subsidy_status }}
+                            </span>
+                        </div>
+
+                        <!-- Remarks -->
+                        <div class="d-flex justify-content-between align-items-start pt-2">
+                            <span class="mobile-label mt-1">Remarks</span>
+                            <span class="mobile-value text-break ps-3">{{ survey.office_remarks|default:"-" }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-5 text-muted bg-white rounded-4 shadow-sm">
+                    <i class="bi bi-inbox fs-1 d-block mb-3 opacity-50"></i>
+                    No records found.
+                </div>
+                {% endfor %}
             </div>
         </div>
-        <div class="card-body p-0">
-            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light sticky-top">
-                        <tr>
-                            <th class="ps-4 border-0">Ref Survey</th>
-                            <th class="border-0">Installer</th>
-                            <th class="border-0">Inverter</th>
-                            <th class="border-0">Date</th>
-                            <th class="border-0 text-end pe-4">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in installer_data %}
-                        <tr>
-                            <td class="ps-4 fw-bold text-dark" data-label="Ref Survey">{{ item.survey.customer_name }}
-                            </td>
-                            <td class="text-secondary small" data-label="Installer">{{ item.updated_by.get_full_name }}
-                            </td>
-                            <td class="text-dark small" data-label="Inverter">{{ item.inverter_make }}</td>
-                            <td class="text-muted small" data-label="Date">
-                                <div>{{ item.timestamp|date:"M d, Y" }}</div>
-                            </td>
-                            <td class="text-end pe-4" data-label="Actions">
-                                <a href="{% url 'site_detail_installer_view' item.survey.pk %}"
-                                    class="btn btn-sm btn-outline-info me-1" title="View Details">
-                                    <i class="bi bi-eye"></i> View
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
     </div>
-
 </div>
 {% endblock %}

@@ -46,7 +46,7 @@ urlpatterns = [
     path('enquiry/list/', views.enquiry_list, name='enquiry_list'),
 
     # Admin Data Views
-    path('admin-portal/fe-data/', views.office_fe_data, name='office_fe_data'),
-    path('admin-portal/installer-data/', views.office_installer_data, name='office_installer_data'),
-    path('admin-portal/workers-profiles/', views.office_workers_profiles, name='office_workers_profiles'),
+    path('office-portal/fe-data/', views.office_fe_data, name='office_fe_data'),
+    path('office-portal/installer-data/', views.office_installer_data, name='office_installer_data'),
+    path('office-portal/workers-profiles/', views.office_workers_profiles, name='office_workers_profiles'),
 ]
