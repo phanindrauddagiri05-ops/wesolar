@@ -31,6 +31,7 @@ urlpatterns = [
     path('survey/new/', views.survey_form_view, name='create_survey'),
     path('survey/update/<int:pk>/', views.update_survey, name='update_survey'),
     path('survey/restart/<int:pk>/', views.delete_and_restart, name='delete_and_restart'),
+    path('survey/edit-details/<int:pk>/', views.fe_update_survey, name='fe_update_survey'),
     
     # Installation (Installer)
     path('installation/update/<int:pk>/', views.update_installation, name='update_installation'),

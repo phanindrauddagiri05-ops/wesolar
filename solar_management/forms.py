@@ -123,6 +123,7 @@ class InstallationForm(forms.ModelForm):
             'dc_voltage',
             'ac_voltage',
             'earthing_resistance',
+            'customer_rating',
         ]
         labels = {
             'inverter_make': 'Inverter Make',
@@ -143,6 +144,7 @@ class InstallationForm(forms.ModelForm):
             'dc_voltage': 'DC Voltage',
             'ac_voltage': 'AC Voltage',
             'earthing_resistance': 'Earthing Resistance',
+            'customer_rating': 'Customer Rating (1-5)',
         }
         widgets = {
             'installer_remarks': forms.Textarea(attrs={'rows': 3}),
@@ -169,12 +171,12 @@ class OfficeStatusForm(forms.ModelForm):
         model = CustomerSurvey
         fields = [
             'customer_name', 
-            'phone_number',
             'installation_date',
             'workflow_status', # Installation Status
             'discom_status', 
             'net_metering_status', 
             'subsidy_status', 
+            'agreed_amount',
             'office_remarks'
         ]
         labels = {
@@ -182,7 +184,6 @@ class OfficeStatusForm(forms.ModelForm):
             'discom_status': 'Discom Status',
             'net_metering_status': 'Net Metering Status',
             'subsidy_status': 'Subsidy Status',
-            'phone_number': 'Phone Number (Search Key)',
             'installation_date': 'Installation Completed Date',
             'office_remarks': 'Remarks (Optional)',
         }
@@ -190,13 +191,14 @@ class OfficeStatusForm(forms.ModelForm):
             'installation_date': forms.DateInput(attrs={'type': 'date'}),
             'office_remarks': forms.Textarea(attrs={'rows': 3}),
             'customer_name': forms.TextInput(attrs={'readonly': 'readonly'}),
+            'agreed_amount': forms.NumberInput(attrs={'readonly': 'readonly'}), # Read-only as per "Fetched from existing data" requirement
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Enforce Status Choices from Model (Pending/Completed)
         # Ensure mandatory fields have 'required' attribute
-        mandatory_fields = ['phone_number', 'installation_date', 'workflow_status', 'discom_status', 'net_metering_status', 'subsidy_status']
+        mandatory_fields = ['installation_date', 'workflow_status', 'discom_status', 'net_metering_status', 'subsidy_status']
         for field in mandatory_fields:
             self.fields[field].required = True
 
@@ -220,13 +222,48 @@ class BankDetailsForm(forms.ModelForm):
     # User Spec: "Mandatory (Editable after submission)" -> We make them required here for initial survey
     parent_bank = forms.CharField(required=True, label="Parent Bank")
     parent_bank_ac_no = forms.CharField(required=True, label="Parent Bank Ac Number (Fetch logic pending)")
-    loan_applied_bank = forms.CharField(required=True, label="Loan Applied Bank")
-    loan_applied_ifsc = forms.CharField(required=True, label="Loan Applied Bank IFSC")
-    loan_applied_ac_no = forms.CharField(required=True, label="Loan Applied Bank Ac Number")
-    manager_number = forms.CharField(required=True, label="Manager Number")
+    loan_applied_bank = forms.CharField(required=False, label="Loan Applied Bank (Optional - Fill later)")
+    loan_applied_ifsc = forms.CharField(required=False, label="Loan Applied Bank IFSC (Optional - Fill later)")
+    loan_applied_ac_no = forms.CharField(required=False, label="Loan Applied Bank Ac Number (Optional - Fill later)")
+    manager_number = forms.CharField(required=False, label="Manager Number")
 
     first_loan_amount = forms.DecimalField(required=False, initial=0.0)
     second_loan_amount = forms.DecimalField(required=False, initial=0.0)
+    
+    # Read-only field for display
+    agreed_amount = forms.DecimalField(required=False, widget=forms.TextInput(attrs={'readonly': 'readonly'}))
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # Populate Agreed Amount
+        if self.instance and self.instance.pk and self.instance.survey:
+            self.fields['agreed_amount'].initial = self.instance.survey.agreed_amount
+        
+        # Ensure Status is mandatory
+        self.fields['loan_pending_status'].required = True
+
+        # Add date widgets
+        self.fields['first_loan_date'].widget = forms.DateInput(attrs={'type': 'date'})
+        self.fields['second_loan_date'].widget = forms.DateInput(attrs={'type': 'date'})
+
+    def clean(self):
+        cleaned_data = super().clean()
+        status = cleaned_data.get('loan_pending_status')
+
+        # Helper to check mandatory fields
+        def check_mandatory(fields, prefix):
+            for field in fields:
+                if not cleaned_data.get(field):
+                    self.add_error(field, f"{prefix} details are mandatory when status is '{status}'.")
+
+        if status == 'First' or status == 'Both':
+            check_mandatory(['first_loan_amount', 'first_loan_utr', 'first_loan_date'], "First Loan")
+
+        if status == 'Second' or status == 'Both':
+            check_mandatory(['second_loan_amount', 'second_loan_utr', 'second_loan_date'], "Second Loan")
+        
+        return cleaned_data
 
     class Meta:
         model = BankDetails
@@ -290,3 +327,56 @@ class EnquiryForm(forms.ModelForm):
         widgets = {
             'address': forms.Textarea(attrs={'rows': 3}),
         }
+
+class FEUpdateForm(forms.ModelForm):
+    # Bank Details Fields (Mapped manually in View)
+    loan_applied_bank = forms.CharField(required=True, label="Loan Applied Bank")
+    loan_applied_ifsc = forms.CharField(required=True, label="Loan Applied Bank IFSC")
+    loan_applied_ac_no = forms.CharField(required=True, label="Loan Applied Bank Ac Number")
+
+    class Meta:
+        model = CustomerSurvey
+        fields = ['registration_status', 'pms_registration_number']
+        labels = {
+            'registration_status': 'Registration Status (Registered/Pending)',
+            'pms_registration_number': 'PM Surya Ghar National Portal Reg. No.',
+        }
+        widgets = {
+            'registration_status': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        bank_details = kwargs.pop('bank_details', None)
+        super().__init__(*args, **kwargs)
+        if bank_details:
+            self.fields['loan_applied_bank'].initial = bank_details.loan_applied_bank
+            self.fields['loan_applied_ifsc'].initial = bank_details.loan_applied_ifsc
+            self.fields['loan_applied_ac_no'].initial = bank_details.loan_applied_ac_no
+
+class OfficeBankDetailsForm(forms.ModelForm):
+    """
+    Strict validation form for Office Portal.
+    Requirements: First/Second Loan Amounts, UTRs, Dates are Mandatory.
+    """
+    class Meta:
+        model = BankDetails
+        fields = [
+            'loan_pending_status',
+            'first_loan_amount', 'first_loan_utr', 'first_loan_date',
+            'second_loan_amount', 'second_loan_utr', 'second_loan_date',
+        ]
+        widgets = {
+             'first_loan_date': forms.DateInput(attrs={'type': 'date'}),
+             'second_loan_date': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Make all fields mandatory as per requirement
+        mandatory_fields = [
+            'loan_pending_status',
+            'first_loan_amount', 'first_loan_utr', 'first_loan_date',
+            'second_loan_amount', 'second_loan_utr', 'second_loan_date'
+        ]
+        for field in mandatory_fields:
+            self.fields[field].required = True

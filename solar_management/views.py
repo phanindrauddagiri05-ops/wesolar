@@ -12,7 +12,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group, User
 
 from .models import CustomerSurvey, Installation, BankDetails, UserProfile, Enquiry
-from .forms import SurveyForm, InstallationForm, BankDetailsForm, SignUpForm, LoginForm, EnquiryForm, OfficeStatusForm
+from .forms import SurveyForm, InstallationForm, BankDetailsForm, SignUpForm, LoginForm, EnquiryForm, OfficeStatusForm, FEUpdateForm, OfficeBankDetailsForm
 import json
 
 from django.core.mail import send_mail
@@ -626,20 +626,35 @@ def office_dashboard(request):
 
 @login_required
 @user_passes_test(is_office_staff)
+@login_required
+@user_passes_test(is_office_staff)
 def office_update_status(request, pk):
-    """View for Office Staff to update project status."""
+    """View for Office Staff to update project status and loan details."""
     survey = get_object_or_404(CustomerSurvey, pk=pk)
+    # Ensure bank details exist
+    bank_details, created = BankDetails.objects.get_or_create(survey=survey)
     
     if request.method == 'POST':
         form = OfficeStatusForm(request.POST, instance=survey)
-        if form.is_valid():
+        bank_form = OfficeBankDetailsForm(request.POST, instance=bank_details)
+        
+        if form.is_valid() and bank_form.is_valid():
             form.save()
-            messages.success(request, f"Status updated for {survey.customer_name}.")
+            bank_form.save()
+            messages.success(request, f"Status and Loan details updated for {survey.customer_name}.")
             return redirect('office_dashboard')
+        else:
+            print("Form Errors:", form.errors)
+            print("Bank Form Errors:", bank_form.errors)
     else:
         form = OfficeStatusForm(instance=survey)
+        bank_form = OfficeBankDetailsForm(instance=bank_details)
     
-    return render(request, 'solar/office_status_form.html', {'form': form, 'survey': survey})
+    return render(request, 'solar/office_status_form.html', {
+        'form': form, 
+        'bank_form': bank_form,
+        'survey': survey
+    })
 
 @login_required
 @user_passes_test(is_loan_officer)
@@ -1038,6 +1053,35 @@ def site_detail_fe_view(request, pk):
 
 @staff_member_required
 def site_detail_installer_view(request, pk):
-    """Restricted view: Shows only Installer data (Installation) for Office Admin."""
     customer = get_object_or_404(CustomerSurvey, pk=pk)
     return render(request, 'solar/site_detail.html', {'customer': customer, 'view_mode': 'installer_only'})
+
+@login_required
+@user_passes_test(is_field_engineer)
+def fe_update_survey(request, pk):
+    """
+    Restricted Edit View for Field Engineers.
+    Allows editing specific Loan and Registration details.
+    """
+    survey = get_object_or_404(CustomerSurvey, pk=pk)
+    bank_details, created = BankDetails.objects.get_or_create(survey=survey)
+
+    if request.method == 'POST':
+        form = FEUpdateForm(request.POST, instance=survey, bank_details=bank_details)
+        if form.is_valid():
+            # Save Survey Fields
+            survey = form.save(commit=False)
+            survey.save()
+            
+            # Save Bank Details Fields (manually handled)
+            bank_details.loan_applied_bank = form.cleaned_data['loan_applied_bank']
+            bank_details.loan_applied_ifsc = form.cleaned_data['loan_applied_ifsc']
+            bank_details.loan_applied_ac_no = form.cleaned_data['loan_applied_ac_no']
+            bank_details.save()
+            
+            messages.success(request, f"Details updated for {survey.customer_name}")
+            return redirect('dashboard')
+    else:
+        form = FEUpdateForm(instance=survey, bank_details=bank_details)
+
+    return render(request, 'solar/fe_update_form.html', {'form': form, 'survey': survey})

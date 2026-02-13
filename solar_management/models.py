@@ -121,6 +121,7 @@ class Installation(models.Model):
     
     installer_remarks = models.TextField(blank=True)
     customer_remarks = models.TextField(blank=True)
+    customer_rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)], default=5, help_text="Rate the experience (1-5)")
     
     # Electrical Readings
     dc_voltage = models.FloatField(default=0.0, help_text="in Volts") # New Field

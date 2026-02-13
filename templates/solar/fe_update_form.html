@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-gradient-primary text-white py-3 rounded-top-4">
+                    <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Edit Survey Details</h4>
+                    <p class="mb-0 small opacity-75">Restricted Edit: Loan & Registration</p>
+                </div>
+                <div class="card-body p-4 bg-light">
+                    <div class="alert alert-info mb-4">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        You can only edit Loan Details and Registration Status. All other fields are read-only to
+                        preserve data integrity.
+                    </div>
+
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        <h5 class="text-primary border-bottom pb-2 mb-3"><i class="bi bi-bank me-2"></i>Loan Details
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6">{{ form.loan_applied_bank|as_crispy_field }}</div>
+                            <div class="col-md-6">{{ form.loan_applied_ifsc|as_crispy_field }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">{{ form.loan_applied_ac_no|as_crispy_field }}</div>
+                        </div>
+
+                        <h5 class="text-primary border-bottom pb-2 mb-3 mt-4"><i
+                                class="bi bi-shield-check me-2"></i>Registration Details</h5>
+                        <div class="row">
+                            <div class="col-md-12">{{ form.registration_status|as_crispy_field }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">{{ form.pms_registration_number|as_crispy_field }}</div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg shadow-sm">
+                                <i class="bi bi-save me-2"></i>Update Details
+                            </button>
+                            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
