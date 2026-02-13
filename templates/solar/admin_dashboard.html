@@ -120,7 +120,8 @@
                         <tr>
                             <th class="ps-4 border-0">Customer</th>
                             <th class="border-0">Engineer</th>
-                            <th class="border-0">Status</th>
+                            <th class="border-0">Capacity</th>
+                            <th class="border-0">Structure</th>
                             <th class="border-0">Date</th>
                             <th class="border-0 text-end pe-4">Actions</th>
                         </tr>
@@ -131,13 +132,8 @@
                             <td class="ps-4 fw-bold text-dark" data-label="Customer">{{ item.customer_name }}</td>
                             <td class="text-secondary small" data-label="Engineer">{{ item.created_by.get_full_name }}
                             </td>
-                            <td data-label="Status">
-                                {% if item.workflow_status == 'Completed' %}
-                                <span class="badge bg-success-subtle text-success">Completed</span>
-                                {% else %}
-                                <span class="badge bg-warning-subtle text-warning">Pending</span>
-                                {% endif %}
-                            </td>
+                            <td class="text-dark small" data-label="Capacity">{{ item.feasibility_kw }} KW</td>
+                            <td class="text-dark small" data-label="Structure">{{ item.structure_type }} / {{item.roof_type }}</td>
                             <td class="text-muted small" data-label="Date">
                                 <div>{{ item.created_at|date:"M d, Y" }}</div>
                             </td>
@@ -186,23 +182,33 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="bg-light sticky-top">
                         <tr>
-                            <th class="ps-4 border-0">Ref Survey</th>
+                            <th class="ps-4 border-0">Application</th>
+                            <th class="border-0">Field Engineer</th>
                             <th class="border-0">Installer</th>
-                            <th class="border-0">Inverter</th>
-                            <th class="border-0">Date</th>
+                            <th class="border-0">Tech Specs</th>
+                            <th class="border-0">Status</th>
                             <th class="border-0 text-end pe-4">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for item in installer_data %}
                         <tr>
-                            <td class="ps-4 fw-bold text-dark" data-label="Ref Survey">{{ item.survey.customer_name }}
+                            <td class="ps-4" data-label="Application">
+                                <div class="fw-bold text-dark">{{ item.survey.customer_name }}</div>
+                                <div class="small text-muted">SC: {{ item.survey.sc_no }}</div>
                             </td>
-                            <td class="text-secondary small" data-label="Installer">{{ item.updated_by.get_full_name }}
+                            <td class="text-secondary small" data-label="Field Engineer">
+                                {{ item.survey.created_by.get_full_name|default:"Unknown" }}
                             </td>
-                            <td class="text-dark small" data-label="Inverter">{{ item.inverter_make }}</td>
-                            <td class="text-muted small" data-label="Date">
-                                <div>{{ item.timestamp|date:"M d, Y" }}</div>
+                            <td class="text-secondary small" data-label="Installer">
+                                {{ item.updated_by.get_full_name|default:"Unknown" }}
+                            </td>
+                            <td class="small" data-label="Tech Specs">
+                                <div class="text-dark">{{ item.survey.feasibility_kw }} KW</div>
+                                <div class="text-muted">{{ item.inverter_make }}</div>
+                            </td>
+                            <td data-label="Status">
+                                <span class="badge bg-success-subtle text-success">Completed</span>
                             </td>
                             <td class="text-end pe-4" data-label="Actions">
                                 <a href="{% url 'site_detail_installer_view' item.survey.pk %}"

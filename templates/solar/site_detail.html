@@ -15,6 +15,7 @@
     </div>
 
     <div class="row">
+        {# SECTION: Installation Report (Visible to Installers/Staff) #}
         {% if view_mode == 'installer_only' or not view_mode and request.user.userprofile.role != 'Field Engineer' or not view_mode and request.user.is_staff %}
             {% if customer.has_installation %}
             <div class="col-md-12 mb-4">
@@ -86,6 +87,7 @@
                                 </div>
                             </div>
                         </div>
+
                         {% if customer.installation.leftover_materials %}
                         <div class="alert alert-secondary border-0 bg-gray-100 mb-4">
                             <small class="fw-bold text-dark"><i class="bi bi-box-seam me-2"></i>Leftover Materials:</small>
@@ -162,7 +164,8 @@
             {% endif %}
         {% endif %}
 
-        {% if view_mode == 'fe_only' or not view_mode %}
+        {# SECTION: General Customer Info #}
+        {% if view_mode == 'fe_only' or view_mode == 'installer_only' or not view_mode %}
         <div class="col-md-6 mb-4">
             <div class="card glass-card h-100">
                 <div class="card-header bg-transparent border-bottom">
@@ -269,8 +272,7 @@
                     {% if customer.roof_photo %}
                     <div class="mt-3">
                         <p class="mb-1 text-muted small">Roof Photo (Critical Site):</p>
-                        <img src="{{ customer.roof_photo.url }}" class="img-fluid rounded shadow-sm"
-                            style="max-height: 200px;">
+                        <img src="{{ customer.roof_photo.url }}" class="img-fluid rounded shadow-sm" style="max-height: 200px;">
                     </div>
                     {% endif %}
                 </div>
