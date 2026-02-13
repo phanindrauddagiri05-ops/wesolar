@@ -34,6 +34,7 @@ class SurveyForm(forms.ModelForm):
             'reference_name': 'Reference Name',
             'pms_registration_number': 'PM Surya Ghar National Portal Reg. No.',
             'division': 'Division',
+            'fe_remarks': 'Remarks',
         }
         widgets = {
              'gps_coordinates': forms.TextInput(attrs={'placeholder': 'Latitude, Longitude', 'readonly': 'readonly'}),
@@ -211,6 +212,7 @@ class BankDetailsForm(forms.ModelForm):
     loan_applied_bank = forms.CharField(required=True, label="Loan Applied Bank")
     loan_applied_ifsc = forms.CharField(required=True, label="Loan Applied Bank IFSC")
     loan_applied_ac_no = forms.CharField(required=True, label="Loan Applied Bank Ac Number")
+    manager_number = forms.CharField(required=True, label="Manager Number")
 
     first_loan_amount = forms.DecimalField(required=False, initial=0.0)
     second_loan_amount = forms.DecimalField(required=False, initial=0.0)
@@ -219,7 +221,10 @@ class BankDetailsForm(forms.ModelForm):
         model = BankDetails
         fields = [
             'parent_bank', 'parent_bank_ac_no', 
-            'loan_applied_bank', 'loan_applied_ifsc', 'loan_applied_ac_no',
+            'loan_applied_bank', 'loan_applied_ifsc', 'loan_applied_ac_no', 'manager_number',
+            'loan_pending_status', 
+            'first_loan_amount', 'first_loan_utr', 'first_loan_date',
+            'second_loan_amount', 'second_loan_utr', 'second_loan_date',
         ]
 
 
@@ -258,6 +263,7 @@ class LoginForm(forms.Form):
         ('installer', 'Installer'),
         ('office', 'Office'),
         ('admin', 'Admin'),
+        ('loan', 'Loan'),
     ]
     login_type = forms.ChoiceField(
         choices=LOGIN_TYPE_CHOICES, 

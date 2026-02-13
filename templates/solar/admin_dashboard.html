@@ -35,211 +35,422 @@
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Section 1: Pending Approvals -->
-    <div class="card glass-card border-0 mb-5">
-        <div class="card-header bg-transparent border-0 pt-4 pb-0">
-            <h4 class="card-title fw-bold text-dark"><i class="bi bi-person-check-fill text-warning me-2"></i>Pending
-                Account Approvals</h4>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="bg-light text-secondary small text-uppercase">
-                        <tr>
-                            <th class="ps-4 border-0">User Details</th>
-                            <th class="border-0">Start Date</th>
-                            <th class="border-0">Role</th>
-                            <th class="border-0">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for profile in pending_users %}
-                        <tr>
-                            <td class="ps-4">
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar-circle bg-light text-primary me-3 fw-bold text-uppercase">
-                                        {{ profile.user.first_name|first|default:profile.user.username|first }}
-                                    </div>
-                                    <div>
-                                        <div class="fw-bold text-dark">{{
-                                            profile.user.get_full_name|default:profile.user.username }}</div>
-                                        <div class="small text-muted">{{ profile.user.email }}</div>
-                                        <div class="small text-muted">{{ profile.mobile_number }}</div>
-                                    </div>
+<style>
+    /* Mobile Card Styles */
+    .mobile-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        margin-bottom: 12px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .mobile-card-body {
+        padding: 16px;
+    }
+
+    .mobile-label {
+        font-size: 0.75rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 2px;
+    }
+
+    .mobile-value {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #212529;
+        margin-bottom: 8px;
+    }
+
+    .mobile-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .avatar-small {
+        width: 32px;
+        height: 32px;
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+</style>
+
+<!-- Section 1: Pending Approvals -->
+<div class="card glass-card border-0 mb-5">
+    <div class="card-header bg-transparent border-0 pt-4 pb-0">
+        <h4 class="card-title fw-bold text-dark"><i class="bi bi-person-check-fill text-warning me-2"></i>Pending
+            Account Approvals</h4>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive d-none d-md-block">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light text-secondary small text-uppercase">
+                    <tr>
+                        <th class="ps-4 border-0">User Details</th>
+                        <th class="border-0">Start Date</th>
+                        <th class="border-0">Role</th>
+                        <th class="border-0">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for profile in pending_users %}
+                    <tr>
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-circle bg-light text-primary me-3 fw-bold text-uppercase">
+                                    {{ profile.user.first_name|first|default:profile.user.username|first }}
                                 </div>
-                            </td>
-                            <td class="text-muted">{{ profile.user.date_joined|date:"M d, Y" }}</td>
-                            <td>
-                                <span
-                                    class="badge bg-secondary-subtle text-dark border border-secondary-subtle rounded-pill px-3">
-                                    {{ profile.role }}
-                                </span>
-                            </td>
-                            <td>
-                                <form action="{% url 'approve_user' profile.pk %}" method="post" class="d-inline">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-sm btn-success shadow-sm">
-                                        <i class="bi bi-check-lg me-1"></i>Approve
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="4" class="text-center py-4 text-muted">
-                                {% if query %}
-                                <i class="bi bi-search display-6 mb-2 d-block text-muted opacity-50"></i>
-                                No pending users found matching "{{ query }}".
-                                {% else %}
-                                <i class="bi bi-check-circle display-6 mb-2 d-block text-success opacity-50"></i>
-                                All caught up! No pending approvals.
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+                                <div>
+                                    <div class="fw-bold text-dark">
+                                        {{profile.user.get_full_name|default:profile.user.username }}</div>
+                                    <div class="small text-muted">{{ profile.user.email }}</div>
+                                    <div class="small text-muted">{{ profile.mobile_number }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-muted">{{ profile.user.date_joined|date:"M d, Y" }}</td>
+                        <td>
+                            <span
+                                class="badge bg-secondary-subtle text-dark border border-secondary-subtle rounded-pill px-3">
+                                {{ profile.role }}
+                            </span>
+                        </td>
+                        <td>
+                            <form action="{% url 'approve_user' profile.pk %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-success shadow-sm me-1">
+                                    <i class="bi bi-check-lg me-1"></i>Approve
+                                </button>
+                            </form>
+                            <form action="{% url 'reject_user' profile.pk %}" method="post" class="d-inline"
+                                onsubmit="return confirm('Are you sure you want to reject and remove this user?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-danger shadow-sm">
+                                    <i class="bi bi-x-lg me-1"></i>Reject
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center py-4 text-muted">
+                            {% if query %}
+                            <i class="bi bi-search display-6 mb-2 d-block text-muted opacity-50"></i>
+                            No pending users found matching "{{ query }}".
+                            {% else %}
+                            <i class="bi bi-check-circle display-6 mb-2 d-block text-success opacity-50"></i>
+                            All caught up! No pending approvals.
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-    </div>
 
-    <!-- Section 2: Field Engineer Data -->
-    <div class="card glass-card border-0 mb-4">
-        <div class="card-header bg-transparent border-0 pt-4">
-            <div class="d-flex justify-content-between align-items-center">
-                <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-people-fill text-primary me-2"></i>Field Engineer
-                    Data</h5>
-                <a href="{% url 'office_fe_data' %}" class="btn btn-sm btn-outline-primary">View All</a>
-            </div>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light sticky-top">
-                        <tr>
-                            <th class="ps-4 border-0">Customer</th>
-                            <th class="border-0">Engineer</th>
-                            <th class="border-0">Capacity</th>
-                            <th class="border-0">Structure</th>
-                            <th class="border-0">Date</th>
-                            <th class="border-0 text-end pe-4">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in fe_data %}
-                        <tr>
-                            <td class="ps-4 fw-bold text-dark" data-label="Customer">{{ item.customer_name }}</td>
-                            <td class="text-secondary small" data-label="Engineer">{{ item.created_by.get_full_name }}
-                            </td>
-                            <td class="text-dark small" data-label="Capacity">{{ item.feasibility_kw }} KW</td>
-                            <td class="text-dark small" data-label="Structure">{{ item.structure_type }} / {{item.roof_type }}</td>
-                            <td class="text-muted small" data-label="Date">
-                                <div>{{ item.created_at|date:"M d, Y" }}</div>
-                            </td>
-                            <td class="text-end pe-4" data-label="Actions">
-                                <a href="{% url 'site_detail_fe_view' item.pk %}"
-                                    class="btn btn-sm btn-outline-info me-1" title="View Details">
-                                    <i class="bi bi-eye"></i> View
-                                </a>
-                                <a href="{% url 'update_survey' item.pk %}" class="btn btn-sm btn-outline-primary"
-                                    title="Edit Data">
-                                    <i class="bi bi-pencil"></i> Edit
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                        {% if not fe_data %}
-                        <tr>
-                            <td colspan="5" class="text-center py-4 text-muted">
-                                {% if query %}
-                                <i class="bi bi-search display-6 mb-2 d-block text-muted opacity-50"></i>
-                                No field engineer data found matching "{{ query }}".
-                                {% else %}
-                                <i class="bi bi-folder2-open display-6 mb-2 d-block text-muted opacity-50"></i>
-                                No survey data available.
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+        <!-- Mobile View: Pending Approvals -->
+        <div class="d-md-none">
+            {% for profile in pending_users %}
+            <div class="mobile-card">
+                <div class="mobile-card-body">
+                    <div class="mobile-header">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar-small bg-primary text-white me-2 fw-bold">
+                                {{ profile.user.first_name|first|default:profile.user.username|first }}
+                            </div>
+                            <div class="fw-bold text-dark">{{ profile.user.get_full_name|default:profile.user.username}}
+                            </div>
+                        </div>
+                        <span class="badge bg-light text-dark border">{{ profile.role }}</span>
+                    </div>
 
-    <!-- Section 3: Installer Data -->
-    <div class="card glass-card border-0 mb-4">
-        <div class="card-header bg-transparent border-0 pt-4">
-            <div class="d-flex justify-content-between align-items-center">
-                <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-tools text-warning me-2"></i>Installer Data</h5>
-                <a href="{% url 'office_installer_data' %}" class="btn btn-sm btn-outline-warning text-dark">View
-                    All</a>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="mobile-label">Mobile</div>
+                            <div class="mobile-value">{{ profile.mobile_number }}</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mobile-label">Joined</div>
+                            <div class="mobile-value">{{ profile.user.date_joined|date:"d M Y" }}</div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mobile-label">Email</div>
+                            <div class="mobile-value text-break">{{ profile.user.email }}</div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3 d-flex gap-2">
+                        <form action="{% url 'approve_user' profile.pk %}" method="post" class="flex-grow-1">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success btn-sm w-100 fw-bold">
+                                <i class="bi bi-check-lg me-1"></i>Approve
+                            </button>
+                        </form>
+                        <form action="{% url 'reject_user' profile.pk %}" method="post" class="flex-grow-1"
+                            onsubmit="return confirm('Reject and remove this user?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm w-100 fw-bold">
+                                <i class="bi bi-x-lg me-1"></i>Reject
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light sticky-top">
-                        <tr>
-                            <th class="ps-4 border-0">Application</th>
-                            <th class="border-0">Field Engineer</th>
-                            <th class="border-0">Installer</th>
-                            <th class="border-0">Tech Specs</th>
-                            <th class="border-0">Status</th>
-                            <th class="border-0 text-end pe-4">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in installer_data %}
-                        <tr>
-                            <td class="ps-4" data-label="Application">
-                                <div class="fw-bold text-dark">{{ item.survey.customer_name }}</div>
-                                <div class="small text-muted">SC: {{ item.survey.sc_no }}</div>
-                            </td>
-                            <td class="text-secondary small" data-label="Field Engineer">
-                                {{ item.survey.created_by.get_full_name|default:"Unknown" }}
-                            </td>
-                            <td class="text-secondary small" data-label="Installer">
-                                {{ item.updated_by.get_full_name|default:"Unknown" }}
-                            </td>
-                            <td class="small" data-label="Tech Specs">
-                                <div class="text-dark">{{ item.survey.feasibility_kw }} KW</div>
-                                <div class="text-muted">{{ item.inverter_make }}</div>
-                            </td>
-                            <td data-label="Status">
-                                <span class="badge bg-success-subtle text-success">Completed</span>
-                            </td>
-                            <td class="text-end pe-4" data-label="Actions">
-                                <a href="{% url 'site_detail_installer_view' item.survey.pk %}"
-                                    class="btn btn-sm btn-outline-info me-1" title="View Details">
-                                    <i class="bi bi-eye"></i> View
-                                </a>
-                                <a href="{% url 'update_installation' item.survey.pk %}"
-                                    class="btn btn-sm btn-outline-warning text-dark" title="Edit Data">
-                                    <i class="bi bi-pencil"></i> Edit
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                        {% if not installer_data %}
-                        <tr>
-                            <td colspan="5" class="text-center py-4 text-muted">
-                                {% if query %}
-                                <i class="bi bi-search display-6 mb-2 d-block text-muted opacity-50"></i>
-                                No installer data found matching "{{ query }}".
-                                {% else %}
-                                <i class="bi bi-tools display-6 mb-2 d-block text-muted opacity-50"></i>
-                                No installation data available.
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
+            {% empty %}
+            <div class="text-center py-4 text-muted">
+                <i class="bi bi-check-circle fs-1 d-block text-success opacity-50 mb-2"></i>
+                <p class="small">No pending approvals</p>
             </div>
+            {% endfor %}
         </div>
     </div>
+</div>
+
+<!-- Section 2: Field Engineer Data -->
+<div class="card glass-card border-0 mb-4">
+    <div class="card-header bg-transparent border-0 pt-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-people-fill text-primary me-2"></i>Field Engineer
+                Data</h5>
+            <a href="{% url 'office_fe_data' %}" class="btn btn-sm btn-outline-primary">View All</a>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive d-none d-md-block" style="max-height: 400px; overflow-y: auto;">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light sticky-top">
+                    <tr>
+                        <th class="ps-4 border-0">Customer</th>
+                        <th class="border-0">Engineer</th>
+                        <th class="border-0">Capacity</th>
+                        <th class="border-0">Structure</th>
+                        <th class="border-0">Date</th>
+                        <th class="border-0 text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in fe_data %}
+                    <tr>
+                        <td class="ps-4 fw-bold text-dark" data-label="Customer">{{ item.customer_name }}</td>
+                        <td class="text-secondary small" data-label="Engineer">{{ item.created_by.get_full_name }}
+                        </td>
+                        <td class="text-dark small" data-label="Capacity">{{ item.feasibility_kw }} KW</td>
+                        <td class="text-dark small" data-label="Structure">{{ item.structure_type }} /
+                            {{item.roof_type}}</td>
+                        <td class="text-muted small" data-label="Date">
+                            <div>{{ item.created_at|date:"M d, Y" }}</div>
+                        </td>
+                        <td class="text-end pe-4" data-label="Actions">
+                            <a href="{% url 'site_detail_fe_view' item.pk %}" class="btn btn-sm btn-outline-info me-1"
+                                title="View Details">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                            <a href="{% url 'update_survey' item.pk %}" class="btn btn-sm btn-outline-primary"
+                                title="Edit Data">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% if not fe_data %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">
+                            {% if query %}
+                            <i class="bi bi-search display-6 mb-2 d-block text-muted opacity-50"></i>
+                            No field engineer data found matching "{{ query }}".
+                            {% else %}
+                            <i class="bi bi-folder2-open display-6 mb-2 d-block text-muted opacity-50"></i>
+                            No survey data available.
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Mobile View: Field Engineer Data -->
+        <div class="d-md-none">
+            {% for item in fe_data %}
+            <div class="mobile-card">
+                <div class="mobile-card-body">
+                    <div class="mobile-header">
+                        <div class="fw-bold text-dark">{{ item.customer_name }}</div>
+                        <span class="badge bg-light text-dark border">{{ item.feasibility_kw }} KW</span>
+                    </div>
+
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="mobile-label">Engineer</div>
+                            <div class="mobile-value">{{ item.created_by.get_full_name }}</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mobile-label">Date</div>
+                            <div class="mobile-value">{{ item.created_at|date:"d M Y" }}</div>
+                        </div>
+                        <div class="col-12">
+                            <div class="mobile-label">Structure</div>
+                            <div class="mobile-value">{{ item.structure_type }} / {{ item.roof_type }}</div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3 d-flex gap-2">
+                        <a href="{% url 'site_detail_fe_view' item.pk %}"
+                            class="btn btn-outline-info btn-sm flex-grow-1">
+                            <i class="bi bi-eye me-1"></i>View
+                        </a>
+                        <a href="{% url 'update_survey' item.pk %}" class="btn btn-outline-primary btn-sm flex-grow-1">
+                            <i class="bi bi-pencil me-1"></i>Edit
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-4 text-muted">
+                <i class="bi bi-folder2-open fs-1 d-block text-muted opacity-50 mb-2"></i>
+                <p class="small">No survey data available.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Section 3: Installer Data -->
+<div class="card glass-card border-0 mb-4">
+    <div class="card-header bg-transparent border-0 pt-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-tools text-warning me-2"></i>Installer Data</h5>
+            <a href="{% url 'office_installer_data' %}" class="btn btn-sm btn-outline-warning text-dark">View
+                All</a>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive d-none d-md-block" style="max-height: 400px; overflow-y: auto;">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light sticky-top">
+                    <tr>
+                        <th class="ps-4 border-0">Application</th>
+                        <th class="border-0">Field Engineer</th>
+                        <th class="border-0">Installer</th>
+                        <th class="border-0">Tech Specs</th>
+                        <th class="border-0">Status</th>
+                        <th class="border-0 text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in installer_data %}
+                    <tr>
+                        <td class="ps-4" data-label="Application">
+                            <div class="fw-bold text-dark">{{ item.survey.customer_name }}</div>
+                            <div class="small text-muted">SC: {{ item.survey.sc_no }}</div>
+                        </td>
+                        <td class="text-secondary small" data-label="Field Engineer">
+                            {{ item.survey.created_by.get_full_name|default:"Unknown" }}
+                        </td>
+                        <td class="text-secondary small" data-label="Installer">
+                            {{ item.updated_by.get_full_name|default:"Unknown" }}
+                        </td>
+                        <td class="small" data-label="Tech Specs">
+                            <div class="text-dark">{{ item.survey.feasibility_kw }} KW</div>
+                            <div class="text-muted">{{ item.inverter_make }}</div>
+                        </td>
+                        <td data-label="Status">
+                            <span class="badge bg-success-subtle text-success">Completed</span>
+                        </td>
+                        <td class="text-end pe-4" data-label="Actions">
+                            <a href="{% url 'site_detail_installer_view' item.survey.pk %}"
+                                class="btn btn-sm btn-outline-info me-1" title="View Details">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                            <a href="{% url 'update_installation' item.survey.pk %}"
+                                class="btn btn-sm btn-outline-warning text-dark" title="Edit Data">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% if not installer_data %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">
+                            {% if query %}
+                            <i class="bi bi-search display-6 mb-2 d-block text-muted opacity-50"></i>
+                            No installer data found matching "{{ query }}".
+                            {% else %}
+                            <i class="bi bi-tools display-6 mb-2 d-block text-muted opacity-50"></i>
+                            No installation data available.
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Mobile View: Installer Data -->
+        <div class="d-md-none">
+            {% for item in installer_data %}
+            <div class="mobile-card">
+                <div class="mobile-card-body">
+                    <div class="mobile-header">
+                        <div class="truncate-text fw-bold text-dark" style="max-width: 70%;">{{item.survey.customer_name
+                            }}</div>
+                        <span class="badge bg-success-subtle text-success">Completed</span>
+                    </div>
+
+                    <div class="row g-2 mb-2">
+                        <div class="col-6">
+                            <div class="mobile-label">Engineer</div>
+                            <div class="mobile-value">{{ item.survey.created_by.get_full_name|default:"Unknown" }}</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mobile-label">Installer</div>
+                            <div class="mobile-value">{{ item.updated_by.get_full_name|default:"Unknown" }}</div>
+                        </div>
+                    </div>
+
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="mobile-label">Capacity</div>
+                            <div class="mobile-value">{{ item.survey.feasibility_kw }} KW</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mobile-label">Inverter</div>
+                            <div class="mobile-value">{{ item.inverter_make }}</div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3 d-flex gap-2">
+                        <a href="{% url 'site_detail_installer_view' item.survey.pk %}"
+                            class="btn btn-outline-info btn-sm flex-grow-1">
+                            <i class="bi bi-eye me-1"></i>View
+                        </a>
+                        <a href="{% url 'update_installation' item.survey.pk %}"
+                            class="btn btn-outline-warning text-dark btn-sm flex-grow-1">
+                            <i class="bi bi-pencil me-1"></i>Edit
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-4 text-muted">
+                <i class="bi bi-tools fs-1 d-block text-muted opacity-50 mb-2"></i>
+                <p class="small">No installation data available.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
 
 </div>
 {% endblock %}

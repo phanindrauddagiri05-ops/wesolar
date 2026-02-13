@@ -8,6 +8,7 @@ urlpatterns = [
     path('admin-portal/login/', views.admin_login_view, name='admin_login'),
     path('signup/', views.signup_view, name='signup'),
     path('admin-portal/approve/<int:pk>/', views.approve_user, name='approve_user'),
+    path('admin-portal/reject/<int:pk>/', views.reject_user, name='reject_user'),
     path('logout/', views.logout_view, name='logout'),
     
     # Admin Portal (Formerly Office)
@@ -21,6 +22,7 @@ urlpatterns = [
 
     # Master Dashboard
     path('dashboard/', views.master_dashboard, name='dashboard'),
+    path('loan-dashboard/', views.loan_dashboard, name='loan_dashboard'),
     path('search/', views.global_search, name='global_search'),
     path('api/search/', views.api_global_search, name='api_global_search'),
     

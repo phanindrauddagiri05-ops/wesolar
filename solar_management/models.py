@@ -9,6 +9,7 @@ class UserProfile(models.Model):
         ('Installer', 'Installer'),
         ('Office', 'Office'),
         ('Admin', 'Admin'),
+        ('Loan', 'Loan'),
     ]
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     mobile_number = models.CharField(max_length=15, unique=True)
@@ -144,6 +145,7 @@ class BankDetails(models.Model):
     loan_applied_bank = models.CharField(max_length=100)
     loan_applied_ifsc = models.CharField(max_length=11)
     loan_applied_ac_no = models.CharField(max_length=20)
+    manager_number = models.CharField(max_length=15, blank=True, null=True) # New field for Loan Dashboard
     
     # Loan Tracking
     LOAN_STATUS_CHOICES = [('First', 'First'), ('Second', 'Second'), ('Both', 'Both'), ('Pending', 'Pending')]

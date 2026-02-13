@@ -1,0 +1,6 @@
+<svg width="150" height="40" xmlns="http://www.w3.org/2000/svg">
+  <!-- Lightning Bolt Icon -->
+  <path d="M10 20 L20 0 L25 10 L35 5 L20 35 L15 20 Z" fill="#FFC107" stroke="#333" stroke-width="2"/>
+  <!-- Text -->
+  <text x="40" y="28" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#0d6efd">WeSolar</text>
+</svg>

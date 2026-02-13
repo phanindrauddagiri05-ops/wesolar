@@ -120,6 +120,17 @@ def custom_login_view(request):
                             messages.error(request, "Account pending admin approval.")
                     else:
                         messages.error(request, "This account is not registered as an Installer.")
+
+                # D. LOAN LOGIN
+                elif login_type == 'loan':
+                    if profile and profile.role == 'Loan':
+                        if profile.is_approved:
+                            login(request, user)
+                            return redirect('loan_dashboard')
+                        else:
+                            messages.error(request, "Account pending admin approval.")
+                    else:
+                        messages.error(request, "This account is not registered as a Loan Officer.")
                 
                 else:
                     messages.error(request, "Invalid login type selected.")
@@ -243,8 +254,21 @@ def approve_user(request, pk):
     elif profile.role == 'Office':
         group, _ = Group.objects.get_or_create(name='Office_Staff')
         profile.user.groups.add(group)
+    elif profile.role == 'Loan':
+        group, _ = Group.objects.get_or_create(name='Loan_Officers')
+        profile.user.groups.add(group)
         
     messages.success(request, f"User {profile.user.get_full_name()} approved.")
+    return redirect('admin_dashboard')
+
+@staff_member_required
+def reject_user(request, pk):
+    """Admin-only: Reject and delete user request."""
+    profile = get_object_or_404(UserProfile, pk=pk)
+    user = profile.user
+    name = user.get_full_name() or user.username
+    user.delete() # Cascade deletes profile
+    messages.error(request, f"User request for {name} has been rejected and removed.")
     return redirect('admin_dashboard')
 
 def logout_view(request):
@@ -266,6 +290,9 @@ def is_bank_user(user):
 def is_office_staff(user):
     return user.groups.filter(name='Office_Staff').exists()
 
+def is_loan_officer(user):
+    return user.groups.filter(name='Loan_Officers').exists() or (hasattr(user, 'userprofile') and user.userprofile.role == 'Loan') or user.is_staff
+
 # ==========================================
 # 0.5 GLOBAL SEARCH
 # ==========================================
@@ -282,6 +309,8 @@ def global_search(request):
         return redirect(f"/dashboard/?q={query}")
     elif is_office_staff(request.user):
         return redirect(f"/office-dashboard/?q={query}")
+    elif is_loan_officer(request.user):
+        return redirect(f"/loan-dashboard/?q={query}")
     elif request.user.is_staff:
         return redirect(f"/admin-dashboard/?q={query}")
     
@@ -358,7 +387,24 @@ def api_global_search(request):
                 'type': 'Project'
             })
 
-    # 4. Admin (All Data Types)
+    # 4. Loan Officer (All Surveys)
+    elif is_loan_officer(request.user):
+        surveys = CustomerSurvey.objects.filter(
+            Q(customer_name__icontains=query) |
+            Q(phone_number__icontains=query) |
+            Q(aadhar_linked_phone__icontains=query) |
+            Q(sc_no__icontains=query)
+        )[:5]
+        for s in surveys:
+            phone = s.phone_number if s.phone_number else s.aadhar_linked_phone
+            results.append({
+                'title': s.customer_name,
+                'subtitle': f"Phone: {phone} | Status: {s.workflow_status}",
+                'url': f"/loan-dashboard/?site_id={s.id}",
+                'type': 'Loan Application'
+            })
+
+    # 5. Admin (All Data Types)
     elif request.user.is_staff:
         # A. Users
         users = UserProfile.objects.filter(
@@ -420,6 +466,8 @@ def master_dashboard(request):
         return installer_dashboard(request)
     elif is_office_staff(user):
         return redirect('office_dashboard')
+    elif is_loan_officer(user):
+        return redirect('loan_dashboard')
     elif user.is_staff: 
         # Superusers/Staff go to Admin Dashboard (Pending approvals + Master Lists)
         return redirect('admin_dashboard') # Reuse existing view logic but expand it
@@ -537,9 +585,9 @@ def office_dashboard(request):
     query = request.GET.get('q', '')
     if query:
         surveys = CustomerSurvey.objects.filter(
-            models.Q(phone_number__icontains=query) | 
-            models.Q(customer_name__icontains=query) |
-            models.Q(sc_no__icontains=query)
+            Q(phone_number__icontains=query) | 
+            Q(customer_name__icontains=query) |
+            Q(sc_no__icontains=query)
         ).select_related('installation').order_by('-created_at')
     else:
         surveys = CustomerSurvey.objects.all().select_related('installation').order_by('-created_at')
@@ -562,6 +610,70 @@ def office_update_status(request, pk):
         form = OfficeStatusForm(instance=survey)
     
     return render(request, 'solar/office_status_form.html', {'form': form, 'survey': survey})
+
+@login_required
+@user_passes_test(is_loan_officer)
+def loan_dashboard(request):
+    """
+    Loan Dashboard:
+    - Search for Customer by Phone Number.
+    - View and Update Bank/Loan Details.
+    """
+    query = request.GET.get('q', '')
+    site_id = request.GET.get('site_id')
+    customer = None
+    bank_details = None
+    form = None
+    recent_customers = [] # For default view
+    
+    if query or site_id:
+        # Search Logic
+        if site_id:
+            customer = get_object_or_404(CustomerSurvey, pk=site_id)
+        else:
+            # Search by Phone Number (including Aadhar linked as backup)
+            customer = CustomerSurvey.objects.filter(
+                Q(phone_number__icontains=query) | 
+                Q(aadhar_linked_phone__icontains=query)
+            ).first()
+        
+        if customer:
+            # Fetch or Create Bank Details
+            # Use get_or_create to ensure we have a record to edit
+            bank_details, created = BankDetails.objects.get_or_create(survey=customer)
+            
+            # Pre-fill data if new
+            if created and customer.bank_account_no:
+                 bank_details.parent_bank_ac_no = customer.bank_account_no
+                 bank_details.save()
+            
+            if request.method == 'POST':
+                form = BankDetailsForm(request.POST, instance=bank_details)
+                if form.is_valid():
+                    form.save()
+                    messages.success(request, f"Loan details updated for {customer.customer_name}.")
+                    return redirect(f"{request.path}?q={query}")
+            else:
+                form = BankDetailsForm(instance=bank_details)
+        else:
+            messages.error(request, "Customer not found with this phone number.")
+    else:
+        # Show recent customers if no query
+        recent_customers = list(CustomerSurvey.objects.all().order_by('-created_at')[:20])
+        for c in recent_customers:
+            try:
+                # Accessing reverse one-to-one raises error if missing
+                c.cached_loan_status = c.bank_details.loan_pending_status
+            except BankDetails.DoesNotExist:
+                c.cached_loan_status = None
+    
+    return render(request, 'solar/loan_dashboard.html', {
+        'form': form,
+        'customer': customer,
+        'query': query,
+        'bank_details': bank_details,
+        'recent_customers': recent_customers
+    })
 
 @login_required
 @user_passes_test(is_field_engineer)
@@ -677,16 +789,35 @@ def update_survey(request, pk):
         messages.error(request, "Field Engineers have read-only access.")
         return redirect('site_detail', pk=pk)
         
+    # Try to fetch existing bank details
+    try:
+        bank_details = survey.bank_details
+    except BankDetails.DoesNotExist:
+        bank_details = None
+
     if request.method == "POST":
         form = SurveyForm(request.POST, request.FILES, instance=survey)
-        if form.is_valid():
+        bank_form = BankDetailsForm(request.POST, instance=bank_details)
+        
+        if form.is_valid() and bank_form.is_valid():
             form.save()
-            messages.success(request, "Survey details updated.")
+            
+            # Save Bank Details
+            bank_obj = bank_form.save(commit=False)
+            bank_obj.survey = survey
+            bank_obj.save()
+            
+            messages.success(request, "Survey and Bank details updated.")
             return redirect('site_detail', pk=pk)
     else:
         form = SurveyForm(instance=survey)
+        bank_form = BankDetailsForm(instance=bank_details)
     
-    return render(request, 'solar/survey_form.html', {'form': form, 'is_update': True})
+    return render(request, 'solar/survey_form.html', {
+        'form': form, 
+        'bank_form': bank_form,
+        'is_update': True
+    })
 
 # ==========================================
 # 6. ADMIN & DATA EXPORT

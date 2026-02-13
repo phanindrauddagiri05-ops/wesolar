@@ -43,161 +43,99 @@
             <h2 class="fw-bold text-dark mb-0">Office Dashboard</h2>
             <p class="text-muted small mb-0">Project Monitoring & Status Tracking</p>
         </div>
-        <!-- Search Bar -->
-        <form method="get" class="d-flex shadow-sm rounded-3 overflow-hidden" style="max-width: 300px;">
-            <input type="text" name="q" class="form-control border-0" placeholder="Search by Phone/Name/SC..."
-                value="{{ query }}">
-            <button type="submit" class="btn btn-primary px-3"><i class="bi bi-search"></i></button>
-        </form>
     </div>
 
     <div class="card shadow-sm border-0 bg-transparent">
         <div class="card-body p-0">
-            <!-- Desktop View: Table -->
             <div class="table-responsive d-none d-md-block">
                 <table class="table table-hover align-middle mb-0 bg-white rounded-3 overflow-hidden shadow-sm">
                     <thead class="bg-light">
                         <tr>
-                            <th class="py-3 px-4 text-secondary text-uppercase small" style="font-weight: 600;">Customer
-                            </th>
-                            <th class="py-3 text-secondary text-uppercase small" style="font-weight: 600;">Phone</th>
-                            <th class="py-3 text-secondary text-uppercase small" style="font-weight: 600;">Install Date
-                            </th>
-                            <th class="py-3 text-secondary text-uppercase small" style="font-weight: 600;">Install
-                                Status</th>
-                            <th class="py-3 text-secondary text-uppercase small" style="font-weight: 600;">Discom</th>
-                            <th class="py-3 text-secondary text-uppercase small" style="font-weight: 600;">Net Metering
-                            </th>
+                            <th class="py-3 px-4 text-secondary text-uppercase small" style="font-weight: 600;">Customer</th>
+                            <th class="py-3 text-secondary text-uppercase small" style="font-weight: 600;">Phone Number</th>
+                            <th class="py-3 text-secondary text-uppercase small" style="font-weight: 600;">Installation Completed Date</th>
+                            <th class="py-3 text-secondary text-uppercase small" style="font-weight: 600;">Installation Status</th>
+                            <th class="py-3 text-secondary text-uppercase small" style="font-weight: 600;">Discom Status</th>
+                            <th class="py-3 text-secondary text-uppercase small" style="font-weight: 600;">Net Metering</th>
                             <th class="py-3 text-secondary text-uppercase small" style="font-weight: 600;">Subsidy</th>
                             <th class="py-3 text-secondary text-uppercase small" style="font-weight: 600;">Remarks</th>
-                            <th class="py-3 px-4 text-secondary text-uppercase small text-center"
-                                style="font-weight: 600;">Action</th>
+                            <th class="py-3 px-4 text-secondary text-uppercase small text-center" style="font-weight: 600;">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for survey in surveys %}
                         <tr class="border-bottom">
                             <td class="fw-bold px-4 py-3 text-dark">{{ survey.customer_name }}</td>
-                            <td class="py-3 text-dark">{{ survey.phone_number|default:"-" }}</td>
-                            <td class="py-3 text-dark">
-                                {{ survey.installation_date|date:"d M Y"|default:"-" }}
-                            </td>
+                            <td class="py-3 text-dark">{{ survey.phone_number|default:survey.aadhar_linked_phone|default:"-" }}</td>
+                            <td class="py-3 text-dark">{{ survey.installation_date|date:"d M Y"|default:"-" }}</td>
                             <td class="py-3">
-                                <span
-                                    class="badge {% if survey.workflow_status == 'Completed' %}bg-success{% else %}bg-warning text-dark{% endif %} status-badge">
+                                <span class="badge {% if survey.workflow_status == 'Completed' %}bg-success{% else %}bg-warning text-dark{% endif %} status-badge">
                                     {{ survey.workflow_status }}
                                 </span>
                             </td>
                             <td class="py-3">
-                                <span
-                                    class="badge {% if survey.discom_status == 'Completed' %}bg-success{% else %}bg-warning text-dark{% endif %} status-badge">
+                                <span class="badge {% if survey.discom_status == 'Completed' %}bg-success{% else %}bg-warning text-dark{% endif %} status-badge">
                                     {{ survey.discom_status }}
                                 </span>
                             </td>
                             <td class="py-3">
-                                <span
-                                    class="badge {% if survey.net_metering_status == 'Completed' %}bg-success{% else %}bg-warning text-dark{% endif %} status-badge">
+                                <span class="badge {% if survey.net_metering_status == 'Completed' %}bg-success{% else %}bg-warning text-dark{% endif %} status-badge">
                                     {{ survey.net_metering_status }}
                                 </span>
                             </td>
                             <td class="py-3">
-                                <span
-                                    class="badge {% if survey.subsidy_status == 'Completed' %}bg-success{% else %}bg-warning text-dark{% endif %} status-badge">
+                                <span class="badge {% if survey.subsidy_status == 'Completed' %}bg-success{% else %}bg-warning text-dark{% endif %} status-badge">
                                     {{ survey.subsidy_status }}
                                 </span>
                             </td>
-                            <td class="py-3 text-dark small"
-                                style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            <td class="py-3 text-dark small" style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                 {{ survey.office_remarks|default:"-" }}
                             </td>
                             <td class="py-3 px-4 text-center">
-                                <a href="{% url 'office_update_status' survey.id %}"
-                                    class="btn btn-sm btn-outline-primary rounded-pill">
-                                    Update
-                                </a>
+                                <a href="{% url 'office_update_status' survey.id %}" class="btn btn-sm btn-outline-primary rounded-pill">Update</a>
                             </td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="9" class="text-center py-5 text-muted">
-                                {% if query %}
-                                <i class="bi bi-search fs-1 d-block mb-3 opacity-50"></i>
-                                No records found matching "{{ query }}".
-                                {% else %}
-                                <i class="bi bi-inbox fs-1 d-block mb-3 opacity-50"></i>
-                                No surveys found.
-                                {% endif %}
-                            </td>
+                            <td colspan="9" class="text-center py-5 text-muted">No records found.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
 
-            <!-- Mobile View: Premium Cards -->
             <div class="d-md-none">
                 {% for survey in surveys %}
                 <div class="mobile-card">
                     <div class="card-body p-4">
-                        <!-- Header -->
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="fw-bold text-dark mb-0 text-truncate" style="max-width: 70%;">{{
-                                survey.customer_name }}</h5>
-                            <a href="{% url 'office_update_status' survey.id %}"
-                                class="btn btn-sm btn-primary rounded-pill px-3">Update</a>
+                            <h5 class="fw-bold text-dark mb-0 text-truncate" style="max-width: 70%;">{{ survey.customer_name }}</h5>
+                            <a href="{% url 'office_update_status' survey.id %}" class="btn btn-sm btn-primary rounded-pill px-3">Update</a>
                         </div>
-
-                        <!-- Phone -->
                         <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light">
                             <span class="mobile-label">Phone</span>
-                            <span class="mobile-value">{{ survey.phone_number|default:"-" }}</span>
+                            <span class="mobile-value">{{ survey.phone_number|default:survey.aadhar_linked_phone|default:"-" }}</span>
                         </div>
-
-                        <!-- Date -->
                         <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light">
-                            <span class="mobile-label">Install Date</span>
+                            <span class="mobile-label">Date</span>
                             <span class="mobile-value">{{ survey.installation_date|date:"d M Y"|default:"-" }}</span>
                         </div>
-
-                        <!-- Installation Status -->
                         <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light">
-                            <span class="mobile-label">Installation Status</span>
-                            <div>
-                                <span
-                                    class="badge {% if survey.workflow_status == 'Completed' %}bg-success{% else %}bg-warning text-dark{% endif %} status-badge">
-                                    {{ survey.workflow_status }}
-                                </span>
-                            </div>
+                            <span class="mobile-label">Installation</span>
+                            <span class="badge {% if survey.workflow_status == 'Completed' %}bg-success{% else %}bg-warning text-dark{% endif %} status-badge">{{ survey.workflow_status }}</span>
                         </div>
-
-                        <!-- Discom Status -->
                         <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light">
-                            <span class="mobile-label">Discom Status</span>
-                            <span
-                                class="badge {% if survey.discom_status == 'Completed' %}bg-success{% else %}bg-warning text-dark{% endif %} status-badge">
-                                {{ survey.discom_status }}
-                            </span>
+                            <span class="mobile-label">Discom</span>
+                            <span class="badge {% if survey.discom_status == 'Completed' %}bg-success{% else %}bg-warning text-dark{% endif %} status-badge">{{ survey.discom_status }}</span>
                         </div>
-
-                        <!-- Net Metering -->
                         <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light">
                             <span class="mobile-label">Net Metering</span>
-                            <span
-                                class="badge {% if survey.net_metering_status == 'Completed' %}bg-success{% else %}bg-warning text-dark{% endif %} status-badge">
-                                {{ survey.net_metering_status }}
-                            </span>
+                            <span class="badge {% if survey.net_metering_status == 'Completed' %}bg-success{% else %}bg-warning text-dark{% endif %} status-badge">{{ survey.net_metering_status }}</span>
                         </div>
-
-                        <!-- Subsidy -->
                         <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light">
                             <span class="mobile-label">Subsidy</span>
-                            <span
-                                class="badge {% if survey.subsidy_status == 'Completed' %}bg-success{% else %}bg-warning text-dark{% endif %} status-badge">
-                                {{ survey.subsidy_status }}
-                            </span>
+                            <span class="badge {% if survey.subsidy_status == 'Completed' %}bg-success{% else %}bg-warning text-dark{% endif %} status-badge">{{ survey.subsidy_status }}</span>
                         </div>
-
-                        <!-- Remarks -->
                         <div class="d-flex justify-content-between align-items-start pt-2">
                             <span class="mobile-label mt-1">Remarks</span>
                             <span class="mobile-value text-break ps-3">{{ survey.office_remarks|default:"-" }}</span>
@@ -205,15 +143,7 @@
                     </div>
                 </div>
                 {% empty %}
-                <div class="text-center py-5 text-muted bg-white rounded-4 shadow-sm">
-                    {% if query %}
-                    <i class="bi bi-search fs-1 d-block mb-3 opacity-50"></i>
-                    No records found matching "{{ query }}".
-                    {% else %}
-                    <i class="bi bi-inbox fs-1 d-block mb-3 opacity-50"></i>
-                    No surveys found.
-                    {% endif %}
-                </div>
+                <div class="text-center py-5 text-muted bg-white rounded-4 shadow-sm">No records found.</div>
                 {% endfor %}
             </div>
         </div>
