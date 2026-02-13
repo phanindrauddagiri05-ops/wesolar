@@ -120,8 +120,13 @@
                         {% empty %}
                         <tr>
                             <td colspan="9" class="text-center py-5 text-muted">
+                                {% if query %}
                                 <i class="bi bi-search fs-1 d-block mb-3 opacity-50"></i>
-                                No records found matching your query.
+                                No records found matching "{{ query }}".
+                                {% else %}
+                                <i class="bi bi-inbox fs-1 d-block mb-3 opacity-50"></i>
+                                No surveys found.
+                                {% endif %}
                             </td>
                         </tr>
                         {% endfor %}
@@ -201,8 +206,13 @@
                 </div>
                 {% empty %}
                 <div class="text-center py-5 text-muted bg-white rounded-4 shadow-sm">
+                    {% if query %}
+                    <i class="bi bi-search fs-1 d-block mb-3 opacity-50"></i>
+                    No records found matching "{{ query }}".
+                    {% else %}
                     <i class="bi bi-inbox fs-1 d-block mb-3 opacity-50"></i>
-                    No records found.
+                    No surveys found.
+                    {% endif %}
                 </div>
                 {% endfor %}
             </div>

@@ -12,9 +12,27 @@
             <a href="{% url 'enquiry_list' %}" class="btn btn-outline-primary me-2">
                 <i class="bi bi-envelope me-2"></i>View Enquiries
             </a>
-            <a href="{% url 'export_solar_data' %}" class="btn btn-success">
-                <i class="bi bi-file-earmark-spreadsheet me-2"></i>Export CSV
-            </a>
+            <div class="btn-group">
+                <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    <i class="bi bi-file-earmark-spreadsheet me-2"></i>Export Data
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="{% url 'export_solar_data' %}?type=field_engineer"><i
+                                class="bi bi-people me-2"></i>Field Engineer Data</a></li>
+                    <li><a class="dropdown-item" href="{% url 'export_solar_data' %}?type=installer"><i
+                                class="bi bi-tools me-2"></i>Installer Data</a></li>
+                    <li><a class="dropdown-item" href="{% url 'export_solar_data' %}?type=enquiries"><i
+                                class="bi bi-envelope me-2"></i>Enquiries</a></li>
+                    <li><a class="dropdown-item" href="{% url 'export_solar_data' %}?type=users"><i
+                                class="bi bi-person-badge me-2"></i>User Profiles</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" href="{% url 'export_solar_data' %}?type=master"><i
+                                class="bi bi-file-earmark-spreadsheet-fill me-2"></i>Master Report (All)</a></li>
+                </ul>
+            </div>
         </div>
     </div>
 
@@ -70,8 +88,13 @@
                         {% empty %}
                         <tr>
                             <td colspan="4" class="text-center py-4 text-muted">
+                                {% if query %}
+                                <i class="bi bi-search display-6 mb-2 d-block text-muted opacity-50"></i>
+                                No pending users found matching "{{ query }}".
+                                {% else %}
                                 <i class="bi bi-check-circle display-6 mb-2 d-block text-success opacity-50"></i>
                                 All caught up! No pending approvals.
+                                {% endif %}
                             </td>
                         </tr>
                         {% endfor %}
@@ -130,6 +153,19 @@
                             </td>
                         </tr>
                         {% endfor %}
+                        {% if not fe_data %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-muted">
+                                {% if query %}
+                                <i class="bi bi-search display-6 mb-2 d-block text-muted opacity-50"></i>
+                                No field engineer data found matching "{{ query }}".
+                                {% else %}
+                                <i class="bi bi-folder2-open display-6 mb-2 d-block text-muted opacity-50"></i>
+                                No survey data available.
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endif %}
                     </tbody>
                 </table>
             </div>
@@ -180,6 +216,19 @@
                             </td>
                         </tr>
                         {% endfor %}
+                        {% if not installer_data %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-muted">
+                                {% if query %}
+                                <i class="bi bi-search display-6 mb-2 d-block text-muted opacity-50"></i>
+                                No installer data found matching "{{ query }}".
+                                {% else %}
+                                <i class="bi bi-tools display-6 mb-2 d-block text-muted opacity-50"></i>
+                                No installation data available.
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endif %}
                     </tbody>
                 </table>
             </div>

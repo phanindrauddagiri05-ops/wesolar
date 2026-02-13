@@ -12,6 +12,62 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/modern_theme.css' %}">
     <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <style>
+        /* Live Search Dropdown */
+        #search-results-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 1050;
+            max-height: 300px;
+            overflow-y: auto;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            display: none;
+        }
+
+        .search-result-item {
+            padding: 12px 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-item:hover {
+            background: rgba(0, 0, 0, 0.02);
+            padding-left: 24px;
+        }
+
+        .search-result-title {
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 2px;
+        }
+
+        .search-result-subtitle {
+            font-size: 0.85em;
+            color: #6c757d;
+        }
+
+        .search-type-badge {
+            font-size: 0.7em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: #e9ecef;
+            color: #495057;
+            padding: 2px 6px;
+            border-radius: 4px;
+            float: right;
+        }
+    </style>
 </head>
 
 <body>
@@ -85,6 +141,10 @@
                     {% endif %}
                 </ul>
 
+                {% if user.is_authenticated %}
+                <!-- Search Removed -->
+                {% endif %}
+
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
                     {% if user.is_authenticated %}
                     <li class="nav-item d-flex align-items-center me-3 mb-2 mb-lg-0">
@@ -106,6 +166,24 @@
 
     <main class="py-4">
         <div class="container">
+            {% if user.is_authenticated %}
+            <div class="row mb-4">
+                <div class="col-md-6 mx-auto">
+                    <form class="d-flex position-relative" action="{% url 'global_search' %}" method="GET"
+                        autocomplete="off">
+                        <div class="input-group shadow-sm">
+                            <span class="input-group-text bg-white border-end-0"><i
+                                    class="bi bi-search text-muted"></i></span>
+                            <input id="global-search-input" class="form-control border-start-0 ps-0" type="search"
+                                name="q" placeholder="Search applications, customers, or installations..."
+                                aria-label="Search" value="{{ query|default:'' }}">
+                            <button class="btn btn-primary" type="submit">Search</button>
+                        </div>
+                        <div id="search-results-dropdown" class="list-group"></div>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
             {% block content %}{% endblock %}
         </div>
     </main>
@@ -124,6 +202,65 @@
             toastList.forEach(function (toast) {
                 toast.show();
             });
+
+            // Live Search Logic
+            const searchInput = document.getElementById('global-search-input');
+            const resultsDropdown = document.getElementById('search-results-dropdown');
+            let debounceTimer;
+
+            if (searchInput) {
+                searchInput.addEventListener('input', function (e) {
+                    clearTimeout(debounceTimer);
+                    const query = e.target.value.trim();
+
+                    if (query.length < 2) {
+                        resultsDropdown.style.display = 'none';
+                        return;
+                    }
+
+                    debounceTimer = setTimeout(() => {
+                        fetch(`/api/search/?q=${encodeURIComponent(query)}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                resultsDropdown.innerHTML = '';
+
+                                if (data.results && data.results.length > 0) {
+                                    resultsDropdown.style.display = 'block';
+                                    data.results.forEach(item => {
+                                        const div = document.createElement('div');
+                                        div.className = 'search-result-item';
+                                        div.innerHTML = `
+                                            <span class="search-type-badge">${item.type}</span>
+                                            <div class="search-result-title">${item.title}</div>
+                                            <div class="search-result-subtitle">${item.subtitle}</div>
+                                        `;
+                                        div.addEventListener('click', () => {
+                                            window.location.href = item.url;
+                                        });
+                                        resultsDropdown.appendChild(div);
+                                    });
+                                } else {
+                                    resultsDropdown.style.display = 'block';
+                                    resultsDropdown.innerHTML = `
+                                        <div class="p-3 text-center text-muted small">
+                                            No matches found
+                                        </div>
+                                    `;
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error fetching search results:', error);
+                            });
+                    }, 300); // 300ms debounce
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function (e) {
+                    if (!searchInput.contains(e.target) && !resultsDropdown.contains(e.target)) {
+                        resultsDropdown.style.display = 'none';
+                    }
+                });
+            }
         });
     </script>
 </body>

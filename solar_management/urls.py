@@ -21,6 +21,8 @@ urlpatterns = [
 
     # Master Dashboard
     path('dashboard/', views.master_dashboard, name='dashboard'),
+    path('search/', views.global_search, name='global_search'),
+    path('api/search/', views.api_global_search, name='api_global_search'),
     
     # Survey (Field Engineer)
 

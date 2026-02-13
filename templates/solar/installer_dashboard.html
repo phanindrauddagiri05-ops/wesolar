@@ -55,8 +55,13 @@
                         <tr>
                             <td colspan="6" class="text-center py-5">
                                 <div class="text-muted">
+                                    {% if query %}
+                                    <i class="bi bi-search display-4 mb-3 d-block"></i>
+                                    No pending installations found matching "{{ query }}".
+                                    {% else %}
                                     <i class="bi bi-inbox display-4 mb-3 d-block"></i>
                                     No pending installations.
+                                    {% endif %}
                                 </div>
                             </td>
                         </tr>
@@ -106,8 +111,13 @@
                         <tr>
                             <td colspan="5" class="text-center py-5">
                                 <div class="text-muted">
+                                    {% if query %}
+                                    <i class="bi bi-search display-4 mb-3 d-block"></i>
+                                    No completed installations found matching "{{ query }}".
+                                    {% else %}
                                     <i class="bi bi-check2-circle display-4 mb-3 d-block"></i>
                                     No completed installations yet.
+                                    {% endif %}
                                 </div>
                             </td>
                         </tr>

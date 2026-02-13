@@ -1,6 +1,8 @@
 import csv
 import re
 import sys
+from datetime import datetime
+from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponse
@@ -265,6 +267,141 @@ def is_office_staff(user):
     return user.groups.filter(name='Office_Staff').exists()
 
 # ==========================================
+# 0.5 GLOBAL SEARCH
+# ==========================================
+@login_required
+def global_search(request):
+    """
+    Redirects search queries to the appropriate dashboard based on user role.
+    """
+    query = request.GET.get('q', '')
+    
+    if is_field_engineer(request.user):
+        return redirect(f"/dashboard/?q={query}")
+    elif is_installer(request.user):
+        return redirect(f"/dashboard/?q={query}")
+    elif is_office_staff(request.user):
+        return redirect(f"/office-dashboard/?q={query}")
+    elif request.user.is_staff:
+        return redirect(f"/admin-dashboard/?q={query}")
+    
+    return redirect('dashboard')
+
+@login_required
+def api_global_search(request):
+    """
+    API Endpoint for Live Search Autocomplete.
+    Returns JSON list of matching records.
+    """
+    query = request.GET.get('q', '')
+    if len(query) < 2:
+        return JsonResponse({'results': []})
+        
+    results = []
+    
+    # 1. Field Engineer (Own Surveys)
+    if is_field_engineer(request.user):
+        surveys = CustomerSurvey.objects.filter(created_by=request.user).filter(
+            Q(customer_name__icontains=query) |
+            Q(phone_number__icontains=query) |
+            Q(sc_no__icontains=query)
+        )[:5]
+        for s in surveys:
+            results.append({
+                'title': s.customer_name,
+                'subtitle': f"Phone: {s.phone_number} | SC: {s.sc_no}",
+                'url': f"/site/{s.id}/",
+                'type': 'Application'
+            })
+
+    # 2. Installer (FE Data + Installer Data)
+    elif is_installer(request.user):
+        surveys = CustomerSurvey.objects.filter(
+            Q(customer_name__icontains=query) |
+            Q(phone_number__icontains=query) |
+            Q(sc_no__icontains=query)
+        ).select_related('installation')[:8]
+        
+        for s in surveys:
+            # Determine if this is "Installer Data" (Active/Completed) or "FE Data" (Pending Claim)
+            has_install = hasattr(s, 'installation')
+            if has_install:
+                 # Installer Data
+                status = s.installation.workflow_status
+                results.append({
+                    'title': s.customer_name,
+                    'subtitle': f"SC: {s.sc_no} | Status: {status}",
+                    'url': f"/site/{s.id}/",
+                    'type': 'Installation' # Distinct Type
+                })
+            else:
+                 # FE Data (Available for Install)
+                results.append({
+                    'title': s.customer_name,
+                    'subtitle': f"SC: {s.sc_no} | Status: Pending Install",
+                    'url': f"/site/{s.id}/",
+                    'type': 'New Application' # Distinct Type
+                })
+
+    # 3. Office Staff (All Surveys) - Default View
+    elif is_office_staff(request.user):
+        surveys = CustomerSurvey.objects.filter(
+            Q(customer_name__icontains=query) |
+            Q(phone_number__icontains=query) |
+            Q(sc_no__icontains=query)
+        )[:5]
+        for s in surveys:
+            results.append({
+                'title': s.customer_name,
+                'subtitle': f"Phone: {s.phone_number} | Status: {s.workflow_status}",
+                'url': f"/office/update-status/{s.id}/",
+                'type': 'Project'
+            })
+
+    # 4. Admin (All Data Types)
+    elif request.user.is_staff:
+        # A. Users
+        users = UserProfile.objects.filter(
+            Q(user__username__icontains=query) |
+            Q(mobile_number__icontains=query)
+        )[:3]
+        for u in users:
+            results.append({
+                'title': u.user.get_full_name() or u.user.username,
+                'subtitle': f"Role: {u.role} | Mobile: {u.mobile_number}",
+                'url': f"/admin-dashboard/?q={query}",
+                'type': 'User'
+            })
+            
+        # B. FE Data (Surveys without installation or general lookup)
+        surveys = CustomerSurvey.objects.filter(
+            Q(customer_name__icontains=query) |
+            Q(phone_number__icontains=query)
+        ).select_related('installation')[:5]
+        
+        for s in surveys:
+            has_install = hasattr(s, 'installation')
+            if has_install:
+                # C. Installer Data
+                results.append({
+                    'title': s.customer_name,
+                    'subtitle': f"Installer: {s.installation.updated_by.get_full_name()} | Status: {s.installation.workflow_status}",
+                    'url': f"/site/{s.id}/",
+                    'type': 'Installation Record'
+                })
+            else:
+                # B. FE Data
+                results.append({
+                    'title': s.customer_name,
+                    'subtitle': f"Engineer: {s.created_by.get_full_name()} | Phone: {s.phone_number}",
+                    'url': f"/site/{s.id}/",
+                    'type': 'FE Application'
+                })
+            
+    return JsonResponse({'results': results})
+
+
+# ==========================================
 # 1. MASTER DASHBOARD
 # ==========================================
 @login_required
@@ -293,15 +430,34 @@ def master_dashboard(request):
 @user_passes_test(is_field_engineer)
 def fe_dashboard(request):
     """Field Engineer: Only own records."""
-    my_surveys = CustomerSurvey.objects.filter(created_by=request.user).order_by('-created_at')
-    return render(request, 'solar/fe_dashboard.html', {'surveys': my_surveys})
+    query = request.GET.get('q', '')
+    if query:
+        my_surveys = CustomerSurvey.objects.filter(created_by=request.user).filter(
+            Q(customer_name__icontains=query) |
+            Q(phone_number__icontains=query) |
+            Q(sc_no__icontains=query)
+        ).order_by('-created_at')
+    else:
+        my_surveys = CustomerSurvey.objects.filter(created_by=request.user).order_by('-created_at')
+    
+    return render(request, 'solar/fe_dashboard.html', {'surveys': my_surveys, 'query': query})
+
 
 @login_required
 @user_passes_test(is_installer)
 def installer_dashboard(request):
     """Installer: View basic details of all surveys (uploaded by FE)."""
     # Spec: "installer can see the basic details in the table which was entered from the form(which the field engineer uploaded)"
-    all_surveys = CustomerSurvey.objects.all().select_related('installation').order_by('-created_at')
+    query = request.GET.get('q', '')
+    if query:
+        all_surveys = CustomerSurvey.objects.filter(
+            Q(customer_name__icontains=query) |
+            Q(phone_number__icontains=query) |
+            Q(sc_no__icontains=query)
+        ).select_related('installation').order_by('-created_at')
+    else:
+        all_surveys = CustomerSurvey.objects.all().select_related('installation').order_by('-created_at')
+
     
     pending_installations = []
     completed_installations = []
@@ -319,7 +475,8 @@ def installer_dashboard(request):
             
     return render(request, 'solar/installer_dashboard.html', {
         'pending_installations': pending_installations,
-        'completed_installations': completed_installations
+        'completed_installations': completed_installations,
+        'query': query
     })
 
 @staff_member_required
@@ -330,21 +487,44 @@ def admin_dashboard(request):
     2. Field Engineer Data (Master List)
     3. Installer Data (Master List)
     """
-    # 1. Pending Approvals
-    pending_users = UserProfile.objects.filter(is_approved=False)
-    
-    # 2. FE Data (All Surveys)
-    fe_data = CustomerSurvey.objects.all().select_related('created_by').order_by('-created_at')
-    
-    # 3. Installer Data (All Installations)
-    installer_data = Installation.objects.all().select_related('survey', 'updated_by').order_by('-timestamp')
+    query = request.GET.get('q', '')
+
+    if query:
+        # 1. Pending Approvals
+        pending_users = UserProfile.objects.filter(is_approved=False).filter(
+            Q(user__username__icontains=query) |
+            Q(mobile_number__icontains=query)
+        )
+        
+        # 2. FE Data (All Surveys)
+        fe_data = CustomerSurvey.objects.filter(
+            Q(customer_name__icontains=query) |
+            Q(phone_number__icontains=query)
+        ).select_related('created_by').order_by('-created_at')
+        
+        # 3. Installer Data (All Installations)
+        installer_data = Installation.objects.filter(
+            Q(survey__customer_name__icontains=query) |
+            Q(survey__phone_number__icontains=query)
+        ).select_related('survey', 'updated_by').order_by('-timestamp')
+    else:
+        # 1. Pending Approvals
+        pending_users = UserProfile.objects.filter(is_approved=False)
+        
+        # 2. FE Data (All Surveys)
+        fe_data = CustomerSurvey.objects.all().select_related('created_by').order_by('-created_at')
+        
+        # 3. Installer Data (All Installations)
+        installer_data = Installation.objects.all().select_related('survey', 'updated_by').order_by('-timestamp')
     
     context = {
         'pending_users': pending_users,
         'fe_data': fe_data,
         'installer_data': installer_data,
+        'query': query,
     }
     return render(request, 'solar/admin_dashboard.html', context)
+
 
 @login_required
 @user_passes_test(is_office_staff)
@@ -522,29 +702,97 @@ def toggle_registration(request, pk):
 
 @login_required
 @staff_member_required
+@login_required
+@staff_member_required
 def export_solar_data(request):
-    """Export master tracker to CSV - restricted to staff."""
+    """
+    Export data to CSV based on report type.
+    Types: master (default), field_engineer, installer, enquiries, users.
+    """
+    report_type = request.GET.get('type', 'master')
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
+    
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="WeSolar_Master_Report.csv"'
-
+    response['Content-Disposition'] = f'attachment; filename="WeSolar_{report_type.title()}_Report_{timestamp}.csv"'
     writer = csv.writer(response)
-    writer.writerow([
-        'Customer Name', 'SC No', 'Phone', 'Phase', 'Roof Type', 
-        'Status', 'Inverter', 'AC Cable', 'Bank', 'UTR'
-    ])
 
-    projects = CustomerSurvey.objects.all().select_related('installation', 'bank_details')
-    for p in projects:
-        has_i = hasattr(p, 'installation')
-        has_b = hasattr(p, 'bank_details')
+    # 1. FIELD ENGINEER REPORT
+    if report_type == 'field_engineer':
         writer.writerow([
-            p.customer_name, p.sc_no, p.phone_number, p.phase, p.roof_type,
-            'Registered' if p.registration_status else 'Pending',
-            p.installation.inverter_make if has_i else 'N/A',
-            p.installation.ac_cable_used if has_i else '0',
-            p.bank_details.loan_applied_bank if has_b else 'N/A',
-            p.bank_details.first_loan_utr if has_b else 'N/A',
+            'Customer Name', 'SC No', 'Phone', 'Connection', 'Phase', 
+            'Roof Type', 'Structure', 'Height', 'Area', 'Lat/Long',
+            'Agreed Amount', 'Advance', 'Feasibility KW', 'Engineer', 'Date'
         ])
+        surveys = CustomerSurvey.objects.all().select_related('created_by').order_by('-created_at')
+        for s in surveys:
+            writer.writerow([
+                s.customer_name, s.sc_no, s.phone_number, s.connection_type, s.phase,
+                s.roof_type, s.structure_type, s.structure_height, s.area, s.gps_coordinates,
+                s.agreed_amount, s.advance_paid, s.feasibility_kw, 
+                s.created_by.get_full_name() if s.created_by else 'Unknown',
+                s.created_at.strftime("%Y-%m-%d")
+            ])
+
+    # 2. INSTALLER REPORT
+    elif report_type == 'installer':
+        writer.writerow([
+            'Customer Name', 'SC No', 'Phone', 'Installer', 'Install Date',
+            'Inverter Make', 'Inverter Phase', 'AC Cable (m)', 'DC Cable (m)', 
+            'LA Cable (m)', 'Pipes (m)', 'DC Volt', 'AC Volt', 'Earth Res', 'Status'
+        ])
+        installations = Installation.objects.all().select_related('survey', 'updated_by').order_by('-timestamp')
+        for i in installations:
+            writer.writerow([
+                i.survey.customer_name, i.survey.sc_no, i.survey.phone_number,
+                i.updated_by.get_full_name() if i.updated_by else 'Unknown',
+                i.timestamp.strftime("%Y-%m-%d"),
+                i.inverter_make, i.inverter_phase, i.ac_cable_used, i.dc_cable_used,
+                i.la_cable_used, i.pipes_used, i.dc_voltage, i.ac_voltage, 
+                i.earthing_resistance, 
+                'Completed' if i.survey.workflow_status == 'Completed' else 'In Progress'
+            ])
+
+    # 3. ENQUIRIES REPORT
+    elif report_type == 'enquiries':
+        writer.writerow(['Name', 'Mobile', 'Email', 'Address', 'Date Received'])
+        enquiries = Enquiry.objects.all().order_by('-created_at')
+        for e in enquiries:
+            writer.writerow([
+                e.name, e.mobile_number, e.email, e.address, 
+                e.created_at.strftime("%Y-%m-%d %H:%M")
+            ])
+
+    # 4. USERS REPORT
+    elif report_type == 'users':
+        writer.writerow(['Username', 'Full Name', 'Mobile', 'Email', 'Role', 'Status', 'Date Joined'])
+        profiles = UserProfile.objects.all().select_related('user').order_by('-user__date_joined')
+        for p in profiles:
+            writer.writerow([
+                p.user.username, p.user.get_full_name(), p.mobile_number, p.user.email,
+                p.role, 'Approved' if p.is_approved else 'Pending',
+                p.user.date_joined.strftime("%Y-%m-%d")
+            ])
+
+    # 5. MASTER REPORT (Default)
+    else:
+        writer.writerow([
+            'Customer Name', 'SC No', 'Phone', 'Phase', 'Roof Type', 
+            'Status', 'Inverter', 'AC Cable', 'Bank', 'UTR', 'Loan Status'
+        ])
+        projects = CustomerSurvey.objects.all().select_related('installation', 'bank_details')
+        for p in projects:
+            has_i = hasattr(p, 'installation')
+            has_b = hasattr(p, 'bank_details')
+            writer.writerow([
+                p.customer_name, p.sc_no, p.phone_number, p.phase, p.roof_type,
+                p.workflow_status,
+                p.installation.inverter_make if has_i else 'N/A',
+                p.installation.ac_cable_used if has_i else '0',
+                p.bank_details.loan_applied_bank if has_b else 'N/A',
+                p.bank_details.first_loan_utr if has_b else 'N/A',
+                p.bank_details.loan_pending_status if has_b else 'N/A'
+            ])
+
     return response
 
 # ==========================================
