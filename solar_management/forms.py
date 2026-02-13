@@ -9,22 +9,27 @@ class SurveyForm(forms.ModelForm):
     class Meta:
         model = CustomerSurvey
         fields = [
-            'customer_name', 'connection_type', 'sc_no', 'phase', 'feasibility_kw',
-            'aadhar_no', 'pan_card', 'email', 'aadhar_linked_phone', 
-            # 'phone_number' removed
+            'customer_name', 'connection_type', 'sc_no', 'phase', 'contracted_load', 'feasibility_kw',
+            'aadhar_no', 'pan_card', 'email', 'phone_number', 'aadhar_linked_phone', 
+            # 'phone_number' re-enabled for FE as Primary Contact
             'area', 'gps_coordinates', 'roof_type', 'roof_photo', 'structure_type',
             'structure_height', 'agreed_amount', 'advance_paid', 
             'mefma_status', 'rp_name', 'rp_phone_number', 
             'fe_remarks', 'reference_name', 
             'pms_registration_number', 'division',
+            # Post-Installation Fields (Mandatory/Optional per user request)
+            'installation_date', 'workflow_status', 
+            'discom_status', 'net_metering_status', 'subsidy_status',
              # 'registration_status' excluded as it is "Editable after submission" (Admin/Office)
         ]
         labels = {
             'sc_no': 'Service Connection Number (16 Digits)',
+            'contracted_load': 'Contracted Load (KW)',
             'feasibility_kw': 'Applied Solar Load (KW)',
             'aadhar_no': 'Aadhar Card (12 Digits)',
             'pan_card': 'Pan Card (10 Digits)',
             'email': 'Email-id',
+            'phone_number': 'Primary Phone Number (10 Digits)',
             'aadhar_linked_phone': 'Aadhar Linked Phone Number (10 Digits)',
             'gps_coordinates': 'GPS Coordinates',
             'roof_photo': 'Roof Photo (Optional/Mandatory if Critical)',
@@ -35,10 +40,16 @@ class SurveyForm(forms.ModelForm):
             'pms_registration_number': 'PM Surya Ghar National Portal Reg. No.',
             'division': 'Division',
             'fe_remarks': 'Remarks',
+            'installation_date': 'Installation Completed Date',
+            'workflow_status': 'Installation Status',
+            'discom_status': 'Discom Status',
+            'net_metering_status': 'Net Metering',
+            'subsidy_status': 'Subsidy',
         }
         widgets = {
              'gps_coordinates': forms.TextInput(attrs={'placeholder': 'Latitude, Longitude', 'readonly': 'readonly'}),
              'mefma_status': forms.Select(choices=[(True, 'Yes'), (False, 'No')]),
+             'installation_date': forms.DateInput(attrs={'type': 'date'}),
         }
 
     def clean_sc_no(self):

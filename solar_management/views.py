@@ -446,6 +446,36 @@ def api_global_search(request):
             
     return JsonResponse({'results': results})
 
+def get_bank_details_by_phone(request):
+    """
+    API to fetch bank details based on phone number.
+    Looks up CustomerSurvey by phone_number or aadhar_linked_phone.
+    Returns parent_bank and parent_bank_ac_no if found.
+    """
+    phone = request.GET.get('phone')
+    if not phone:
+        return JsonResponse({'error': 'Phone number required'}, status=400)
+
+    # Search in both phone fields
+    survey = CustomerSurvey.objects.filter(
+        Q(phone_number__icontains=phone) | 
+        Q(aadhar_linked_phone__icontains=phone)
+    ).order_by('-created_at').first() # Get most recent
+
+    if survey:
+        try:
+            bank_details = survey.bank_details
+            return JsonResponse({
+                'found': True,
+                'parent_bank': bank_details.parent_bank,
+                'parent_bank_ac_no': bank_details.parent_bank_ac_no,
+                'customer_name': survey.customer_name # Optional verification for user
+            })
+        except BankDetails.DoesNotExist:
+             return JsonResponse({'found': False, 'message': 'Survey found but no bank details linked.'})
+    
+    return JsonResponse({'found': False, 'message': 'No survey found with this phone number.'})
+
 
 # ==========================================
 # 1. MASTER DASHBOARD

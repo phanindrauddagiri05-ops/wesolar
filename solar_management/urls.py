@@ -45,6 +45,7 @@ urlpatterns = [
     # Export & API
     path('export/csv/', views.export_solar_data, name='export_solar_data'),
     path('api/get-customer-data/', views.get_customer_data, name='get_customer_data'),
+    path('api/get-bank-details/', views.get_bank_details_by_phone, name='get_bank_details_by_phone'),
     
     # Enquiry System
     path('enquiry/new/', views.create_enquiry, name='create_enquiry'),

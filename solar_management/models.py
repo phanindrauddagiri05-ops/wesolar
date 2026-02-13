@@ -30,6 +30,7 @@ class CustomerSurvey(models.Model):
     connection_type = models.CharField(max_length=50, choices=CONNECTION_CHOICES)
     sc_no = models.CharField(max_length=16, help_text="16 Digits")
     phase = models.CharField(max_length=20, choices=PHASE_CHOICES)
+    contracted_load = models.FloatField(default=0.0, help_text="Contracted Load (KW)") # New Field
     feasibility_kw = models.FloatField(help_text="Maximum KW (Applied Solar Load)")
     aadhar_no = models.CharField(max_length=12, help_text="12 Digits") 
     pan_card = models.CharField(max_length=10, help_text="10 Digits")

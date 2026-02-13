@@ -51,17 +51,18 @@
                         <div class="col-md-6">{{ form.phase|as_crispy_field }}</div>
                     </div>
                     <div class="row">
+                        <div class="col-md-6">{{ form.contracted_load|as_crispy_field }}</div>
                         <div class="col-md-6">{{ form.feasibility_kw|as_crispy_field }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">{{ form.phone_number|as_crispy_field }}</div>
                         <div class="col-md-6">{{ form.email|as_crispy_field }}</div>
                     </div>
                     <div class="row">
                         <div class="col-md-6">{{ form.aadhar_no|as_crispy_field }}</div>
                         <div class="col-md-6">{{ form.pan_card|as_crispy_field }}</div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6">{{ form.aadhar_linked_phone|as_crispy_field }}</div>
-                        <!-- phone_number removed -->
-                    </div>
+
                 </div>
 
                 <!-- Section 2: Bank Details (Mandatory) -->
@@ -137,6 +138,20 @@
 
                     <div class="row mt-3">
                         <div class="col-md-12">{{ form.fe_remarks|as_crispy_field }}</div>
+                    </div>
+                </div>
+
+                <h5 class="text-primary border-bottom pb-2 mb-3"><i
+                        class="bi bi-check-circle-fill me-2"></i>Installation & Status Tracking</h5>
+                <div class="bg-light p-3 rounded mb-4 border">
+                    <div class="row">
+                        <div class="col-md-6">{{ form.installation_date|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.workflow_status|as_crispy_field }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">{{ form.discom_status|as_crispy_field }}</div>
+                        <div class="col-md-4">{{ form.net_metering_status|as_crispy_field }}</div>
+                        <div class="col-md-4">{{ form.subsidy_status|as_crispy_field }}</div>
                     </div>
                 </div>
 
@@ -304,5 +319,42 @@
             toggleMefma(); // Initial state
         }
     });
+
+    // Bank Details Fetcher
+    function fetchBankDetails() {
+        const phoneField = document.getElementById('id_aadhar_linked_phone');
+        const statusSpan = document.getElementById('bankFetchStatus');
+        const parentBankField = document.getElementById('id_parent_bank');
+        const acNoField = document.getElementById('id_parent_bank_ac_no');
+
+        if (!phoneField || !phoneField.value) {
+            alert("Please enter a phone number first.");
+            return;
+        }
+
+        const phone = phoneField.value;
+        statusSpan.textContent = "Searching...";
+        statusSpan.className = "ms-2 small text-info";
+
+        fetch(`/api/get-bank-details/?phone=${phone}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.found) {
+                    if (data.parent_bank) parentBankField.value = data.parent_bank;
+                    if (data.parent_bank_ac_no) acNoField.value = data.parent_bank_ac_no;
+
+                    statusSpan.textContent = "Details Found & Auto-filled!";
+                    statusSpan.className = "ms-2 small text-success fw-bold";
+                } else {
+                    statusSpan.textContent = data.message || "No previous bank details found.";
+                    statusSpan.className = "ms-2 small text-warning";
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                statusSpan.textContent = "Error fetching details.";
+                statusSpan.className = "ms-2 small text-danger";
+            });
+    }
 </script>
 {% endblock %}
