@@ -32,21 +32,24 @@ def custom_login_view(request):
     """Unified login view for Field Engineer, Installer, and Office."""
     if request.user.is_authenticated:
          # Redirect if already logged in based on role
-         if request.user.is_staff:
-             return redirect('office_dashboard')
          try:
              # Try to find profile role
             profile = request.user.userprofile
-            if 'Field Engineer' in profile.role:
+            if profile.role == 'Admin' or request.user.is_superuser:
+                return redirect('admin_dashboard')
+            elif 'Field Engineer' in profile.role:
                 return redirect('dashboard')
             elif 'Installer' in profile.role:
                 return redirect('dashboard')
             elif 'Office' in profile.role:
                 return redirect('office_dashboard')
+            elif 'Loan' in profile.role:
+                return redirect('loan_dashboard')
          except:
              pass 
          
-         if request.user.is_staff: # Admin/Superuser
+         # Fallback for staff/superuser without profile
+         if request.user.is_superuser or request.user.is_staff:
              return redirect('admin_dashboard')
 
          return redirect('dashboard') # Default fallback

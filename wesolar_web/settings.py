@@ -118,7 +118,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 # Authentication Redirects
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'dashboard'
-LOGOUT_REDIRECT_URL = 'landing'
+LOGOUT_REDIRECT_URL = 'login'
 
 # Media Files
 import os
