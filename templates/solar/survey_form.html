@@ -51,8 +51,7 @@
                         <div class="col-md-6">{{ form.phase|as_crispy_field }}</div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">{{ form.contracted_load|as_crispy_field }}</div>
-                        <div class="col-md-6">{{ form.feasibility_kw|as_crispy_field }}</div>
+                        <div class="col-md-12">{{ form.feasibility_kw|as_crispy_field }}</div>
                     </div>
                     <div class="row">
                         <div class="col-md-6">{{ form.phone_number|as_crispy_field }}</div>
@@ -102,9 +101,6 @@
                         <div class="col-md-6">{{ form.structure_type|as_crispy_field }}</div>
                         <div class="col-md-6">{{ form.structure_height|as_crispy_field }}</div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6">{{ form.is_critical_site|as_crispy_field }}</div>
-                    </div>
                 </div>
 
                 <!-- Section 4: Pricing & Approvals -->
@@ -133,7 +129,8 @@
                     </div>
 
                     <div class="row mt-3">
-                        <div class="col-md-12">{{ form.pms_registration_number|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.pms_registration_number|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.registration_status|as_crispy_field }}</div>
                     </div>
 
                     <div class="row mt-3">
@@ -141,19 +138,6 @@
                     </div>
                 </div>
 
-                <h5 class="text-primary border-bottom pb-2 mb-3"><i
-                        class="bi bi-check-circle-fill me-2"></i>Installation & Status Tracking</h5>
-                <div class="bg-light p-3 rounded mb-4 border">
-                    <div class="row">
-                        <div class="col-md-6">{{ form.installation_date|as_crispy_field }}</div>
-                        <div class="col-md-6">{{ form.workflow_status|as_crispy_field }}</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4">{{ form.discom_status|as_crispy_field }}</div>
-                        <div class="col-md-4">{{ form.net_metering_status|as_crispy_field }}</div>
-                        <div class="col-md-4">{{ form.subsidy_status|as_crispy_field }}</div>
-                    </div>
-                </div>
 
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-premium btn-lg">
@@ -215,6 +199,16 @@
             }
         }
 
+        // Helper to restrict input to alphabets and spaces only
+        function setAlphaOnly(fieldId) {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.addEventListener('input', function (e) {
+                    this.value = this.value.replace(/[^a-zA-Z\s]/g, '');
+                });
+            }
+        }
+
         // Helper to validate length and show error
         function validateLength(fieldId, exactLength, fieldName) {
             const field = document.getElementById(fieldId);
@@ -223,7 +217,9 @@
                     const val = this.value;
                     let errorMsg = "";
 
-                    if (val && val.length !== exactLength) {
+                    if (!val) {
+                        errorMsg = `${fieldName} is required.`;
+                    } else if (val.length !== exactLength) {
                         errorMsg = `${fieldName} must be exactly ${exactLength} digits.`;
                     }
 
@@ -283,8 +279,8 @@
         setNumericOnly('id_aadhar_no');
         validateLength('id_aadhar_no', 12, 'Aadhar Number');
 
-        setNumericOnly('id_aadhar_linked_phone');
-        validateLength('id_aadhar_linked_phone', 10, 'Phone Number');
+        setNumericOnly('id_phone_number');
+        validateLength('id_phone_number', 10, 'Aadhar Linked Phone Number');
 
         setNumericOnly('id_rp_phone_number');
         validateLength('id_rp_phone_number', 10, 'RP Phone Number');
@@ -293,6 +289,12 @@
 
         setNumericOnly('id_parent_bank_ac_no');
         setNumericOnly('id_loan_applied_ac_no');
+
+        // Apply Alpha-Only Restrictions
+        setAlphaOnly('id_customer_name');
+        setAlphaOnly('id_rp_name');
+        setAlphaOnly('id_parent_bank');
+        setAlphaOnly('id_loan_applied_bank');
 
         // Toggle MEFMA fields (Existing Logic)
         const mefmaSelect = document.getElementById('id_mefma_status');
@@ -322,7 +324,7 @@
 
     // Bank Details Fetcher
     function fetchBankDetails() {
-        const phoneField = document.getElementById('id_aadhar_linked_phone');
+        const phoneField = document.getElementById('id_phone_number');
         const statusSpan = document.getElementById('bankFetchStatus');
         const parentBankField = document.getElementById('id_parent_bank');
         const acNoField = document.getElementById('id_parent_bank_ac_no');

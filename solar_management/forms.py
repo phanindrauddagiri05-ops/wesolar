@@ -4,33 +4,27 @@ from django.contrib.auth.models import User
 from .models import CustomerSurvey, Installation, BankDetails, UserProfile, Enquiry
 import re
 class SurveyForm(forms.ModelForm):
-    is_critical_site = forms.BooleanField(required=False, label="Is Critical Site?", help_text="Check if roof photo is mandatory")
+    is_critical_site = forms.BooleanField(required=False, label="Is Critical Site?")
+    phone_number = forms.CharField(required=True, label="Aadhar Linked Phone Number (10 Digits)", widget=forms.TextInput(attrs={'pattern': '\d{10}', 'maxlength': '10', 'minlength': '10', 'oninput': "this.value = this.value.replace(/[^0-9]/g, '')", 'title': 'Phone number must be exactly 10 digits.'}))
 
     class Meta:
         model = CustomerSurvey
         fields = [
-            'customer_name', 'connection_type', 'sc_no', 'phase', 'contracted_load', 'feasibility_kw',
-            'aadhar_no', 'pan_card', 'email', 'phone_number', 'aadhar_linked_phone', 
-            # 'phone_number' re-enabled for FE as Primary Contact
+            'customer_name', 'connection_type', 'sc_no', 'phase', 'feasibility_kw',
+            'aadhar_no', 'pan_card', 'email', 'phone_number', 
             'area', 'gps_coordinates', 'roof_type', 'roof_photo', 'structure_type',
             'structure_height', 'agreed_amount', 'advance_paid', 
             'mefma_status', 'rp_name', 'rp_phone_number', 
             'fe_remarks', 'reference_name', 
-            'pms_registration_number', 'division',
-            # Post-Installation Fields (Mandatory/Optional per user request)
-            'installation_date', 'workflow_status', 
-            'discom_status', 'net_metering_status', 'subsidy_status',
-             # 'registration_status' excluded as it is "Editable after submission" (Admin/Office)
+            'pms_registration_number', 'division', 'registration_status',
         ]
         labels = {
             'sc_no': 'Service Connection Number (16 Digits)',
-            'contracted_load': 'Contracted Load (KW)',
             'feasibility_kw': 'Applied Solar Load (KW)',
             'aadhar_no': 'Aadhar Card (12 Digits)',
             'pan_card': 'Pan Card (10 Digits)',
             'email': 'Email-id',
-            'phone_number': 'Primary Phone Number (10 Digits)',
-            'aadhar_linked_phone': 'Aadhar Linked Phone Number (10 Digits)',
+            'phone_number': 'Aadhar Linked Phone Number (10 Digits)',
             'gps_coordinates': 'GPS Coordinates',
             'roof_photo': 'Roof Photo (Optional/Mandatory if Critical)',
             'mefma_status': 'Mefma (Yes/No)',
@@ -40,16 +34,16 @@ class SurveyForm(forms.ModelForm):
             'pms_registration_number': 'PM Surya Ghar National Portal Reg. No.',
             'division': 'Division',
             'fe_remarks': 'Remarks',
-            'installation_date': 'Installation Completed Date',
-            'workflow_status': 'Installation Status',
-            'discom_status': 'Discom Status',
-            'net_metering_status': 'Net Metering',
-            'subsidy_status': 'Subsidy',
+            'registration_status': 'Registration Status',
         }
         widgets = {
              'gps_coordinates': forms.TextInput(attrs={'placeholder': 'Latitude, Longitude', 'readonly': 'readonly'}),
              'mefma_status': forms.Select(choices=[(True, 'Yes'), (False, 'No')]),
-             'installation_date': forms.DateInput(attrs={'type': 'date'}),
+             'registration_status': forms.Select(choices=[(True, 'Yes'), (False, 'No')]),
+             'customer_name': forms.TextInput(attrs={'pattern': '[a-zA-Z\s]+', 'oninput': "this.value = this.value.replace(/[^a-zA-Z\s]/g, '')", 'title': 'Name must contain only letters.'}),
+             'phone_number': forms.TextInput(attrs={'pattern': '\d{10}', 'maxlength': '10', 'minlength': '10', 'oninput': "this.value = this.value.replace(/[^0-9]/g, '')", 'title': 'Phone number must be exactly 10 digits.'}),
+             'email': forms.EmailInput(attrs={'pattern': '[^, ]+', 'title': 'Enter a single valid email address.'}),
+             'rp_name': forms.TextInput(attrs={'pattern': '[a-zA-Z\s]+', 'oninput': "this.value = this.value.replace(/[^a-zA-Z\s]/g, '')", 'title': 'RP Name must contain only letters.'}),
         }
 
     def clean_sc_no(self):
@@ -76,18 +70,46 @@ class SurveyForm(forms.ModelForm):
              raise ValidationError("RP Phone Number must be exactly 10 digits.")
          return phone
 
+    def clean_rp_name(self):
+        name = self.cleaned_data.get('rp_name')
+        if name and any(char.isdigit() for char in name):
+             raise ValidationError("RP Name must contain only text (no numbers).")
+        return name
+
+    def clean_phone_number(self):
+        phone = self.cleaned_data.get('phone_number')
+        if phone:
+            # Check length is exactly 10 digits
+            if not re.match(r'^\d{10}$', phone):
+                 raise ValidationError("Aadhar Linked Phone Number must be exactly 10 digits.")
+        return phone
+
+    def clean_customer_name(self):
+        name = self.cleaned_data.get('customer_name')
+        if name and any(char.isdigit() for char in name):
+             raise ValidationError("Customer Name must contain only text (no numbers).")
+        return name
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        # Ensure single email and basic validity (Django handles format, we ensure no multiple emails/junk)
+        if email:
+            if ',' in email or ' ' in email:
+                 raise ValidationError("Please enter a single valid email address.")
+        return email
+
     def clean(self):
         cleaned_data = super().clean()
-        is_critical = cleaned_data.get('is_critical_site')
-        roof_photo = cleaned_data.get('roof_photo')
         mefma_status = cleaned_data.get('mefma_status')
         rp_name = cleaned_data.get('rp_name')
         rp_phone = cleaned_data.get('rp_phone_number')
         reference_name = cleaned_data.get('reference_name')
+        roof_photo = cleaned_data.get('roof_photo')
 
-        if is_critical and not roof_photo:
+        # Roof photo is mandatory (removed critical site checkbox logic)
+        if not roof_photo:
             if not (self.instance.pk and self.instance.roof_photo):
-                 self.add_error('roof_photo', "Roof photo is mandatory for critical sites.")
+                 self.add_error('roof_photo', "Roof photo is mandatory.")
         
         if mefma_status:
             if not rp_name:
@@ -226,9 +248,6 @@ class BankDetailsForm(forms.ModelForm):
     loan_applied_ifsc = forms.CharField(required=False, label="Loan Applied Bank IFSC (Optional - Fill later)")
     loan_applied_ac_no = forms.CharField(required=False, label="Loan Applied Bank Ac Number (Optional - Fill later)")
     manager_number = forms.CharField(required=False, label="Manager Number")
-
-    first_loan_amount = forms.DecimalField(required=False, initial=0.0)
-    second_loan_amount = forms.DecimalField(required=False, initial=0.0)
     
     # Read-only field for display
     agreed_amount = forms.DecimalField(required=False, widget=forms.TextInput(attrs={'readonly': 'readonly'}))
@@ -239,41 +258,31 @@ class BankDetailsForm(forms.ModelForm):
         # Populate Agreed Amount
         if self.instance and self.instance.pk and self.instance.survey:
             self.fields['agreed_amount'].initial = self.instance.survey.agreed_amount
-        
-        # Ensure Status is mandatory
-        self.fields['loan_pending_status'].required = True
 
-        # Add date widgets
-        self.fields['first_loan_date'].widget = forms.DateInput(attrs={'type': 'date'})
-        self.fields['second_loan_date'].widget = forms.DateInput(attrs={'type': 'date'})
+    def clean_parent_bank(self):
+        bank = self.cleaned_data.get('parent_bank')
+        if bank and any(char.isdigit() for char in bank):
+            raise ValidationError("Parent Bank Name must contain only text (no numbers).")
+        return bank
 
-    def clean(self):
-        cleaned_data = super().clean()
-        status = cleaned_data.get('loan_pending_status')
+    def clean_loan_applied_bank(self):
+        bank = self.cleaned_data.get('loan_applied_bank')
+        if bank and any(char.isdigit() for char in bank):
+            raise ValidationError("Loan Applied Bank Name must contain only text (no numbers).")
+        return bank
 
-        # Helper to check mandatory fields
-        def check_mandatory(fields, prefix):
-            for field in fields:
-                if not cleaned_data.get(field):
-                    self.add_error(field, f"{prefix} details are mandatory when status is '{status}'.")
 
-        if status == 'First' or status == 'Both':
-            check_mandatory(['first_loan_amount', 'first_loan_utr', 'first_loan_date'], "First Loan")
-
-        if status == 'Second' or status == 'Both':
-            check_mandatory(['second_loan_amount', 'second_loan_utr', 'second_loan_date'], "Second Loan")
-        
-        return cleaned_data
 
     class Meta:
         model = BankDetails
         fields = [
             'parent_bank', 'parent_bank_ac_no', 
             'loan_applied_bank', 'loan_applied_ifsc', 'loan_applied_ac_no', 'manager_number',
-            'loan_pending_status', 
-            'first_loan_amount', 'first_loan_utr', 'first_loan_date',
-            'second_loan_amount', 'second_loan_utr', 'second_loan_date',
         ]
+        widgets = {
+             'parent_bank': forms.TextInput(attrs={'pattern': '[a-zA-Z\s]+', 'oninput': "this.value = this.value.replace(/[^a-zA-Z\s]/g, '')", 'title': 'Bank Name must contain only letters.'}),
+             'loan_applied_bank': forms.TextInput(attrs={'pattern': '[a-zA-Z\s]+', 'oninput': "this.value = this.value.replace(/[^a-zA-Z\s]/g, '')", 'title': 'Bank Name must contain only letters.'}),
+        }
 
 
 class SignUpForm(forms.ModelForm):
@@ -338,11 +347,11 @@ class FEUpdateForm(forms.ModelForm):
         model = CustomerSurvey
         fields = ['registration_status', 'pms_registration_number']
         labels = {
-            'registration_status': 'Registration Status (Registered/Pending)',
+            'registration_status': 'Registration Status',
             'pms_registration_number': 'PM Surya Ghar National Portal Reg. No.',
         }
         widgets = {
-            'registration_status': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'registration_status': forms.Select(choices=[(True, 'Yes'), (False, 'No')]),
         }
 
     def __init__(self, *args, **kwargs):
