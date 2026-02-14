@@ -288,10 +288,10 @@ def is_bank_user(user):
     return user.groups.filter(name='Bank_Users').exists() or user.is_staff
 
 def is_office_staff(user):
-    return user.groups.filter(name='Office_Staff').exists()
+    return user.groups.filter(name='Office_Staff').exists() or (hasattr(user, 'userprofile') and user.userprofile.role == 'Admin') or user.is_staff
 
 def is_loan_officer(user):
-    return user.groups.filter(name='Loan_Officers').exists() or (hasattr(user, 'userprofile') and user.userprofile.role == 'Loan') or user.is_staff
+    return user.groups.filter(name='Loan_Officers').exists() or (hasattr(user, 'userprofile') and user.userprofile.role == 'Loan') or (hasattr(user, 'userprofile') and user.userprofile.role == 'Admin') or user.is_staff
 
 # ==========================================
 # 0.5 GLOBAL SEARCH
