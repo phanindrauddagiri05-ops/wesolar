@@ -34,6 +34,7 @@ urlpatterns = [
     path('survey/edit-details/<int:pk>/', views.fe_update_survey, name='fe_update_survey'),
     
     # Installation (Installer)
+    path('installation/new/', views.new_installation, name='new_installation'),
     path('installation/update/<int:pk>/', views.update_installation, name='update_installation'),
     
     # Bank (Finance)
@@ -47,6 +48,8 @@ urlpatterns = [
     path('export/csv/', views.export_solar_data, name='export_solar_data'),
     path('api/get-customer-data/', views.get_customer_data, name='get_customer_data'),
     path('api/get-bank-details/', views.get_bank_details_by_phone, name='get_bank_details_by_phone'),
+    path('api/get-survey-by-phone/', views.get_survey_by_phone, name='get_survey_by_phone'),
+    path('api/get-survey-by-id/', views.get_survey_by_id, name='get_survey_by_id'),
     
     # Enquiry System
     path('enquiry/new/', views.create_enquiry, name='create_enquiry'),
@@ -56,4 +59,6 @@ urlpatterns = [
     path('office-portal/fe-data/', views.office_fe_data, name='office_fe_data'),
     path('office-portal/installer-data/', views.office_installer_data, name='office_installer_data'),
     path('office-portal/workers-profiles/', views.office_workers_profiles, name='office_workers_profiles'),
+    path('admin/delete-worker/<int:user_id>/', views.delete_worker, name='delete_worker'),
+    path('admin/delete-application/<int:survey_id>/', views.delete_application, name='delete_application'),
 ]

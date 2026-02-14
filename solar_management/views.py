@@ -560,10 +560,12 @@ def installer_dashboard(request):
 @staff_member_required
 def admin_dashboard(request):
     """
-    Admin Dashboard: 3 Sections
+    Admin Dashboard: 5 Sections
     1. Account Confirmation (Pending Users)
     2. Field Engineer Data (Master List)
     3. Installer Data (Master List)
+    4. Office Data (Recent Office Updates)
+    5. Loan Data (Recent Loan Applications)
     """
     query = request.GET.get('q', '')
 
@@ -585,6 +587,18 @@ def admin_dashboard(request):
             Q(survey__customer_name__icontains=query) |
             Q(survey__phone_number__icontains=query)
         ).select_related('survey', 'updated_by').order_by('-timestamp')
+        
+        # 4. Office Data (Surveys with Status Tracking)
+        office_data = CustomerSurvey.objects.filter(
+            Q(customer_name__icontains=query) |
+            Q(phone_number__icontains=query)
+        ).exclude(workflow_status='Pending').order_by('-created_at')[:5]
+        
+        # 5. Loan Data (Bank Details)
+        loan_data = BankDetails.objects.filter(
+            Q(survey__customer_name__icontains=query) |
+            Q(survey__phone_number__icontains=query)
+        ).select_related('survey').order_by('-id')[:5]
     else:
         # 1. Pending Approvals
         pending_users = UserProfile.objects.filter(is_approved=False)
@@ -594,11 +608,19 @@ def admin_dashboard(request):
         
         # 3. Installer Data (All Installations)
         installer_data = Installation.objects.all().select_related('survey', 'updated_by').order_by('-timestamp')
+        
+        # 4. Office Data (Recent 5 with status updates)
+        office_data = CustomerSurvey.objects.exclude(workflow_status='Pending').order_by('-created_at')[:5]
+        
+        # 5. Loan Data (Recent 5 loan applications)
+        loan_data = BankDetails.objects.all().select_related('survey').order_by('-id')[:5]
     
     context = {
         'pending_users': pending_users,
         'fe_data': fe_data,
         'installer_data': installer_data,
+        'office_data': office_data,
+        'loan_data': loan_data,
         'query': query,
     }
     return render(request, 'solar/admin_dashboard.html', context)
@@ -772,6 +794,197 @@ def delete_and_restart(request, pk):
 def installation_entry(request):
     """Fallback: Installer entry if no ID passed (mostly unused now)."""
     return redirect('dashboard')
+
+
+@login_required
+@user_passes_test(is_installer)
+def new_installation(request):
+    """
+    New Installation Form with Mobile Number Lookup.
+    Installer enters phone number, fetches customer details, then fills installation form.
+    """
+    survey = None
+    form = None
+    
+    if request.method == 'POST':
+        survey_id = request.POST.get('survey_id')
+        
+        if survey_id:
+            try:
+                survey = CustomerSurvey.objects.get(id=survey_id)
+                
+                # Check if installation already exists
+                if hasattr(survey, 'installation'):
+                    messages.error(request, f"Installation already exists for {survey.customer_name}. Cannot create duplicate.")
+                    return redirect('dashboard')
+                
+                # Process installation form
+                form = InstallationForm(request.POST, request.FILES)
+                if form.is_valid():
+                    installation = form.save(commit=False)
+                    installation.survey = survey
+                    installation.updated_by = request.user
+                    installation.save()
+                    messages.success(request, f"Installation submitted successfully for {survey.customer_name}!")
+                    return redirect('dashboard')
+                else:
+                    # Form has validation errors - add message
+                    messages.error(request, "Please correct the errors below and try again.")
+            except CustomerSurvey.DoesNotExist:
+                messages.error(request, "Survey not found.")
+                form = InstallationForm()
+        else:
+            # No survey_id provided
+            messages.error(request, "No customer selected. Please fetch customer details first.")
+            form = InstallationForm()
+    else:
+        # GET request: Show empty form
+        form = InstallationForm()
+    
+    return render(request, 'solar/new_installation_form.html', {
+        'form': form,
+        'survey': survey
+    })
+
+def get_survey_by_phone(request):
+    """
+    API Endpoint: Fetch customer survey details by phone number.
+    Returns JSON with customer info for auto-fill.
+    Supports multiple surveys per phone number.
+    """
+    phone = request.GET.get('phone', '')
+    
+    if not phone:
+        return JsonResponse({'found': False, 'message': 'Phone number is required.'})
+    
+    # Query ALL surveys with this phone number (excluding those with installations)
+    surveys = CustomerSurvey.objects.filter(phone_number=phone).order_by('-created_at')
+    
+    if not surveys.exists():
+        return JsonResponse({
+            'found': False,
+            'message': 'No customer found with this phone number.'
+        })
+    
+    # Filter out surveys that already have installations
+    available_surveys = [s for s in surveys if not hasattr(s, 'installation')]
+    
+    if not available_surveys:
+        return JsonResponse({
+            'found': False,
+            'message': 'All applications for this phone number already have installations completed.'
+        })
+    
+    # If only one available survey, return it directly
+    if len(available_surveys) == 1:
+        survey = available_surveys[0]
+        return JsonResponse({
+            'found': True,
+            'count': 1,
+            'survey_id': survey.id,
+            'customer_name': survey.customer_name,
+            'connection_type': survey.connection_type,
+            'sc_no': survey.sc_no,
+            'phase': survey.phase,
+            'feasibility_kw': str(survey.feasibility_kw),
+            'aadhar_no': survey.aadhar_no,
+            'pan_card': survey.pan_card,
+            'email': survey.email,
+            'phone_number': survey.phone_number or '',
+            'area': survey.area,
+            'gps_coordinates': survey.gps_coordinates,
+            'roof_type': survey.roof_type,
+            'structure_type': survey.structure_type,
+            'structure_height': str(survey.structure_height),
+            'agreed_amount': str(survey.agreed_amount),
+            'advance_paid': str(survey.advance_paid) if survey.advance_paid else '0',
+            'mefma_status': 'Yes' if survey.mefma_status else 'No',
+            'rp_name': survey.rp_name or '',
+            'rp_phone_number': survey.rp_phone_number or '',
+            'fe_remarks': survey.fe_remarks or '',
+            'reference_name': survey.reference_name or '',
+            'pms_registration_number': survey.pms_registration_number or '',
+            'division': survey.division or '',
+            'registration_status': 'Yes' if survey.registration_status else 'No',
+        })
+    
+    # Multiple surveys found - return list for selection
+    records = []
+    for survey in available_surveys:
+        records.append({
+            'id': survey.id,
+            'customer_name': survey.customer_name,
+            'sc_no': survey.sc_no,
+            'phase': survey.phase,
+            'area': survey.area,
+            'feasibility_kw': str(survey.feasibility_kw),
+            'agreed_amount': str(survey.agreed_amount),
+            'roof_type': survey.roof_type,
+            'connection_type': survey.connection_type,
+            'created_at': survey.created_at.strftime('%Y-%m-%d'),
+        })
+    
+    return JsonResponse({
+        'found': True,
+        'count': len(records),
+        'records': records
+    })
+
+def get_survey_by_id(request):
+    """
+    API Endpoint: Fetch single survey details by ID.
+    Used after user selects from multiple records.
+    """
+    survey_id = request.GET.get('id', '')
+    
+    if not survey_id:
+        return JsonResponse({'found': False, 'message': 'Survey ID is required.'})
+    
+    try:
+        survey = CustomerSurvey.objects.get(id=survey_id)
+        
+        # Check if installation already exists
+        if hasattr(survey, 'installation'):
+            return JsonResponse({
+                'found': False,
+                'message': f'Installation already exists for this application.'
+            })
+        
+        # Return full customer details
+        return JsonResponse({
+            'found': True,
+            'survey_id': survey.id,
+            'customer_name': survey.customer_name,
+            'connection_type': survey.connection_type,
+            'sc_no': survey.sc_no,
+            'phase': survey.phase,
+            'feasibility_kw': str(survey.feasibility_kw),
+            'aadhar_no': survey.aadhar_no,
+            'pan_card': survey.pan_card,
+            'email': survey.email,
+            'phone_number': survey.phone_number or '',
+            'area': survey.area,
+            'gps_coordinates': survey.gps_coordinates,
+            'roof_type': survey.roof_type,
+            'structure_type': survey.structure_type,
+            'structure_height': str(survey.structure_height),
+            'agreed_amount': str(survey.agreed_amount),
+            'advance_paid': str(survey.advance_paid) if survey.advance_paid else '0',
+            'mefma_status': 'Yes' if survey.mefma_status else 'No',
+            'rp_name': survey.rp_name or '',
+            'rp_phone_number': survey.rp_phone_number or '',
+            'fe_remarks': survey.fe_remarks or '',
+            'reference_name': survey.reference_name or '',
+            'pms_registration_number': survey.pms_registration_number or '',
+            'division': survey.division or '',
+            'registration_status': 'Yes' if survey.registration_status else 'No',
+        })
+    except CustomerSurvey.DoesNotExist:
+        return JsonResponse({
+            'found': False,
+            'message': 'Survey not found.'
+        })
+
 
 @login_required
 @user_passes_test(is_installer)
@@ -1037,12 +1250,17 @@ def office_installer_data(request):
 
 @staff_member_required
 def office_workers_profiles(request):
-    """View to list Field Engineers and Installers separately."""
-    field_engineers = User.objects.filter(groups__name='Field_Engineers')
-    installers = User.objects.filter(groups__name='Installers')
+    """View to list all worker types: Field Engineers, Installers, Office, and Loan."""
+    field_engineers = User.objects.filter(userprofile__role='Field Engineer', userprofile__is_approved=True)
+    installers = User.objects.filter(userprofile__role='Installer', userprofile__is_approved=True)
+    office_users = User.objects.filter(userprofile__role='Office', userprofile__is_approved=True)
+    loan_users = User.objects.filter(userprofile__role='Loan', userprofile__is_approved=True)
+    
     return render(request, 'solar/office_workers_profiles.html', {
         'field_engineers': field_engineers,
-        'installers': installers
+        'installers': installers,
+        'office_users': office_users,
+        'loan_users': loan_users,
     })
 
 @staff_member_required
@@ -1053,8 +1271,48 @@ def site_detail_fe_view(request, pk):
 
 @staff_member_required
 def site_detail_installer_view(request, pk):
+    """Restricted view: Shows Merged Data (Survey + Installation) for Office Admin."""
     customer = get_object_or_404(CustomerSurvey, pk=pk)
-    return render(request, 'solar/site_detail.html', {'customer': customer, 'view_mode': 'installer_only'})
+    try:
+        installation = Installation.objects.get(survey=customer)
+    except Installation.DoesNotExist:
+        installation = None
+    return render(request, 'solar/site_detail.html', {'customer': customer, 'installation': installation, 'view_mode': 'merged'})
+
+@user_passes_test(lambda u: hasattr(u, 'userprofile') and u.userprofile.role == 'Admin')
+def delete_worker(request, user_id):
+    """Delete a worker user. Admin only."""
+    if request.method == 'POST':
+        user = get_object_or_404(User, id=user_id)
+        worker_name = user.get_full_name() or user.username
+        worker_role = user.userprofile.role if hasattr(user, 'userprofile') else 'User'
+        
+        # Delete the user (profile will cascade delete)
+        user.delete()
+        
+        messages.success(request, f"{worker_role} '{worker_name}' has been deleted successfully.")
+        return redirect('office_workers_profiles')
+    
+    # If not POST, redirect back
+    return redirect('office_workers_profiles')
+
+@user_passes_test(lambda u: hasattr(u, 'userprofile') and u.userprofile.role == 'Admin')
+def delete_application(request, survey_id):
+    """Delete a customer application. Admin only. Cascades to Installation and BankDetails."""
+    if request.method == 'POST':
+        survey = get_object_or_404(CustomerSurvey, id=survey_id)
+        customer_name = survey.customer_name
+        sc_no = survey.sc_no
+        
+        # Delete the survey (Installation and BankDetails will cascade delete)
+        survey.delete()
+        
+        messages.success(request, f"Application for '{customer_name}' (SC: {sc_no}) has been deleted successfully.")
+        return redirect('admin_dashboard')
+    
+    # If not POST, redirect back
+    return redirect('admin_dashboard')
+
 
 @login_required
 @user_passes_test(is_field_engineer)

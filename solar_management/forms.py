@@ -161,7 +161,7 @@ class InstallationForm(forms.ModelForm):
             'la_cable_used': 'Used LA Cable length (Mtrs)',
             'pipes_used': 'Used Pipes',
             'leftover_materials': 'Left Over material details',
-            'installer_remarks': 'Remarks',
+            'installer_remarks': 'Installer Remarks',
             'customer_remarks': 'Customer Remarks',
             'dc_voltage': 'DC Voltage',
             'ac_voltage': 'AC Voltage',
@@ -181,6 +181,10 @@ class InstallationForm(forms.ModelForm):
         # inverter_serial_photo: Mandatory
         # inverter_acdb_photo: Optional (null=True, blank=True in model) -> User said "Mandatory". We override here.
         self.fields['inverter_acdb_photo'].required = True 
+        
+        # Customer rating has a default value in the model, so make it optional in the form
+        self.fields['customer_rating'].required = False
+        self.fields['customer_rating'].initial = 5
         
         # Ensure numeric fields have correct input type for mobile keyboards
         numeric_fields = ['ac_cable_used', 'dc_cable_used', 'la_cable_used', 'pipes_used', 'dc_voltage', 'ac_voltage', 'earthing_resistance']
@@ -278,19 +282,44 @@ class BankDetailsForm(forms.ModelForm):
         fields = [
             'parent_bank', 'parent_bank_ac_no', 
             'loan_applied_bank', 'loan_applied_ifsc', 'loan_applied_ac_no', 'manager_number',
+            'loan_pending_status',
+            'first_loan_amount', 'first_loan_utr', 'first_loan_date',
+            'second_loan_amount', 'second_loan_utr', 'second_loan_date',
+            'agreed_amount',
         ]
         widgets = {
              'parent_bank': forms.TextInput(attrs={'pattern': '[a-zA-Z\s]+', 'oninput': "this.value = this.value.replace(/[^a-zA-Z\s]/g, '')", 'title': 'Bank Name must contain only letters.'}),
              'loan_applied_bank': forms.TextInput(attrs={'pattern': '[a-zA-Z\s]+', 'oninput': "this.value = this.value.replace(/[^a-zA-Z\s]/g, '')", 'title': 'Bank Name must contain only letters.'}),
+             'first_loan_date': forms.DateInput(attrs={'type': 'date'}),
+             'second_loan_date': forms.DateInput(attrs={'type': 'date'}),
         }
 
 
 class SignUpForm(forms.ModelForm):
     first_name = forms.CharField(max_length=150, required=True)
     last_name = forms.CharField(max_length=150, required=True)
-    mobile_number = forms.CharField(max_length=15, required=True)
+    mobile_number = forms.CharField(
+        max_length=15,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'type': 'tel',
+            'pattern': '[0-9]{10}',
+            'maxlength': '10',
+            'minlength': '10',
+            'oninput': "this.value = this.value.replace(/[^0-9]/g, '')",
+            'placeholder': '10-digit mobile number',
+            'title': 'Mobile number must be exactly 10 digits'
+        })
+    )
     role = forms.ChoiceField(choices=UserProfile.ROLE_CHOICES, required=True)
-    email = forms.EmailField(required=True)
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(attrs={
+            'type': 'email',
+            'placeholder': 'example@email.com',
+            'autocomplete': 'email'
+        })
+    )
     password = forms.CharField(widget=forms.PasswordInput, required=True)
     confirm_password = forms.CharField(widget=forms.PasswordInput, required=True)
 
@@ -300,9 +329,28 @@ class SignUpForm(forms.ModelForm):
 
     def clean_mobile_number(self):
         mobile = self.cleaned_data.get('mobile_number')
-        if UserProfile.objects.filter(mobile_number=mobile).exists():
-            raise forms.ValidationError("This mobile number is already registered.")
+        # Remove any non-digit characters
+        if mobile:
+            mobile = re.sub(r'\D', '', mobile)
+            # Check if it's exactly 10 digits
+            if len(mobile) != 10:
+                raise forms.ValidationError("Mobile number must be exactly 10 digits.")
+            # Check if mobile already exists
+            if UserProfile.objects.filter(mobile_number=mobile).exists():
+                raise forms.ValidationError("This mobile number is already registered.")
         return mobile
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email:
+            # Check for valid email format
+            email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+            if not re.match(email_pattern, email):
+                raise forms.ValidationError("Please enter a valid email address.")
+            # Check if email already exists
+            if User.objects.filter(email=email).exists():
+                raise forms.ValidationError("This email is already registered.")
+        return email
 
     def clean(self):
         cleaned_data = super().clean()
@@ -374,6 +422,10 @@ class OfficeBankDetailsForm(forms.ModelForm):
             'first_loan_amount', 'first_loan_utr', 'first_loan_date',
             'second_loan_amount', 'second_loan_utr', 'second_loan_date',
         ]
+        labels = {
+            'first_loan_utr': 'First loan utr number',
+            'second_loan_utr': 'Second loan utr number',
+        }
         widgets = {
              'first_loan_date': forms.DateInput(attrs={'type': 'date'}),
              'second_loan_date': forms.DateInput(attrs={'type': 'date'}),

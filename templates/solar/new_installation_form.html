@@ -1,0 +1,555 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Mobile Number Lookup Section -->
+        <div class="col-12 mb-4">
+            <div class="card glass-card border-0 shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-search me-2"></i>Find Customer by Mobile Number</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-8">
+                            <label for="mobile_number_input" class="form-label fw-bold">Mobile Number (10
+                                Digits)</label>
+                            <input type="text" id="mobile_number_input" class="form-control form-control-lg"
+                                placeholder="Enter customer's mobile number" maxlength="10" pattern="\d{10}"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                        </div>
+                        <div class="col-md-4">
+                            <button type="button" class="btn btn-premium btn-lg w-100 shadow"
+                                onclick="fetchCustomerDetails()">
+                                <i class="bi bi-download me-2"></i>Fetch Customer Details
+                            </button>
+                        </div>
+                    </div>
+                    <div id="fetch_status" class="mt-3"></div>
+
+                    <!-- Record Selection UI (Hidden until multiple records found) -->
+                    <div id="record_selection" class="mt-4" style="display:none;">
+                        <h6 class="fw-bold text-primary mb-3">Multiple Applications Found - Select One:</h6>
+                        <div id="record_list" class="list-group mb-3"></div>
+                        <button type="button" class="btn btn-success" onclick="confirmSelection()" disabled
+                            id="confirm_btn">
+                            <i class="bi bi-check-circle me-2"></i>Confirm Selection
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Preview (Hidden until fetched/selected) -->
+        <div id="customer_preview" class="col-12 mb-4" style="display:{% if survey %}block{% else %}none{% endif %};">
+            <div class="card glass-card border-0 shadow">
+                <div class="card-header bg-transparent border-bottom">
+                    <h5 class="mb-0 text-dark fw-bold"><i class="bi bi-info-circle-fill text-primary me-2"></i>Field
+                        Engineer Application Details (Read-Only)</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Customer Details -->
+                    <h6 class="text-primary fw-bold mb-3 mt-2"><i class="bi bi-person-fill me-2"></i>Customer
+                        Information</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-3">
+                            <label class="small text-muted text-uppercase fw-bold">Customer Name</label>
+                            <input type="text" id="preview_customer_name" class="form-control bg-light" readonly
+                                value="{{ survey.customer_name|default:'' }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="small text-muted text-uppercase fw-bold">Connection Type</label>
+                            <input type="text" id="preview_connection_type" class="form-control bg-light" readonly
+                                value="{{ survey.connection_type|default:'' }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="small text-muted text-uppercase fw-bold">Phone Number</label>
+                            <input type="text" id="preview_phone" class="form-control bg-light" readonly
+                                value="{{ survey.phone_number|default:'' }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="small text-muted text-uppercase fw-bold">Email</label>
+                            <input type="text" id="preview_email" class="form-control bg-light" readonly
+                                value="{{ survey.email|default:'' }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="small text-muted text-uppercase fw-bold">Aadhar Number</label>
+                            <input type="text" id="preview_aadhar_no" class="form-control bg-light" readonly
+                                value="{{ survey.aadhar_no|default:'' }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="small text-muted text-uppercase fw-bold">PAN Card</label>
+                            <input type="text" id="preview_pan_card" class="form-control bg-light" readonly
+                                value="{{ survey.pan_card|default:'' }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="small text-muted text-uppercase fw-bold">SC Number</label>
+                            <input type="text" id="preview_sc_no" class="form-control bg-light" readonly
+                                value="{{ survey.sc_no|default:'' }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="small text-muted text-uppercase fw-bold">Phase</label>
+                            <input type="text" id="preview_phase" class="form-control bg-light" readonly
+                                value="{{ survey.phase|default:'' }}">
+                        </div>
+                    </div>
+
+                    <!-- Site Details -->
+                    <h6 class="text-primary fw-bold mb-3 mt-3"><i class="bi bi-geo-alt-fill me-2"></i>Site Details</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label class="small text-muted text-uppercase fw-bold">Area</label>
+                            <input type="text" id="preview_area" class="form-control bg-light" readonly
+                                value="{{ survey.area|default:'' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small text-muted text-uppercase fw-bold">GPS Coordinates</label>
+                            <input type="text" id="preview_gps_coordinates" class="form-control bg-light" readonly
+                                value="{{ survey.gps_coordinates|default:'' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small text-muted text-uppercase fw-bold">Feasibility (KW)</label>
+                            <input type="text" id="preview_feasibility_kw" class="form-control bg-light" readonly
+                                value="{% if survey %}{{ survey.feasibility_kw }} KW{% endif %}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small text-muted text-uppercase fw-bold">Type of Roof</label>
+                            <input type="text" id="preview_roof_type" class="form-control bg-light" readonly
+                                value="{{ survey.roof_type|default:'' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small text-muted text-uppercase fw-bold">Structure Type</label>
+                            <input type="text" id="preview_structure_type" class="form-control bg-light" readonly
+                                value="{{ survey.structure_type|default:'' }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small text-muted text-uppercase fw-bold">Structure Height</label>
+                            <input type="text" id="preview_structure_height" class="form-control bg-light" readonly
+                                value="{% if survey %}{{ survey.structure_height }} ft{% endif %}">
+                        </div>
+                    </div>
+
+                    <!-- Pricing & Payment -->
+                    <h6 class="text-primary fw-bold mb-3 mt-3"><i class="bi bi-currency-rupee me-2"></i>Pricing &
+                        Payment</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="small text-muted text-uppercase fw-bold">Agreed Amount</label>
+                            <input type="text" id="preview_agreed_amount" class="form-control bg-light" readonly
+                                value="{% if survey %}₹ {{ survey.agreed_amount }}{% endif %}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="small text-muted text-uppercase fw-bold">Advance Paid</label>
+                            <input type="text" id="preview_advance_paid" class="form-control bg-light" readonly
+                                value="{% if survey %}₹ {{ survey.advance_paid }}{% endif %}">
+                        </div>
+                    </div>
+
+                    <!-- MEFMA & Registration -->
+                    <h6 class="text-primary fw-bold mb-3 mt-3"><i class="bi bi-file-earmark-check-fill me-2"></i>MEFMA &
+                        Registration Details</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-3">
+                            <label class="small text-muted text-uppercase fw-bold">MEFMA Status</label>
+                            <input type="text" id="preview_mefma_status" class="form-control bg-light" readonly
+                                value="{% if survey %}{% if survey.mefma_status %}Yes{% else %}No{% endif %}{% endif %}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="small text-muted text-uppercase fw-bold">RP Name</label>
+                            <input type="text" id="preview_rp_name" class="form-control bg-light" readonly
+                                value="{{ survey.rp_name|default:'N/A' }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="small text-muted text-uppercase fw-bold">RP Phone Number</label>
+                            <input type="text" id="preview_rp_phone_number" class="form-control bg-light" readonly
+                                value="{{ survey.rp_phone_number|default:'N/A' }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="small text-muted text-uppercase fw-bold">Reference Name</label>
+                            <input type="text" id="preview_reference_name" class="form-control bg-light" readonly
+                                value="{{ survey.reference_name|default:'N/A' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="small text-muted text-uppercase fw-bold">PM Surya Ghar Registration
+                                Number</label>
+                            <input type="text" id="preview_pms_registration_number" class="form-control bg-light"
+                                readonly value="{{ survey.pms_registration_number|default:'N/A' }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="small text-muted text-uppercase fw-bold">Division</label>
+                            <input type="text" id="preview_division" class="form-control bg-light" readonly
+                                value="{{ survey.division|default:'N/A' }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="small text-muted text-uppercase fw-bold">Registration Status</label>
+                            <input type="text" id="preview_registration_status" class="form-control bg-light" readonly
+                                value="{% if survey %}{% if survey.registration_status %}Yes{% else %}No{% endif %}{% endif %}">
+                        </div>
+                    </div>
+
+                    <!-- Remarks -->
+                    <h6 class="text-primary fw-bold mb-3 mt-3"><i class="bi bi-chat-left-text-fill me-2"></i>Field
+                        Engineer Remarks</h6>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <textarea id="preview_fe_remarks" class="form-control bg-light" rows="2"
+                                readonly>{{ survey.fe_remarks|default:'No remarks provided' }}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Installation Form (Hidden until customer fetched) -->
+        <div id="installation_form_container" class="col-12"
+            style="display:{% if survey %}block{% else %}none{% endif %};">
+            <div class="card shadow-lg border-0 p-4">
+                <h2 class="fw-bold text-dark mb-4"><i class="bi bi-tools text-warning me-2"></i> Installation Entry</h2>
+
+                <form method="post" enctype="multipart/form-data" novalidate id="installation_form">
+                    {% csrf_token %}
+                    <!-- Hidden field to store survey ID -->
+                    <input type="hidden" name="survey_id" id="survey_id_hidden" required
+                        value="{% if survey %}{{ survey.id }}{% endif %}">
+
+                    {% if form.errors %}
+                    <div class="alert alert-danger shadow-sm border-0">
+                        <h5 class="alert-heading"><i class="bi bi-exclamation-triangle-fill me-2"></i>Please correct
+                            errors:</h5>
+                        <ul class="mb-2">
+                            {% for field, errors in form.errors.items %}
+                            <li><strong>{{ field|title }}:</strong> {{ errors|join:", " }}</li>
+                            {% endfor %}
+                        </ul>
+                        <hr>
+                        <p class="mb-0 fw-bold text-danger"><i class="bi bi-arrow-repeat me-2"></i>⚠️ IMPORTANT: You
+                            need to re-upload all image files (photos) again before submitting.</p>
+                    </div>
+                    {% endif %}
+
+                    <!-- Hardware Section -->
+                    <h5 class="text-primary border-bottom pb-2 mt-3 mb-3 fw-bold"><i class="bi bi-cpu me-2"></i>Hardware
+                        Details</h5>
+                    <div class="row g-3">
+                        <div class="col-md-4">{{ form.inverter_make|as_crispy_field }}</div>
+                        <div class="col-md-4">{{ form.inverter_phase|as_crispy_field }}</div>
+                        <div class="col-md-4">{{ form.inverter_serial_photo|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.inverter_acdb_photo|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.panel_serial_photo|as_crispy_field }}</div>
+                    </div>
+
+                    <!-- Cables & Materials -->
+                    <h5 class="text-primary border-bottom pb-2 mt-4 mb-3 fw-bold"><i
+                            class="bi bi-gear-wide-connected me-2"></i>Cables & Materials</h5>
+                    <div class="row g-3">
+                        <div class="col-md-3">{{ form.ac_cable_used|as_crispy_field }}</div>
+                        <div class="col-md-3">{{ form.dc_cable_used|as_crispy_field }}</div>
+                        <div class="col-md-3">{{ form.la_cable_used|as_crispy_field }}</div>
+                        <div class="col-md-3">{{ form.pipes_used|as_crispy_field }}</div>
+                        <div class="col-12">{{ form.leftover_materials|as_crispy_field }}</div>
+                    </div>
+
+                    <!-- Readings -->
+                    <h5 class="text-primary border-bottom pb-2 mt-4 mb-3 fw-bold"><i
+                            class="bi bi-lightning-charge me-2"></i>Electrical Readings</h5>
+                    <div class="row g-3">
+                        <div class="col-md-4">{{ form.dc_voltage|as_crispy_field }}</div>
+                        <div class="col-md-4">{{ form.ac_voltage|as_crispy_field }}</div>
+                        <div class="col-md-4">{{ form.earthing_resistance|as_crispy_field }}</div>
+                    </div>
+
+                    <!-- Completion & Remarks -->
+                    <h5 class="text-primary border-bottom pb-2 mt-4 mb-3 fw-bold"><i
+                            class="bi bi-check-circle me-2"></i>Status & Remarks</h5>
+                    <div class="row g-3">
+                        <div class="col-md-3 pt-4">
+                            <div class="form-check form-switch">
+                                {{ form.warranty_claimed }}
+                                <label class="form-check-label fw-bold"
+                                    for="{{ form.warranty_claimed.id_for_label }}">Warranty Claimed?</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3 pt-4">
+                            <div class="form-check form-switch">
+                                {{ form.app_installation_status }}
+                                <label class="form-check-label fw-bold"
+                                    for="{{ form.app_installation_status.id_for_label }}">App Installed?</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">{{ form.site_photos_with_customer|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.customer_remarks|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.installer_remarks|as_crispy_field }}</div>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-5">
+                        <button type="submit" class="btn btn-premium btn-lg shadow hover-lift fw-bold" id="submit_btn">
+                            <i class="bi bi-send-fill me-2"></i> Submit Installation Report
+                        </button>
+                        <a href="{% url 'dashboard' %}" class="btn btn-light btn-lg border">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Real-time Numeric Validation
+        function setNumericOnly(fieldId) {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.addEventListener('input', function (e) {
+                    this.value = this.value.replace(/[^0-9.]/g, '');
+                    if ((this.value.match(/\./g) || []).length > 1) {
+                        this.value = this.value.replace(/\.$/, "");
+                    }
+                });
+            }
+        }
+
+        const numericFields = [
+            'id_ac_cable_used', 'id_dc_cable_used', 'id_la_cable_used', 'id_pipes_used',
+            'id_dc_voltage', 'id_ac_voltage', 'id_earthing_resistance'
+        ];
+
+        numericFields.forEach(id => setNumericOnly(id));
+
+        // Form Validation Before Submission
+        const form = document.getElementById('installation_form');
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                const errors = [];
+
+                // Check required text fields
+                const inverterMake = document.getElementById('id_inverter_make');
+                if (inverterMake && !inverterMake.value.trim()) {
+                    errors.push('Inverter Make is required');
+                }
+
+                const inverterPhase = document.getElementById('id_inverter_phase');
+                if (inverterPhase && !inverterPhase.value) {
+                    errors.push('Inverter Phase is required');
+                }
+
+                // Check required file uploads (only if form is being submitted for first time, not on re-submit after error)
+                const hasExistingErrors = document.querySelector('.alert-danger');
+                if (!hasExistingErrors) {
+                    const inverterSerialPhoto = document.getElementById('id_inverter_serial_photo');
+                    if (inverterSerialPhoto && !inverterSerialPhoto.files.length) {
+                        errors.push('Inverter Serial Number Photo is required');
+                    }
+
+                    const inverterAcdbPhoto = document.getElementById('id_inverter_acdb_photo');
+                    if (inverterAcdbPhoto && !inverterAcdbPhoto.files.length) {
+                        errors.push('Inverter Photo (with ACDB & DCDB) is required');
+                    }
+
+                    const panelSerialPhoto = document.getElementById('id_panel_serial_photo');
+                    if (panelSerialPhoto && !panelSerialPhoto.files.length) {
+                        errors.push('Panel Serial Numbers Photo is required');
+                    }
+
+                    const sitePhotos = document.getElementById('id_site_photos_with_customer');
+                    if (sitePhotos && !sitePhotos.files.length) {
+                        errors.push('Site Photos with Customer is required');
+                    }
+                }
+
+                // Check numeric required fields
+                const dcVoltage = document.getElementById('id_dc_voltage');
+                if (dcVoltage && !dcVoltage.value) {
+                    errors.push('DC Voltage is required');
+                }
+
+                const acVoltage = document.getElementById('id_ac_voltage');
+                if (acVoltage && !acVoltage.value) {
+                    errors.push('AC Voltage is required');
+                }
+
+                const earthingResistance = document.getElementById('id_earthing_resistance');
+                if (earthingResistance && !earthingResistance.value) {
+                    errors.push('Earthing Resistance is required');
+                }
+
+                if (errors.length > 0) {
+                    e.preventDefault();
+                    alert('Please fill in all required fields:\n\n' + errors.join('\n'));
+                    // Scroll to top to show which fields need attention
+                    window.scrollTo({ top: document.getElementById('installation_form_container').offsetTop - 100, behavior: 'smooth' });
+                    return false;
+                }
+            });
+        }
+    });
+
+    let selectedSurveyId = null;
+
+    function fetchCustomerDetails() {
+        const phoneField = document.getElementById('mobile_number_input');
+        const statusDiv = document.getElementById('fetch_status');
+        const selectionDiv = document.getElementById('record_selection');
+        const previewDiv = document.getElementById('customer_preview');
+        const formContainer = document.getElementById('installation_form_container');
+
+        if (!phoneField || !phoneField.value) {
+            statusDiv.innerHTML = '<div class="alert alert-warning">Please enter a mobile number first.</div>';
+            return;
+        }
+
+        const phone = phoneField.value;
+
+        if (phone.length !== 10) {
+            statusDiv.innerHTML = '<div class="alert alert-warning">Mobile number must be exactly 10 digits.</div>';
+            return;
+        }
+
+        // Reset UI
+        selectionDiv.style.display = 'none';
+        previewDiv.style.display = 'none';
+        formContainer.style.display = 'none';
+        selectedSurveyId = null;
+
+        statusDiv.innerHTML = '<div class="alert alert-info"><i class="bi bi-hourglass-split me-2"></i>Searching for applications...</div>';
+
+        fetch(`/api/get-survey-by-phone/?phone=${phone}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.found) {
+                    if (data.count === 1) {
+                        // Single record - auto-select
+                        displayFEData(data, phone);
+                        showInstallationForm(data.survey_id);
+                        statusDiv.innerHTML = '<div class="alert alert-success shadow"><i class="bi bi-check-circle-fill me-2"></i>Application found! Please fill the installation details below.</div>';
+                    } else {
+                        // Multiple records - show selection
+                        displayRecordSelection(data.records, phone);
+                        statusDiv.innerHTML = `<div class="alert alert-info shadow"><i class="bi bi-list-ul me-2"></i>Found ${data.count} applications. Please select one to proceed.</div>`;
+                    }
+                } else {
+                    statusDiv.innerHTML = `<div class="alert alert-danger shadow"><i class="bi bi-x-circle-fill me-2"></i>${data.message || "No records found."}</div>`;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                statusDiv.innerHTML = '<div class="alert alert-danger">Error fetching customer details.</div>';
+            });
+    }
+
+    function displayFEData(data, phone) {
+        // Customer Information
+        document.getElementById('preview_customer_name').value = data.customer_name;
+        document.getElementById('preview_connection_type').value = data.connection_type;
+        document.getElementById('preview_phone').value = phone;
+        document.getElementById('preview_email').value = data.email || '';
+        document.getElementById('preview_aadhar_no').value = data.aadhar_no || '';
+        document.getElementById('preview_pan_card').value = data.pan_card || '';
+        document.getElementById('preview_sc_no').value = data.sc_no;
+        document.getElementById('preview_phase').value = data.phase;
+
+        // Site Details
+        document.getElementById('preview_area').value = data.area || '';
+        document.getElementById('preview_gps_coordinates').value = data.gps_coordinates || '';
+        document.getElementById('preview_feasibility_kw').value = data.feasibility_kw + ' KW';
+        document.getElementById('preview_roof_type').value = data.roof_type;
+        document.getElementById('preview_structure_type').value = data.structure_type;
+        document.getElementById('preview_structure_height').value = data.structure_height + ' ft';
+
+        // Pricing & Payment
+        document.getElementById('preview_agreed_amount').value = '₹ ' + data.agreed_amount;
+        document.getElementById('preview_advance_paid').value = '₹ ' + data.advance_paid;
+
+        // MEFMA & Registration
+        document.getElementById('preview_mefma_status').value = data.mefma_status;
+        document.getElementById('preview_rp_name').value = data.rp_name || 'N/A';
+        document.getElementById('preview_rp_phone_number').value = data.rp_phone_number || 'N/A';
+        document.getElementById('preview_reference_name').value = data.reference_name || 'N/A';
+        document.getElementById('preview_pms_registration_number').value = data.pms_registration_number || 'N/A';
+        document.getElementById('preview_division').value = data.division || 'N/A';
+        document.getElementById('preview_registration_status').value = data.registration_status;
+
+        // Remarks
+        document.getElementById('preview_fe_remarks').value = data.fe_remarks || 'No remarks provided';
+
+        // Show preview
+        document.getElementById('customer_preview').style.display = 'block';
+    }
+
+    function displayRecordSelection(records, phone) {
+        const listContainer = document.getElementById('record_list');
+        const selectionDiv = document.getElementById('record_selection');
+
+        listContainer.innerHTML = '';
+
+        records.forEach((record, index) => {
+            const item = document.createElement('div');
+            item.className = 'list-group-item list-group-item-action';
+            item.innerHTML = `
+                <div class="d-flex w-100 align-items-center">
+                    <input type="radio" name="selected_survey" value="${record.id}" id="survey_${record.id}" class="form-check-input me-3" onchange="enableConfirmButton()">
+                    <label for="survey_${record.id}" class="flex-grow-1 mb-0" style="cursor:pointer;">
+                        <div class="row g-2">
+                            <div class="col-md-3"><strong>${record.customer_name}</strong></div>
+                            <div class="col-md-3"><small class="text-muted">SC: ${record.sc_no.slice(0, 10)}...</small></div>
+                            <div class="col-md-2"><span class="badge bg-primary">${record.feasibility_kw} KW</span></div>
+                            <div class="col-md-2"><span class="badge bg-info">${record.phase}</span></div>
+                            <div class="col-md-2"><small class="text-muted">${record.created_at}</small></div>
+                        </div>
+                    </label>
+                </div>
+            `;
+            listContainer.appendChild(item);
+        });
+
+        selectionDiv.style.display = 'block';
+    }
+
+    function enableConfirmButton() {
+        document.getElementById('confirm_btn').disabled = false;
+    }
+
+    function confirmSelection() {
+        const selected = document.querySelector('input[name="selected_survey"]:checked');
+
+        if (!selected) {
+            alert('Please select an application first.');
+            return;
+        }
+
+        const surveyId = selected.value;
+        selectedSurveyId = surveyId;
+
+        const statusDiv = document.getElementById('fetch_status');
+        statusDiv.innerHTML = '<div class="alert alert-info"><i class="bi bi-hourglass-split me-2"></i>Loading application details...</div>';
+
+        // Fetch full details of selected survey
+        fetch(`/api/get-survey-by-id/?id=${surveyId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.found) {
+                    const phone = document.getElementById('mobile_number_input').value;
+                    displayFEData(data, phone);
+                    showInstallationForm(surveyId);
+                    document.getElementById('record_selection').style.display = 'none';
+                    statusDiv.innerHTML = '<div class="alert alert-success shadow"><i class="bi bi-check-circle-fill me-2"></i>Application selected! Please fill the installation details below.</div>';
+                } else {
+                    statusDiv.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                statusDiv.innerHTML = '<div class="alert alert-danger">Error loading application details.</div>';
+            });
+    }
+
+    function showInstallationForm(surveyId) {
+        // Store survey ID in hidden field
+        document.getElementById('survey_id_hidden').value = surveyId;
+
+        // Show installation form
+        document.getElementById('installation_form_container').style.display = 'block';
+    }
+</script>
+{% endblock %}

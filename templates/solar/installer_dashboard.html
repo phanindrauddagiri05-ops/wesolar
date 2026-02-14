@@ -2,14 +2,14 @@
 
 {% block content %}
 <div class="container-fluid px-4 py-4">
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
         <div>
-            <h2 class="fw-bold text-dark mb-0">Pending Installations</h2>
-            <p class="text-muted small">Installer Dashboard - Full Visibility</p>
+            <h2 class="fw-bold text-dark mb-1"><i class="bi bi-tools text-warning me-2"></i>Installer Dashboard</h2>
+            <p class="text-muted small mb-0">Installer Dashboard - Full Visibility</p>
         </div>
-        <div>
-            <!-- Button removed as updates are now specific to rows -->
-        </div>
+        <a href="{% url 'new_installation' %}" class="btn btn-premium btn-lg shadow">
+            <i class="bi bi-plus-circle me-2"></i>New Installation
+        </a>
     </div>
 
     <!-- Basic Details Table (FE Data) -->
@@ -43,7 +43,7 @@
                             <td class="text-center" data-label="Details">
                                 <a href="{% url 'update_installation' item.id %}"
                                     class="btn btn-sm btn-premium mb-1 btn-mobile-full">
-                                    <i class="bi bi-file-earmark-plus"></i> New Installation
+                                    <i class="bi bi-pencil-square"></i> Update
                                 </a>
                                 <a href="{% url 'site_detail' item.id %}"
                                     class="btn btn-sm btn-outline-info btn-mobile-full">

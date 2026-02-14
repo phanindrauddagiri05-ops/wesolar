@@ -37,7 +37,7 @@ class CustomerSurvey(models.Model):
     email = models.EmailField()
     aadhar_linked_phone = models.CharField(max_length=10, default="0000000000", help_text="10 Digits")
     bank_account_no = models.CharField(max_length=30, blank=True) 
-    phone_number = models.CharField(max_length=15, unique=True, null=True, blank=True) # Restored for Office Search
+    phone_number = models.CharField(max_length=15, null=True, blank=True) # Restored for Office Search
     
     # Roof & Structure
     roof_type = models.CharField(max_length=100, choices=ROOF_CHOICES)

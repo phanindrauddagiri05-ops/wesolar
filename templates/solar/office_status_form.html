@@ -43,12 +43,12 @@
 
                         <!-- Read-only Project Info -->
                         <div class="alert alert-light border mb-4">
-                            <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted small">Customer Name</span>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-muted small fw-semibold">Customer Name</span>
                                 <span class="fw-bold text-dark">{{ survey.customer_name }}</span>
                             </div>
-                            <div class="d-flex justify-content-between">
-                                <span class="text-muted small">SC Number</span>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted small fw-semibold">SC Number</span>
                                 <span class="fw-bold text-dark">{{ survey.sc_no }}</span>
                             </div>
                         </div>
@@ -58,30 +58,30 @@
                             {{ form.installation_date|as_crispy_field }}
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
+                        <div class="row g-3">
+                            <div class="col-md-6">
                                 {{ form.workflow_status|as_crispy_field }}
                             </div>
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-6">
                                 {{ form.discom_status|as_crispy_field }}
                             </div>
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
+                        <div class="row g-3 mt-1">
+                            <div class="col-md-6">
                                 {{ form.net_metering_status|as_crispy_field }}
                             </div>
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-6">
                                 {{ form.subsidy_status|as_crispy_field }}
                             </div>
                         </div>
 
                         <!-- Agreed Amount & Remarks -->
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
+                        <div class="row g-3 mt-1">
+                            <div class="col-md-6">
                                 {{ form.agreed_amount|as_crispy_field }}
                             </div>
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-6">
                                 {{ form.office_remarks|as_crispy_field }}
                             </div>
                         </div>
@@ -90,22 +90,36 @@
 
                         <!-- Loan & Finance Details -->
                         <h5 class="fw-bold text-dark mb-3"><i class="bi bi-bank me-2"></i>Loan & Finance Details</h5>
-                        <div class="row">
-                            <div class="col-md-12 mb-3">
-                                {{ bank_form.loan_pending_status|as_crispy_field }}
+
+                        <div class="mb-3">
+                            {{ bank_form.loan_pending_status|as_crispy_field }}
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                {{ bank_form.first_loan_amount|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ bank_form.first_loan_utr|as_crispy_field }}
                             </div>
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-4 mb-3">{{ bank_form.first_loan_amount|as_crispy_field }}</div>
-                            <div class="col-md-4 mb-3">{{ bank_form.first_loan_utr|as_crispy_field }}</div>
-                            <div class="col-md-4 mb-3">{{ bank_form.first_loan_date|as_crispy_field }}</div>
+                        <div class="row g-3 mt-1">
+                            <div class="col-md-6">
+                                {{ bank_form.first_loan_date|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ bank_form.second_loan_amount|as_crispy_field }}
+                            </div>
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-4 mb-3">{{ bank_form.second_loan_amount|as_crispy_field }}</div>
-                            <div class="col-md-4 mb-3">{{ bank_form.second_loan_utr|as_crispy_field }}</div>
-                            <div class="col-md-4 mb-3">{{ bank_form.second_loan_date|as_crispy_field }}</div>
+                        <div class="row g-3 mt-1">
+                            <div class="col-md-6">
+                                {{ bank_form.second_loan_utr|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ bank_form.second_loan_date|as_crispy_field }}
+                            </div>
                         </div>
 
                         <!-- Hidden / Readonly Fields (rendered by crispy but we want to ensure style) -->
@@ -116,7 +130,7 @@
 
                         <div class="d-grid gap-2 mt-4">
                             <button type="submit"
-                                class="btn btn-primary shadow-sm bg-gradient border-0 icon-link icon-link-hover">
+                                class="btn btn-primary btn-lg shadow-sm bg-gradient border-0 icon-link icon-link-hover">
                                 <i class="bi bi-save me-2"></i>Update Status
                             </button>
                             <a href="{% url 'office_dashboard' %}" class="btn btn-outline-secondary border-0">Cancel</a>

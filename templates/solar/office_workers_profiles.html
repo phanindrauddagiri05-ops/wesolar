@@ -5,7 +5,7 @@
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
         <div>
             <h2 class="fw-bold text-dark mb-0">Workers Profiles</h2>
-            <p class="text-muted small">Registered Field Engineers and Installers</p>
+            <p class="text-muted small">Registered Field Engineers, Installers, Office, and Loan Workers</p>
         </div>
         <a href="{% url 'office_dashboard' %}" class="btn btn-outline-secondary btn-mobile-full">
             <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
@@ -14,7 +14,7 @@
 
     <div class="row g-4">
         <!-- Field Engineers Table -->
-        <div class="col-lg-6">
+        <div class="col-md-6">
             <div class="card glass-card border-0 h-100">
                 <div class="card-header bg-transparent border-0 pt-4 pb-2">
                     <h5 class="fw-bold text-success mb-0"><i class="bi bi-people-fill me-2"></i>Field Engineers</h5>
@@ -27,6 +27,7 @@
                                     <th class="ps-4 border-0">Name</th>
                                     <th class="border-0">Mobile</th>
                                     <th class="border-0">Status</th>
+                                    <th class="border-0 text-center">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -57,10 +58,17 @@
                                             style="font-size: 0.7rem;">Inactive</span>
                                         {% endif %}
                                     </td>
+                                    <td class="text-center" data-label="Actions">
+                                        <button class="btn btn-sm btn-outline-danger delete-worker-btn"
+                                            data-user-id="{{ user.id }}" data-user-name="{{ user.get_full_name }}"
+                                            data-user-role="Field Engineer" title="Delete Worker">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                                 {% empty %}
                                 <tr>
-                                    <td colspan="3" class="text-center py-3 text-muted small">No Field Engineers found.
+                                    <td colspan="4" class="text-center py-3 text-muted small">No Field Engineers found.
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -72,7 +80,7 @@
         </div>
 
         <!-- Installers Table -->
-        <div class="col-lg-6">
+        <div class="col-md-6">
             <div class="card glass-card border-0 h-100">
                 <div class="card-header bg-transparent border-0 pt-4 pb-2">
                     <h5 class="fw-bold text-warning mb-0"><i class="bi bi-tools me-2"></i>Installers</h5>
@@ -85,6 +93,7 @@
                                     <th class="ps-4 border-0">Name</th>
                                     <th class="border-0">Mobile</th>
                                     <th class="border-0">Status</th>
+                                    <th class="border-0 text-center">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -115,10 +124,149 @@
                                             style="font-size: 0.7rem;">Inactive</span>
                                         {% endif %}
                                     </td>
+                                    <td class="text-center" data-label="Actions">
+                                        <button class="btn btn-sm btn-outline-danger delete-worker-btn"
+                                            data-user-id="{{ user.id }}" data-user-name="{{ user.get_full_name }}"
+                                            data-user-role="Installer" title="Delete Worker">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                                 {% empty %}
                                 <tr>
-                                    <td colspan="3" class="text-center py-3 text-muted small">No Installers found.</td>
+                                    <td colspan="4" class="text-center py-3 text-muted small">No Installers found.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Office Workers Table -->
+        <div class="col-md-6">
+            <div class="card glass-card border-0 h-100">
+                <div class="card-header bg-transparent border-0 pt-4 pb-2">
+                    <h5 class="fw-bold text-primary mb-0"><i class="bi bi-briefcase-fill me-2"></i>Office Workers</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4 border-0">Name</th>
+                                    <th class="border-0">Mobile</th>
+                                    <th class="border-0">Status</th>
+                                    <th class="border-0 text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in office_users %}
+                                <tr>
+                                    <td class="ps-4" data-label="Name">
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle bg-primary-subtle text-primary me-2 fw-bold"
+                                                style="width: 32px; height: 32px; font-size: 0.85rem;">
+                                                {{ user.first_name|first }}{{ user.last_name|first }}
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold text-dark small">{{ user.get_full_name }}</div>
+                                                <div class="text-muted" style="font-size: 0.75rem;">{{ user.email }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="small" data-label="Mobile">{{ user.userprofile.mobile_number }}</td>
+                                    <td data-label="Status">
+                                        {% if user.is_active %}
+                                        <span
+                                            class="badge bg-success-subtle text-success border border-success rounded-pill"
+                                            style="font-size: 0.7rem;">Active</span>
+                                        {% else %}
+                                        <span
+                                            class="badge bg-secondary-subtle text-secondary border border-secondary rounded-pill"
+                                            style="font-size: 0.7rem;">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center" data-label="Actions">
+                                        <button class="btn btn-sm btn-outline-danger delete-worker-btn"
+                                            data-user-id="{{ user.id }}" data-user-name="{{ user.get_full_name }}"
+                                            data-user-role="Office" title="Delete Worker">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-3 text-muted small">No Office Workers found.
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loan Workers Table -->
+        <div class="col-md-6">
+            <div class="card glass-card border-0 h-100">
+                <div class="card-header bg-transparent border-0 pt-4 pb-2">
+                    <h5 class="fw-bold text-info mb-0"><i class="bi bi-currency-dollar me-2"></i>Loan Workers</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4 border-0">Name</th>
+                                    <th class="border-0">Mobile</th>
+                                    <th class="border-0">Status</th>
+                                    <th class="border-0 text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in loan_users %}
+                                <tr>
+                                    <td class="ps-4" data-label="Name">
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle bg-info-subtle text-info me-2 fw-bold"
+                                                style="width: 32px; height: 32px; font-size: 0.85rem;">
+                                                {{ user.first_name|first }}{{ user.last_name|first }}
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold text-dark small">{{ user.get_full_name }}</div>
+                                                <div class="text-muted" style="font-size: 0.75rem;">{{ user.email }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="small" data-label="Mobile">{{ user.userprofile.mobile_number }}</td>
+                                    <td data-label="Status">
+                                        {% if user.is_active %}
+                                        <span
+                                            class="badge bg-success-subtle text-success border border-success rounded-pill"
+                                            style="font-size: 0.7rem;">Active</span>
+                                        {% else %}
+                                        <span
+                                            class="badge bg-secondary-subtle text-secondary border border-secondary rounded-pill"
+                                            style="font-size: 0.7rem;">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center" data-label="Actions">
+                                        <button class="btn btn-sm btn-outline-danger delete-worker-btn"
+                                            data-user-id="{{ user.id }}" data-user-name="{{ user.get_full_name }}"
+                                            data-user-role="Loan" title="Delete Worker">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-3 text-muted small">No Loan Workers found.
+                                    </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -129,4 +277,153 @@
         </div>
     </div>
 </div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteWorkerModal" tabindex="-1" aria-labelledby="deleteWorkerModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title" id="deleteWorkerModalLabel">
+                    <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>Confirm Delete
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-2">Are you sure you want to delete this worker?</p>
+                <div class="alert alert-warning border-warning">
+                    <strong id="workerRole"></strong>: <span id="workerName"></span>
+                </div>
+                <p class="text-muted small mb-0"><i class="bi bi-info-circle me-1"></i>This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="POST" id="deleteWorkerForm" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash me-1"></i>Delete Worker
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Mobile-specific styles for worker profiles */
+    @media (max-width: 767px) {
+        .table-responsive {
+            border: none;
+        }
+
+        .table thead {
+            display: none;
+        }
+
+        .table tbody tr {
+            display: block;
+            margin-bottom: 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1rem;
+            background: white;
+        }
+
+        .table tbody td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0 !important;
+            border: none !important;
+            text-align: right;
+        }
+
+        .table tbody td::before {
+            content: attr(data-label);
+            font-weight: 600;
+            color: #6c757d;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            text-align: left;
+        }
+
+        .table tbody td:first-child {
+            padding-top: 0 !important;
+        }
+
+        .table tbody td:last-child {
+            padding-bottom: 0 !important;
+            justify-content: center;
+            margin-top: 0.5rem;
+            padding-top: 1rem !important;
+            border-top: 1px solid #e0e0e0 !important;
+        }
+
+        .table tbody td:last-child::before {
+            display: none;
+        }
+
+        .table tbody td[data-label="Name"] {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .table tbody td[data-label="Name"] .d-flex {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .table tbody td[data-label="Name"]::before {
+            margin-bottom: 0.25rem;
+        }
+
+        /* Adjust delete button for mobile */
+        .delete-worker-btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* Improve card spacing on mobile */
+        .card {
+            margin-bottom: 1.5rem;
+        }
+
+        /* Ensure proper column stacking */
+        .col-md-6 {
+            margin-bottom: 1rem;
+        }
+
+        .col-md-6:last-child {
+            margin-bottom: 0;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteWorkerModal'));
+        const deleteForm = document.getElementById('deleteWorkerForm');
+        const workerNameSpan = document.getElementById('workerName');
+        const workerRoleSpan = document.getElementById('workerRole');
+
+        document.querySelectorAll('.delete-worker-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const userId = this.dataset.userId;
+                const userName = this.dataset.userName;
+                const userRole = this.dataset.userRole;
+
+                // Update modal content
+                workerNameSpan.textContent = userName;
+                workerRoleSpan.textContent = userRole;
+
+                // Update form action
+                deleteForm.action = `/admin/delete-worker/${userId}/`;
+
+                // Show modal
+                deleteModal.show();
+            });
+        });
+    });
+</script>
 {% endblock %}
