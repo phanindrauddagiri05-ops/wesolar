@@ -51,4 +51,22 @@
         </div>
     </div>
 </div>
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var acNoInput = document.getElementById('id_loan_applied_ac_no');
+        if (acNoInput) {
+            acNoInput.setAttribute('inputmode', 'numeric');
+            acNoInput.addEventListener('input', function () {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+            acNoInput.addEventListener('keypress', function (e) {
+                if (!/[0-9]/.test(e.key)) {
+                    e.preventDefault();
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
 {% endblock %}

@@ -260,6 +260,10 @@ def approve_user(request, pk):
     elif profile.role == 'Loan':
         group, _ = Group.objects.get_or_create(name='Loan_Officers')
         profile.user.groups.add(group)
+    elif profile.role == 'Admin':
+        # Grant is_staff so @staff_member_required on admin_dashboard allows them in
+        profile.user.is_staff = True
+        profile.user.save()
         
     messages.success(request, f"User {profile.user.get_full_name()} approved.")
     return redirect('admin_dashboard')
@@ -680,6 +684,68 @@ def office_update_status(request, pk):
         'bank_form': bank_form,
         'survey': survey
     })
+
+@login_required
+@user_passes_test(is_office_staff)
+def office_update_home(request):
+    """
+    Office Staff Phone Search Landing Page.
+    Allows office staff to search for a customer by phone number,
+    then redirects to the update status form.
+    """
+    return render(request, 'solar/office_update_home.html')
+
+
+@login_required
+@user_passes_test(is_office_staff)
+def get_survey_by_phone_all(request):
+    """
+    API Endpoint: Fetch ALL customer surveys by phone number (for Office use).
+    Unlike the installer API, this does NOT filter out surveys with installations.
+    Returns JSON with matching survey(s) info.
+    """
+    phone = request.GET.get('phone', '')
+
+    if not phone:
+        return JsonResponse({'found': False, 'message': 'Phone number is required.'})
+
+    surveys = CustomerSurvey.objects.filter(
+        Q(phone_number=phone) | Q(aadhar_linked_phone=phone)
+    ).order_by('-created_at')
+
+    if not surveys.exists():
+        return JsonResponse({'found': False, 'message': 'No customer found with this phone number.'})
+
+    if surveys.count() == 1:
+        survey = surveys.first()
+        return JsonResponse({
+            'found': True,
+            'count': 1,
+            'survey_id': survey.id,
+            'customer_name': survey.customer_name,
+            'sc_no': survey.sc_no,
+            'phase': survey.phase,
+            'area': survey.area or '',
+            'agreed_amount': str(survey.agreed_amount),
+            'workflow_status': survey.workflow_status,
+            'phone_number': survey.phone_number or survey.aadhar_linked_phone or '',
+        })
+
+    # Multiple surveys found — return list
+    records = []
+    for s in surveys:
+        records.append({
+            'id': s.id,
+            'customer_name': s.customer_name,
+            'sc_no': s.sc_no,
+            'phase': s.phase,
+            'area': s.area or '',
+            'agreed_amount': str(s.agreed_amount),
+            'workflow_status': s.workflow_status,
+            'created_at': s.created_at.strftime('%d %b %Y'),
+        })
+
+    return JsonResponse({'found': True, 'count': surveys.count(), 'records': records})
 
 @login_required
 @user_passes_test(is_loan_officer)

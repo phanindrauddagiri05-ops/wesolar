@@ -10,7 +10,7 @@ class SurveyForm(forms.ModelForm):
     class Meta:
         model = CustomerSurvey
         fields = [
-            'customer_name', 'connection_type', 'sc_no', 'phase', 'feasibility_kw',
+            'customer_name', 'connection_type', 'sc_no', 'phase', 'contracted_load', 'feasibility_kw',
             'aadhar_no', 'pan_card', 'email', 'phone_number', 
             'area', 'gps_coordinates', 'roof_type', 'roof_photo', 'structure_type',
             'structure_height', 'agreed_amount', 'advance_paid', 
@@ -20,6 +20,8 @@ class SurveyForm(forms.ModelForm):
         ]
         labels = {
             'sc_no': 'Service Connection Number (16 Digits)',
+            'contracted_load': 'Contracted Load (KW)',
+            'structure_height': 'Structure Height (in Feet)',
             'feasibility_kw': 'Applied Solar Load (KW)',
             'aadhar_no': 'Aadhar Card (12 Digits)',
             'pan_card': 'Pan Card (10 Digits)',
@@ -249,9 +251,9 @@ class BankDetailsForm(forms.ModelForm):
     parent_bank = forms.CharField(required=True, label="Parent Bank")
     parent_bank_ac_no = forms.CharField(required=True, label="Parent Bank Ac Number (Fetch logic pending)")
     loan_applied_bank = forms.CharField(required=False, label="Loan Applied Bank (Optional - Fill later)")
-    loan_applied_ifsc = forms.CharField(required=False, label="Loan Applied Bank IFSC (Optional - Fill later)")
-    loan_applied_ac_no = forms.CharField(required=False, label="Loan Applied Bank Ac Number (Optional - Fill later)")
-    manager_number = forms.CharField(required=False, label="Manager Number")
+    loan_applied_ifsc = forms.CharField(required=True, label="Loan Applied Bank IFSC")
+    loan_applied_ac_no = forms.CharField(required=True, label="Loan Applied Bank Ac Number")
+
     
     # Read-only field for display
     agreed_amount = forms.DecimalField(required=False, widget=forms.TextInput(attrs={'readonly': 'readonly'}))
@@ -281,7 +283,7 @@ class BankDetailsForm(forms.ModelForm):
         model = BankDetails
         fields = [
             'parent_bank', 'parent_bank_ac_no', 
-            'loan_applied_bank', 'loan_applied_ifsc', 'loan_applied_ac_no', 'manager_number',
+            'loan_applied_bank', 'loan_applied_ifsc', 'loan_applied_ac_no',
             'loan_pending_status',
             'first_loan_amount', 'first_loan_utr', 'first_loan_date',
             'second_loan_amount', 'second_loan_utr', 'second_loan_date',

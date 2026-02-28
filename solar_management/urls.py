@@ -18,6 +18,7 @@ urlpatterns = [
 
     # New Office Portal
     path('office-dashboard/', views.office_dashboard, name='office_dashboard'),
+    path('office/update/', views.office_update_home, name='office_update_home'),
     path('office/update-status/<int:pk>/', views.office_update_status, name='office_update_status'),
 
     # Master Dashboard
@@ -49,6 +50,7 @@ urlpatterns = [
     path('api/get-customer-data/', views.get_customer_data, name='get_customer_data'),
     path('api/get-bank-details/', views.get_bank_details_by_phone, name='get_bank_details_by_phone'),
     path('api/get-survey-by-phone/', views.get_survey_by_phone, name='get_survey_by_phone'),
+    path('api/get-survey-by-phone-all/', views.get_survey_by_phone_all, name='get_survey_by_phone_all'),
     path('api/get-survey-by-id/', views.get_survey_by_id, name='get_survey_by_id'),
     
     # Enquiry System

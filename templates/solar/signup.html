@@ -1,9 +1,100 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 
+{% block extra_css %}
+<style>
+    /* Mobile-specific styles for registration page */
+    @media (max-width: 768px) {
+
+        /* Container padding adjustments for mobile */
+        .signup-container {
+            padding: 1rem !important;
+            min-height: auto !important;
+        }
+
+        /* Card adjustments for mobile */
+        .signup-card {
+            margin: 1rem 0 !important;
+            max-width: 100% !important;
+        }
+
+        /* Card header spacing */
+        .signup-card .card-header {
+            padding: 1.5rem 1rem !important;
+        }
+
+        .signup-card .card-header h2 {
+            font-size: 1.5rem !important;
+            margin-bottom: 0.5rem !important;
+        }
+
+        .signup-card .card-header p {
+            font-size: 0.875rem !important;
+        }
+
+        /* Card body padding for mobile */
+        .signup-card .card-body {
+            padding: 1.5rem 1rem !important;
+        }
+
+        /* Form field adjustments */
+        .signup-card .form-group,
+        .signup-card .mb-3 {
+            margin-bottom: 1rem !important;
+        }
+
+        /* Input field styling */
+        .signup-card input,
+        .signup-card select,
+        .signup-card textarea {
+            font-size: 1rem !important;
+            padding: 0.75rem !important;
+        }
+
+        /* Label styling */
+        .signup-card label {
+            font-size: 0.9rem !important;
+            margin-bottom: 0.5rem !important;
+        }
+
+        /* Button styling for mobile */
+        .signup-card .btn-lg {
+            padding: 0.875rem 1rem !important;
+            font-size: 1rem !important;
+        }
+
+        /* Link styling */
+        .signup-card .text-center a {
+            font-size: 0.9rem !important;
+        }
+
+        /* Remove excessive margins on mobile */
+        .signup-card .mt-4 {
+            margin-top: 1.5rem !important;
+        }
+    }
+
+    /* Extra small devices (phones, less than 576px) */
+    @media (max-width: 576px) {
+        .signup-container {
+            padding: 0.5rem !important;
+        }
+
+        .signup-card {
+            margin: 0.5rem !important;
+            border-radius: 1rem !important;
+        }
+
+        .signup-card .card-header h2 {
+            font-size: 1.25rem !important;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container d-flex align-items-center justify-content-center" style="min-height: 80vh;">
-    <div class="card glass-card shadow-lg" style="max-width: 500px; width: 100%;">
+<div class="container d-flex align-items-center justify-content-center signup-container" style="min-height: 80vh;">
+    <div class="card glass-card shadow-lg signup-card" style="max-width: 500px; width: 100%;">
         <div class="card-header text-center py-4 border-0">
             <h2 class="mb-0 text-success">Create Account</h2>
             <p class="text-muted small">Join as Engineer or Installer</p>

@@ -51,7 +51,8 @@
                         <div class="col-md-6">{{ form.phase|as_crispy_field }}</div>
                     </div>
                     <div class="row">
-                        <div class="col-md-12">{{ form.feasibility_kw|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.contracted_load|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.feasibility_kw|as_crispy_field }}</div>
                     </div>
                     <div class="row">
                         <div class="col-md-6">{{ form.phone_number|as_crispy_field }}</div>
@@ -289,6 +290,7 @@
 
         setNumericOnly('id_parent_bank_ac_no');
         setNumericOnly('id_loan_applied_ac_no');
+        setNumericOnly('id_contracted_load');
 
         // Apply Alpha-Only Restrictions
         setAlphaOnly('id_customer_name');
