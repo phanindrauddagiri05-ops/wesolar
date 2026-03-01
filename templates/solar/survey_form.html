@@ -111,12 +111,15 @@
                     Photos <span class="text-danger">*</span></h5>
                 <div class="bg-light p-3 rounded mb-4 border">
                     <div class="row">
-                        <div class="col-md-4">{{ form.pan_card_photo|as_crispy_field }}</div>
-                        <div class="col-md-4">{{ form.aadhar_photo|as_crispy_field }}</div>
-                        <div class="col-md-4">{{ form.current_bill_photo|as_crispy_field }}</div>
+                        <div class="col-md-6 mb-3">{{ form.pan_card_photo|as_crispy_field }}</div>
+                        <div class="col-md-6 mb-3">{{ form.aadhar_photo|as_crispy_field }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">{{ form.current_bill_photo|as_crispy_field }}</div>
+                        <div class="col-md-6 mb-3">{{ form.bank_account_photo|as_crispy_field }}</div>
                     </div>
                     <small class="text-muted"><i class="bi bi-info-circle me-1"></i>All file formats accepted — JPG,
-                        PNG, PDF, HEIC, etc. All 3 are mandatory.</small>
+                        PNG, PDF, HEIC, etc. All 4 are mandatory.</small>
                 </div>
 
                 <!-- Section 5: Pricing & Approvals -->

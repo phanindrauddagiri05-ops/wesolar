@@ -47,6 +47,7 @@ class CustomerSurvey(models.Model):
     pan_card_photo = models.FileField(upload_to='surveys/documents/', null=True, blank=True, help_text="Photo/Scan of PAN Card")
     aadhar_photo = models.FileField(upload_to='surveys/documents/', null=True, blank=True, help_text="Photo/Scan of Aadhar Card")
     current_bill_photo = models.FileField(upload_to='surveys/documents/', null=True, blank=True, help_text="Photo/Scan of Current Electricity Bill")
+    bank_account_photo = models.FileField(upload_to='surveys/documents/', null=True, blank=True, help_text="Photo/Scan of Bank Account")
     structure_type = models.CharField(max_length=100, choices=STRUCTURE_CHOICES)
     structure_height = models.FloatField(help_text="in Feet")
     gps_coordinates = models.CharField(max_length=100)

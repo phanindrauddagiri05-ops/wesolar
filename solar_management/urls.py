@@ -13,6 +13,7 @@ urlpatterns = [
     
     # Admin Portal (Formerly Office)
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('admin-portal/pending-approvals/', views.pending_approvals, name='pending_approvals'),
     path('admin-portal/fe-view/<int:pk>/', views.site_detail_fe_view, name='site_detail_fe_view'),
     path('admin-portal/installer-view/<int:pk>/', views.site_detail_installer_view, name='site_detail_installer_view'),
 

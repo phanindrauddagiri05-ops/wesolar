@@ -17,7 +17,7 @@ class SurveyForm(forms.ModelForm):
             'mefma_status', 'rp_name', 'rp_phone_number', 
             'fe_remarks', 'reference_name', 
             'pms_registration_number', 'division', 'registration_status',
-            'pan_card_photo', 'aadhar_photo', 'current_bill_photo',
+            'pan_card_photo', 'aadhar_photo', 'current_bill_photo', 'bank_account_photo',
         ]
         labels = {
             'sc_no': 'Service Connection Number (16 Digits)',
@@ -41,6 +41,7 @@ class SurveyForm(forms.ModelForm):
             'pan_card_photo': 'PAN Card Photo',
             'aadhar_photo': 'Aadhar Card Photo',
             'current_bill_photo': 'Current Electricity Bill Photo',
+            'bank_account_photo': 'Bank Account Photo',
         }
         widgets = {
              'gps_coordinates': forms.TextInput(attrs={'placeholder': 'Latitude, Longitude', 'readonly': 'readonly'}),

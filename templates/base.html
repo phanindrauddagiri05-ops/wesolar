@@ -112,16 +112,21 @@
                     {% if user.is_authenticated %}
                     {% if user.is_staff %}
                     {# ADMIN NAVIGATION #}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'admin_dashboard' %}">Admin Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'office_fe_data' %}">Field Engineer</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'office_installer_data' %}">Installation</a>
+                    <li class="nav-item"><a class="nav-link text-nowrap" href="{% url 'admin_dashboard' %}">Admin
+                            Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link text-nowrap" href="{% url 'pending_approvals' %}">Pending
+                            Approvals</a></li>
+                    <li class="nav-item"><a class="nav-link text-nowrap" href="{% url 'office_fe_data' %}">Field
+                            Engineer</a></li>
+                    <li class="nav-item"><a class="nav-link text-nowrap"
+                            href="{% url 'office_installer_data' %}">Installation</a></li>
+                    <li class="nav-item"><a class="nav-link text-nowrap" href="{% url 'enquiry_list' %}">Enquiries</a>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'enquiry_list' %}">Enquiries</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'office_workers_profiles' %}">Workers
-                            Profiles</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'office_dashboard' %}"><i
+                    <li class="nav-item"><a class="nav-link text-nowrap"
+                            href="{% url 'office_workers_profiles' %}">Workers Profiles</a></li>
+                    <li class="nav-item"><a class="nav-link text-nowrap" href="{% url 'office_dashboard' %}"><i
                                 class="bi bi-briefcase me-1"></i>Office</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'loan_dashboard' %}"><i
+                    <li class="nav-item"><a class="nav-link text-nowrap" href="{% url 'loan_dashboard' %}"><i
                                 class="bi bi-bank me-1"></i>Loan</a></li>
 
                     {% elif user.groups.all.0.name == 'Office_Staff' %}

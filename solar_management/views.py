@@ -269,7 +269,7 @@ def approve_user(request, pk):
         profile.user.save()
         
     messages.success(request, f"User {profile.user.get_full_name()} approved.")
-    return redirect('admin_dashboard')
+    return redirect('pending_approvals')
 
 @staff_member_required
 def reject_user(request, pk):
@@ -279,7 +279,7 @@ def reject_user(request, pk):
     name = user.get_full_name() or user.username
     user.delete() # Cascade deletes profile
     messages.error(request, f"User request for {name} has been rejected and removed.")
-    return redirect('admin_dashboard')
+    return redirect('pending_approvals')
 
 def logout_view(request):
     logout(request)
@@ -568,23 +568,35 @@ def installer_dashboard(request):
     })
 
 @staff_member_required
-def admin_dashboard(request):
-    """
-    Admin Dashboard: 5 Sections
-    1. Account Confirmation (Pending Users)
-    2. Field Engineer Data (Master List)
-    3. Installer Data (Master List)
-    4. Office Data (Recent Office Updates)
-    5. Loan Data (Recent Loan Applications)
-    """
+def pending_approvals(request):
+    """Admin-only view to see and approve/reject pending users."""
     query = request.GET.get('q', '')
-
     if query:
-        # 1. Pending Approvals
         pending_users = UserProfile.objects.filter(is_approved=False).filter(
             Q(user__username__icontains=query) |
             Q(mobile_number__icontains=query)
         )
+    else:
+        pending_users = UserProfile.objects.filter(is_approved=False)
+        
+    context = {
+        'pending_users': pending_users,
+        'query': query,
+    }
+    return render(request, 'solar/pending_approvals.html', context)
+
+@staff_member_required
+def admin_dashboard(request):
+    """
+    Admin Dashboard: 4 Sections (Approvals moved to separate view)
+    1. Field Engineer Data (Master List)
+    2. Installer Data (Master List)
+    3. Office Data (Recent Office Updates)
+    4. Loan Data (Recent Loan Applications)
+    """
+    query = request.GET.get('q', '')
+
+    if query:
         
         # 2. FE Data (All Surveys)
         fe_data = CustomerSurvey.objects.filter(
@@ -610,8 +622,6 @@ def admin_dashboard(request):
             Q(survey__phone_number__icontains=query)
         ).select_related('survey').order_by('-id')[:5]
     else:
-        # 1. Pending Approvals
-        pending_users = UserProfile.objects.filter(is_approved=False)
         
         # 2. FE Data (All Surveys)
         fe_data = CustomerSurvey.objects.all().select_related('created_by').order_by('-created_at')
@@ -626,7 +636,6 @@ def admin_dashboard(request):
         loan_data = BankDetails.objects.all().select_related('survey').order_by('-id')[:5]
     
     context = {
-        'pending_users': pending_users,
         'fe_data': fe_data,
         'installer_data': installer_data,
         'office_data': office_data,
