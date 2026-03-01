@@ -54,6 +54,7 @@
                         {% endif %}
                         <th class="py-3 bg-light text-secondary border-0">Status</th>
                         <th>Finance Tracking</th>
+                        <th class="py-3 bg-light text-secondary border-0">Submitted On</th>
                         <th class="text-center pe-4">Actions</th>
                     </tr>
                 </thead>
@@ -123,6 +124,10 @@
                             {% endif %}
                         </td>
 
+                        <td>
+                            <div class="small text-muted">{{ item.created_at|date:"M d, Y" }}</div>
+                            <div class="text-secondary" style="font-size:0.82em;">{{ item.created_at|date:"H:i" }}</div>
+                        </td>
                         <td class="text-center pe-4">
                             <div class="dropdown">
                                 <button class="btn btn-sm btn-premium-outline dropdown-toggle" type="button"

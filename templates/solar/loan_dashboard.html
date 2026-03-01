@@ -187,6 +187,7 @@
                                 <th class="ps-4">Customer Name</th>
                                 <th>Phone</th>
                                 <th>Loan Status</th>
+                                <th>Submitted On</th>
                                 <th class="text-end pe-4">Action</th>
                             </tr>
                         </thead>
@@ -213,6 +214,10 @@
                                     {% else %}
                                     <span class="badge bg-light text-muted border">Not Started</span>
                                     {% endif %}
+                                </td>
+                                <td>
+                                    <div class="small">{{ cust.created_at|date:"M d, Y" }}</div>
+                                    <div class="text-secondary" style="font-size:0.82em;">{{ cust.created_at|date:"H:i"}}</div>
                                 </td>
                                 <td class="text-end pe-4">
                                     <a href="?site_id={{ cust.id }}" class="btn btn-sm btn-outline-primary">

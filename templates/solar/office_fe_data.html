@@ -48,6 +48,8 @@
                             </td>
                             <td class="text-muted small" data-label="Date">
                                 <div>{{ item.created_at|date:"M d, Y" }}</div>
+                                <div class="text-secondary" style="font-size:0.82em;">{{ item.created_at|date:"H:i" }}
+                                </div>
                             </td>
                             <td class="text-end pe-4" data-label="Actions">
                                 <a href="{% url 'site_detail_fe_view' item.pk %}"
@@ -56,6 +58,10 @@
                                 </a>
                                 <a href="{% url 'update_survey' item.pk %}" class="btn btn-sm btn-outline-primary me-1">
                                     <i class="bi bi-pencil me-1"></i>Edit
+                                </a>
+                                <a href="{% url 'download_images' item.pk %}"
+                                    class="btn btn-sm btn-outline-success me-1" title="Download All Images">
+                                    <i class="bi bi-download"></i>
                                 </a>
                                 <button class="btn btn-sm btn-outline-danger delete-app-btn"
                                     data-survey-id="{{ item.id }}" data-customer-name="{{ item.customer_name }}"

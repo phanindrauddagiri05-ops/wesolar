@@ -74,9 +74,11 @@
                         <div class="col-md-6">{{ bank_form.parent_bank_ac_no|as_crispy_field }}</div>
                     </div>
                     <div class="row mt-2">
-                        <div class="col-md-4">{{ bank_form.loan_applied_bank|as_crispy_field }}</div>
-                        <div class="col-md-4">{{ bank_form.loan_applied_ifsc|as_crispy_field }}</div>
-                        <div class="col-md-4">{{ bank_form.loan_applied_ac_no|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ bank_form.loan_applied_bank|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ bank_form.loan_applied_ifsc|as_crispy_field }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">{{ bank_form.loan_applied_ac_no|as_crispy_field }}</div>
                     </div>
                 </div>
 
@@ -104,7 +106,20 @@
                     </div>
                 </div>
 
-                <!-- Section 4: Pricing & Approvals -->
+                <!-- Section 4: Document Photos -->
+                <h5 class="text-primary border-bottom pb-2 mb-3"><i class="bi bi-file-earmark-image me-2"></i>Document
+                    Photos <span class="text-danger">*</span></h5>
+                <div class="bg-light p-3 rounded mb-4 border">
+                    <div class="row">
+                        <div class="col-md-4">{{ form.pan_card_photo|as_crispy_field }}</div>
+                        <div class="col-md-4">{{ form.aadhar_photo|as_crispy_field }}</div>
+                        <div class="col-md-4">{{ form.current_bill_photo|as_crispy_field }}</div>
+                    </div>
+                    <small class="text-muted"><i class="bi bi-info-circle me-1"></i>All file formats accepted — JPG,
+                        PNG, PDF, HEIC, etc. All 3 are mandatory.</small>
+                </div>
+
+                <!-- Section 5: Pricing & Approvals -->
                 <h5 class="text-primary border-bottom pb-2 mb-3"><i class="bi bi-currency-rupee me-2"></i>Pricing &
                     Approvals</h5>
                 <div class="bg-light p-3 rounded mb-4 border">

@@ -42,6 +42,11 @@ class CustomerSurvey(models.Model):
     # Roof & Structure
     roof_type = models.CharField(max_length=100, choices=ROOF_CHOICES)
     roof_photo = models.ImageField(upload_to='surveys/roofs/', null=True, blank=True, help_text="Mandatory if critical site")
+    
+    # Document Photos (FileField to accept all formats: PDF, HEIC, JPG, PNG, etc.)
+    pan_card_photo = models.FileField(upload_to='surveys/documents/', null=True, blank=True, help_text="Photo/Scan of PAN Card")
+    aadhar_photo = models.FileField(upload_to='surveys/documents/', null=True, blank=True, help_text="Photo/Scan of Aadhar Card")
+    current_bill_photo = models.FileField(upload_to='surveys/documents/', null=True, blank=True, help_text="Photo/Scan of Current Electricity Bill")
     structure_type = models.CharField(max_length=100, choices=STRUCTURE_CHOICES)
     structure_height = models.FloatField(help_text="in Feet")
     gps_coordinates = models.CharField(max_length=100)
@@ -175,3 +180,19 @@ class Enquiry(models.Model):
 
     def __str__(self):
         return f"Enquiry from {self.name} ({self.mobile_number})"
+
+class SiteSettings(models.Model):
+    """Singleton model to store global site settings like maintenance mode."""
+    maintenance_mode = models.BooleanField(default=False, help_text="When enabled, all pages show a maintenance screen.")
+
+    class Meta:
+        verbose_name = "Site Settings"
+        verbose_name_plural = "Site Settings"
+
+    def __str__(self):
+        return "Site Settings"
+
+    @classmethod
+    def get_settings(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj

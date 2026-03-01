@@ -1,6 +1,9 @@
 import csv
+import io
 import re
 import sys
+import zipfile
+import os
 from datetime import datetime
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
@@ -11,7 +14,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group, User
 
-from .models import CustomerSurvey, Installation, BankDetails, UserProfile, Enquiry
+from .models import CustomerSurvey, Installation, BankDetails, UserProfile, Enquiry, SiteSettings
 from .forms import SurveyForm, InstallationForm, BankDetailsForm, SignUpForm, LoginForm, EnquiryForm, OfficeStatusForm, FEUpdateForm, OfficeBankDetailsForm
 import json
 
@@ -629,8 +632,55 @@ def admin_dashboard(request):
         'office_data': office_data,
         'loan_data': loan_data,
         'query': query,
+        'maintenance_mode': SiteSettings.get_settings().maintenance_mode,
     }
     return render(request, 'solar/admin_dashboard.html', context)
+
+
+@staff_member_required
+def download_images(request, survey_id):
+    """
+    Admin only: Download all images for a given CustomerSurvey as a ZIP file.
+    Includes roof_photo, and all installation photos if an installation exists.
+    """
+    survey = get_object_or_404(CustomerSurvey, pk=survey_id)
+
+    # Collect all (label, image_field) pairs
+    images = []
+
+    if survey.roof_photo:
+        images.append((f'roof_photo{os.path.splitext(survey.roof_photo.name)[1]}', survey.roof_photo))
+
+    if hasattr(survey, 'installation'):
+        inst = survey.installation
+        if inst.inverter_serial_photo:
+            images.append((f'inverter_serial{os.path.splitext(inst.inverter_serial_photo.name)[1]}', inst.inverter_serial_photo))
+        if inst.inverter_acdb_photo:
+            images.append((f'inverter_acdb{os.path.splitext(inst.inverter_acdb_photo.name)[1]}', inst.inverter_acdb_photo))
+        if inst.panel_serial_photo:
+            images.append((f'panel_serial{os.path.splitext(inst.panel_serial_photo.name)[1]}', inst.panel_serial_photo))
+        if inst.site_photos_with_customer:
+            images.append((f'site_with_customer{os.path.splitext(inst.site_photos_with_customer.name)[1]}', inst.site_photos_with_customer))
+
+    if not images:
+        messages.warning(request, f'No images found for {survey.customer_name}.')
+        return redirect('admin_dashboard')
+
+    # Build ZIP in memory
+    buffer = io.BytesIO()
+    safe_name = survey.customer_name.replace(' ', '_').replace('/', '-')
+    with zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED) as zf:
+        for filename, image_field in images:
+            try:
+                with image_field.open('rb') as img_file:
+                    zf.writestr(filename, img_file.read())
+            except Exception:
+                pass  # Skip any files that can't be read
+
+    buffer.seek(0)
+    response = HttpResponse(buffer.read(), content_type='application/zip')
+    response['Content-Disposition'] = f'attachment; filename="{safe_name}_images.zip"'
+    return response
 
 
 @login_required
@@ -1346,7 +1396,7 @@ def site_detail_installer_view(request, pk):
         installation = Installation.objects.get(survey=customer)
     except Installation.DoesNotExist:
         installation = None
-    return render(request, 'solar/site_detail.html', {'customer': customer, 'installation': installation, 'view_mode': 'merged'})
+    return render(request, 'solar/site_detail.html', {'customer': customer, 'installation': installation, 'view_mode': 'installer_only'})
 
 @user_passes_test(lambda u: hasattr(u, 'userprofile') and u.userprofile.role == 'Admin')
 def delete_worker(request, user_id):
@@ -1412,3 +1462,17 @@ def fe_update_survey(request, pk):
         form = FEUpdateForm(instance=survey, bank_details=bank_details)
 
     return render(request, 'solar/fe_update_form.html', {'form': form, 'survey': survey})
+
+
+# ==========================================
+# MAINTENANCE MODE TOGGLE
+# ==========================================
+@staff_member_required
+def toggle_maintenance_mode(request):
+    if request.method == 'POST':
+        settings_obj = SiteSettings.get_settings()
+        settings_obj.maintenance_mode = not settings_obj.maintenance_mode
+        settings_obj.save()
+        status = "enabled" if settings_obj.maintenance_mode else "disabled"
+        messages.success(request, f"Maintenance mode {status}.")
+    return redirect('admin_dashboard')

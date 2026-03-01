@@ -17,6 +17,7 @@ class SurveyForm(forms.ModelForm):
             'mefma_status', 'rp_name', 'rp_phone_number', 
             'fe_remarks', 'reference_name', 
             'pms_registration_number', 'division', 'registration_status',
+            'pan_card_photo', 'aadhar_photo', 'current_bill_photo',
         ]
         labels = {
             'sc_no': 'Service Connection Number (16 Digits)',
@@ -37,6 +38,9 @@ class SurveyForm(forms.ModelForm):
             'division': 'Division',
             'fe_remarks': 'Remarks',
             'registration_status': 'Registration Status',
+            'pan_card_photo': 'PAN Card Photo',
+            'aadhar_photo': 'Aadhar Card Photo',
+            'current_bill_photo': 'Current Electricity Bill Photo',
         }
         widgets = {
              'gps_coordinates': forms.TextInput(attrs={'placeholder': 'Latitude, Longitude', 'readonly': 'readonly'}),
@@ -107,12 +111,28 @@ class SurveyForm(forms.ModelForm):
         rp_phone = cleaned_data.get('rp_phone_number')
         reference_name = cleaned_data.get('reference_name')
         roof_photo = cleaned_data.get('roof_photo')
+        pan_card_photo = cleaned_data.get('pan_card_photo')
+        aadhar_photo = cleaned_data.get('aadhar_photo')
+        current_bill_photo = cleaned_data.get('current_bill_photo')
 
-        # Roof photo is mandatory (removed critical site checkbox logic)
+        # Roof photo is mandatory
         if not roof_photo:
             if not (self.instance.pk and self.instance.roof_photo):
                  self.add_error('roof_photo', "Roof photo is mandatory.")
-        
+
+        # Document photos are mandatory
+        if not pan_card_photo:
+            if not (self.instance.pk and self.instance.pan_card_photo):
+                self.add_error('pan_card_photo', "PAN Card photo is mandatory.")
+
+        if not aadhar_photo:
+            if not (self.instance.pk and self.instance.aadhar_photo):
+                self.add_error('aadhar_photo', "Aadhar Card photo is mandatory.")
+
+        if not current_bill_photo:
+            if not (self.instance.pk and self.instance.current_bill_photo):
+                self.add_error('current_bill_photo', "Current Electricity Bill photo is mandatory.")
+
         if mefma_status:
             if not rp_name:
                 self.add_error('rp_name', "RP Name is mandatory if MEFMA is Yes.")
@@ -251,8 +271,8 @@ class BankDetailsForm(forms.ModelForm):
     parent_bank = forms.CharField(required=True, label="Parent Bank")
     parent_bank_ac_no = forms.CharField(required=True, label="Parent Bank Ac Number (Fetch logic pending)")
     loan_applied_bank = forms.CharField(required=False, label="Loan Applied Bank (Optional - Fill later)")
-    loan_applied_ifsc = forms.CharField(required=True, label="Loan Applied Bank IFSC")
-    loan_applied_ac_no = forms.CharField(required=True, label="Loan Applied Bank Ac Number")
+    loan_applied_ifsc = forms.CharField(required=False, label="Loan Applied Bank IFSC (Optional - Fill later)")
+    loan_applied_ac_no = forms.CharField(required=False, label="Loan Applied Bank Ac Number (Optional - Fill later)")
 
     
     # Read-only field for display
@@ -264,6 +284,15 @@ class BankDetailsForm(forms.ModelForm):
         # Populate Agreed Amount
         if self.instance and self.instance.pk and self.instance.survey:
             self.fields['agreed_amount'].initial = self.instance.survey.agreed_amount
+
+        # These fields are filled LATER by the Loan Officer — not required at survey creation
+        loan_officer_fields = [
+            'loan_pending_status',
+            'first_loan_amount', 'first_loan_utr', 'first_loan_date',
+            'second_loan_amount', 'second_loan_utr', 'second_loan_date',
+        ]
+        for field in loan_officer_fields:
+            self.fields[field].required = False
 
     def clean_parent_bank(self):
         bank = self.cleaned_data.get('parent_bank')

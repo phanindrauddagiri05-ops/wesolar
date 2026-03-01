@@ -73,8 +73,7 @@
                         {% for survey in surveys %}
                         <tr class="border-bottom">
                             <td class="fw-bold px-4 py-3 text-dark">{{ survey.customer_name }}</td>
-                            <td class="py-3 text-dark">{{
-                                survey.phone_number|default:survey.aadhar_linked_phone|default:"-" }}</td>
+                            <td class="py-3 text-dark">{{survey.phone_number|default:survey.aadhar_linked_phone|default:"-" }}</td>
                             <td class="py-3 text-dark">{{ survey.installation_date|date:"d M Y"|default:"-" }}</td>
                             <td class="py-3">
                                 <span

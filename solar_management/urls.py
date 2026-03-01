@@ -63,4 +63,6 @@ urlpatterns = [
     path('office-portal/workers-profiles/', views.office_workers_profiles, name='office_workers_profiles'),
     path('admin/delete-worker/<int:user_id>/', views.delete_worker, name='delete_worker'),
     path('admin/delete-application/<int:survey_id>/', views.delete_application, name='delete_application'),
+    path('portal/download-images/<int:survey_id>/', views.download_images, name='download_images'),
+    path('admin/toggle-maintenance/', views.toggle_maintenance_mode, name='toggle_maintenance_mode'),
 ]
