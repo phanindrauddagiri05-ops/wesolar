@@ -651,6 +651,14 @@ def download_images(request, survey_id):
     if survey.roof_photo:
         images.append((f'roof_photo{os.path.splitext(survey.roof_photo.name)[1]}', survey.roof_photo))
 
+    # Document photos uploaded by Field Engineer
+    if survey.pan_card_photo:
+        images.append((f'pan_card{os.path.splitext(survey.pan_card_photo.name)[1]}', survey.pan_card_photo))
+    if survey.aadhar_photo:
+        images.append((f'aadhar_card{os.path.splitext(survey.aadhar_photo.name)[1]}', survey.aadhar_photo))
+    if survey.current_bill_photo:
+        images.append((f'current_bill{os.path.splitext(survey.current_bill_photo.name)[1]}', survey.current_bill_photo))
+
     if hasattr(survey, 'installation'):
         inst = survey.installation
         if inst.inverter_serial_photo:

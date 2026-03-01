@@ -9,20 +9,6 @@
             <p class="text-muted mb-0">Platform Administration & Approvals</p>
         </div>
         <div class="d-flex align-items-center gap-2 flex-wrap">
-            <!-- Maintenance Mode Toggle -->
-            <form method="post" action="{% url 'toggle_maintenance_mode' %}" class="d-inline">
-                {% csrf_token %}
-                {% if maintenance_mode %}
-                <button type="submit" class="btn btn-danger me-1" title="Maintenance mode is ON — click to disable">
-                    <i class="bi bi-tools me-1"></i> Maintenance ON
-                </button>
-                {% else %}
-                <button type="submit" class="btn btn-outline-secondary me-1" title="Click to enable maintenance mode">
-                    <i class="bi bi-tools me-1"></i> Maintenance OFF
-                </button>
-                {% endif %}
-            </form>
-
             <a href="{% url 'enquiry_list' %}" class="btn btn-outline-primary me-2">
                 <i class="bi bi-envelope me-2"></i>View Enquiries
             </a>
