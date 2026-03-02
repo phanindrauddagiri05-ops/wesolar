@@ -2,21 +2,30 @@
 
 {% block content %}
 <div class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
         <h2 class="fw-bold text-dark mb-0">Project Details: {{ customer.customer_name }}</h2>
-        <div>
+        <div class="d-flex flex-wrap gap-2">
+            {# Permission-based Download Link #}
+            {% if request.user.is_superuser or request.user.is_staff or request.user.userprofile.role == 'Admin' or request.user.userprofile.role == 'Office' %}
+            <a href="{% url 'download_images' customer.id %}" class="btn btn-info shadow-sm text-white">
+                <i class="bi bi-download me-1"></i> Download All Images
+            </a>
+            {% endif %}
+
+            {# Staff Update Link #}
             {% if request.user.is_staff %}
-            <a href="{% url 'update_survey' customer.id %}" class="btn btn-warning shadow-sm me-2">
+            <a href="{% url 'update_survey' customer.id %}" class="btn btn-warning shadow-sm">
                 <i class="bi bi-pencil-square me-1"></i> Update Details
             </a>
             {% endif %}
+            
             <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Back to Dashboard</a>
         </div>
     </div>
 
     <div class="row">
         {# SECTION: Installation Report (Visible to Installers/Staff) #}
-        {% if view_mode == 'installer_only' or not view_mode and request.user.userprofile.role != 'Field Engineer' or not view_mode and request.user.is_staff %}
+        {% if view_mode == 'installer_only' or not view_mode and request.user.userprofile.role != 'Field Engineer' or request.user.is_staff %}
             {% if customer.has_installation %}
             <div class="col-md-12 mb-4">
                 <div class="card glass-card">
@@ -161,10 +170,10 @@
                     </div>
                 </div>
             </div>
-            {% endif %}
-        {% endif %}
+            {% endif %} {# Ends customer.has_installation #}
+        {% endif %} {# Ends Installation Report access #}
 
-        {# SECTION: General Customer Info (Visible based on view_mode) #}
+        {# SECTION: General Customer Info #}
         {% if view_mode == 'fe_only' or view_mode == 'installer_only' or not view_mode %}
         <div class="col-md-6 mb-4">
             <div class="card glass-card h-100">
@@ -173,25 +182,25 @@
                 </div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span class="text-muted">SC Number:</span>
-                            <span class="fw-bold">{{ customer.sc_no }}</span>
+                        <li class="list-group-item d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
+                            <span class="text-muted mb-1 mb-sm-0">SC Number:</span>
+                            <span class="fw-bold text-start text-sm-end">{{ customer.sc_no }}</span>
                         </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span class="text-muted">Phase:</span>
-                            <span>{{ customer.phase }}</span>
+                        <li class="list-group-item d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
+                            <span class="text-muted mb-1 mb-sm-0">Phase:</span>
+                            <span class="text-start text-sm-end">{{ customer.phase }}</span>
                         </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span class="text-muted">Phone:</span>
-                            <span>{{ customer.phone_number }}</span>
+                        <li class="list-group-item d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
+                            <span class="text-muted mb-1 mb-sm-0">Phone:</span>
+                            <span class="text-start text-sm-end">{{ customer.phone_number }}</span>
                         </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span class="text-muted">Email:</span>
-                            <span>{{ customer.email }}</span>
+                        <li class="list-group-item d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
+                            <span class="text-muted mb-1 mb-sm-0">Email:</span>
+                            <span class="text-start text-sm-end">{{ customer.email }}</span>
                         </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span class="text-muted">Aadhar Linked Phone:</span>
-                            <span>{{ customer.aadhar_linked_phone }}</span>
+                        <li class="list-group-item d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
+                            <span class="text-muted mb-1 mb-sm-0">Aadhar Linked Phone:</span>
+                            <span class="text-start text-sm-end">{{ customer.aadhar_linked_phone }}</span>
                         </li>
                     </ul>
                 </div>
@@ -205,29 +214,84 @@
                 </div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span class="text-muted">Aadhar Number:</span>
-                            <span class="font-monospace">{{ customer.masked_aadhar }}</span>
+                        <li class="list-group-item d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
+                            <span class="text-muted mb-1 mb-sm-0">Aadhar Number:</span>
+                            <div class="text-start text-sm-end">
+                                {% if request.user.is_superuser or request.user.is_staff or request.user.userprofile.role == 'Admin' or request.user.userprofile.role == 'Office' %}
+                                <span class="font-monospace">{{ customer.aadhar_no }}</span>
+                                {% if customer.aadhar_photo %}
+                                <a href="{{ customer.aadhar_photo.url }}" target="_blank" class="btn btn-sm btn-outline-success ms-sm-2 mt-2 mt-sm-0 py-0 px-2 text-decoration-none d-inline-block d-sm-inline" title="View Aadhaar"><i class="bi bi-eye"></i> View</a>
+                                {% endif %}
+                                {% else %}
+                                <span class="font-monospace">{{ customer.masked_aadhar }}</span>
+                                {% if customer.aadhar_photo %}
+                                <i class="bi bi-image text-success ms-2" title="Image Uploaded"></i>
+                                {% endif %}
+                                {% endif %}
+                            </div>
                         </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span class="text-muted">PAN Card:</span>
-                            <span class="font-monospace">{{ customer.masked_pan }}</span>
+                        <li class="list-group-item d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
+                            <span class="text-muted mb-1 mb-sm-0">PAN Card:</span>
+                            <div class="text-start text-sm-end">
+                                {% if request.user.is_superuser or request.user.is_staff or request.user.userprofile.role == 'Admin' or request.user.userprofile.role == 'Office' %}
+                                <span class="font-monospace">{{ customer.pan_card }}</span>
+                                {% if customer.pan_card_photo %}
+                                <a href="{{ customer.pan_card_photo.url }}" target="_blank" class="btn btn-sm btn-outline-primary ms-sm-2 mt-2 mt-sm-0 py-0 px-2 text-decoration-none d-inline-block d-sm-inline" title="View PAN"><i class="bi bi-eye"></i> View</a>
+                                {% endif %}
+                                {% else %}
+                                <span class="font-monospace">{{ customer.masked_pan }}</span>
+                                {% if customer.pan_card_photo %}
+                                <i class="bi bi-image text-success ms-2" title="Image Uploaded"></i>
+                                {% endif %}
+                                {% endif %}
+                            </div>
                         </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span class="text-muted">Bank Account:</span>
-                            <span>{{ customer.bank_account_no|default:"-" }}</span>
+                        <li class="list-group-item d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
+                            <span class="text-muted mb-1 mb-sm-0">Bank Account:</span>
+                            <div class="text-start text-sm-end">
+                                <span>{{ customer.bank_account_no|default:"-" }}</span>
+                                {% if request.user.is_superuser or request.user.is_staff or request.user.userprofile.role == 'Admin' or request.user.userprofile.role == 'Office' %}
+                                    {% if customer.bank_account_photo %}
+                                    <a href="{{ customer.bank_account_photo.url }}" target="_blank" class="btn btn-sm btn-outline-secondary ms-sm-2 mt-2 mt-sm-0 py-0 px-2 text-decoration-none d-inline-block d-sm-inline" title="View Bank Account"><i class="bi bi-eye"></i> View</a>
+                                    {% endif %}
+                                {% else %}
+                                    {% if customer.bank_account_photo %}
+                                    <i class="bi bi-image text-success ms-2" title="Image Uploaded"></i>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
                         </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span class="text-muted">Agreed Amount:</span>
-                            <span class="fw-bold text-success">₹ {{ customer.agreed_amount }}</span>
+                        <li class="list-group-item d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
+                            <span class="text-muted mb-1 mb-sm-0">Current Bill:</span>
+                            <div class="text-start text-sm-end">
+                                {% if request.user.is_superuser or request.user.is_staff or request.user.userprofile.role == 'Admin' or request.user.userprofile.role == 'Office' %}
+                                    {% if customer.current_bill_photo %}
+                                    <a href="{{ customer.current_bill_photo.url }}" target="_blank" class="btn btn-sm btn-outline-warning text-dark ms-sm-2 mt-2 mt-sm-0 py-0 px-2 text-decoration-none d-inline-block d-sm-inline" title="View Electricity Bill"><i class="bi bi-eye"></i> View Bill</a>
+                                    {% else %}
+                                    <span class="text-muted small">Not Uploaded</span>
+                                    {% endif %}
+                                {% else %}
+                                    {% if customer.current_bill_photo %}
+                                    <span class="text-success small"><i class="bi bi-check-circle"></i> Uploaded</span>
+                                    {% else %}
+                                    <span class="text-muted small">Not Uploaded</span>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
                         </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <span class="text-muted">Registration Status:</span>
-                            {% if customer.registration_status %}
-                            <span class="badge bg-success">Yes</span>
-                            {% else %}
-                            <span class="badge bg-danger">No</span>
-                            {% endif %}
+                        <li class="list-group-item d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
+                            <span class="text-muted mb-1 mb-sm-0">Agreed Amount:</span>
+                            <span class="fw-bold text-success text-start text-sm-end">₹ {{ customer.agreed_amount }}</span>
+                        </li>
+                        <li class="list-group-item d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
+                            <span class="text-muted mb-1 mb-sm-0">Registration Status:</span>
+                            <div class="text-start text-sm-end">
+                                {% if customer.registration_status %}
+                                <span class="badge bg-success">Yes</span>
+                                {% else %}
+                                <span class="badge bg-danger">No</span>
+                                {% endif %}
+                            </div>
                         </li>
                     </ul>
                 </div>
@@ -265,7 +329,7 @@
                                 <iframe src="https://maps.google.com/maps?q={{ customer.gps_coordinates }}&t=&z=15&ie=UTF8&iwloc=&output=embed" width="100%" height="100%" frameborder="0" style="border:0;" allowfullscreen></iframe>
                             </div>
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
-                                <a href="https://maps.google.com/?q={{ customer.gps_coordinates }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                <a href="https://www.google.com/maps/search/?api=1&query={{ customer.gps_coordinates }}" target="_blank" class="btn btn-sm btn-outline-primary">
                                     <i class="bi bi-box-arrow-up-right me-1"></i> Open Larger Map
                                 </a>
                             </div>
@@ -300,121 +364,6 @@
         </div>
         {% endif %}
 
-        <div class="col-md-12 mb-4">
-            <div class="card glass-card">
-                <div class="card-header bg-transparent border-bottom">
-                    <h5 class="mb-0 text-dark"><i class="bi bi-file-earmark-image me-2"></i>Document Photos</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row g-3">
-                        {# PAN Card Section #}
-                        <div class="col-md-3">
-                            {% if customer.pan_card_photo %}
-                            <div class="card border shadow-sm text-center h-100">
-                                <div class="card-body d-flex flex-column align-items-center justify-content-center p-3">
-                                    {% if ".pdf" in customer.pan_card_photo.name|lower %}
-                                    <i class="bi bi-file-earmark-pdf fs-2 text-danger mb-2"></i>
-                                    {% else %}
-                                    <img src="{{ customer.pan_card_photo.url }}" class="img-fluid rounded mb-3 shadow-sm border" style="max-height:150px; width:100%; object-fit:contain;" alt="PAN Card">
-                                    {% endif %}
-                                    <p class="fw-bold mb-2 small">PAN Card</p>
-                                    <a href="{{ customer.pan_card_photo.url }}" target="_blank" class="btn btn-sm btn-outline-primary mt-auto">
-                                        <i class="bi bi-eye me-1"></i>View / Download
-                                    </a>
-                                </div>
-                            </div>
-                            {% else %}
-                            <div class="card border border-dashed text-center h-100">
-                                <div class="card-body d-flex flex-column align-items-center justify-content-center p-3 text-muted">
-                                    <i class="bi bi-file-earmark-x fs-2 mb-2 opacity-50"></i>
-                                    <small>PAN Card — Not Uploaded</small>
-                                </div>
-                            </div>
-                            {% endif %}
-                        </div>
-
-                        {# Aadhaar Card Section #}
-                        <div class="col-md-3">
-                            {% if customer.aadhar_photo %}
-                            <div class="card border shadow-sm text-center h-100">
-                                <div class="card-body d-flex flex-column align-items-center justify-content-center p-3">
-                                    {% if ".pdf" in customer.aadhar_photo.name|lower %}
-                                    <i class="bi bi-file-earmark-pdf fs-2 text-danger mb-2"></i>
-                                    {% else %}
-                                    <img src="{{ customer.aadhar_photo.url }}" class="img-fluid rounded mb-3 shadow-sm border" style="max-height:150px; width:100%; object-fit:contain;" alt="Aadhaar Card">
-                                    {% endif %}
-                                    <p class="fw-bold mb-2 small">Aadhaar Card</p>
-                                    <a href="{{ customer.aadhar_photo.url }}" target="_blank" class="btn btn-sm btn-outline-success mt-auto">
-                                        <i class="bi bi-eye me-1"></i>View / Download
-                                    </a>
-                                </div>
-                            </div>
-                            {% else %}
-                            <div class="card border border-dashed text-center h-100">
-                                <div class="card-body d-flex flex-column align-items-center justify-content-center p-3 text-muted">
-                                    <i class="bi bi-file-earmark-x fs-2 mb-2 opacity-50"></i>
-                                    <small>Aadhaar Card — Not Uploaded</small>
-                                </div>
-                            </div>
-                            {% endif %}
-                        </div>
-
-                        {# Current Bill Section #}
-                        <div class="col-md-3">
-                            {% if customer.current_bill_photo %}
-                            <div class="card border shadow-sm text-center h-100">
-                                <div class="card-body d-flex flex-column align-items-center justify-content-center p-3">
-                                    {% if ".pdf" in customer.current_bill_photo.name|lower %}
-                                    <i class="bi bi-file-earmark-pdf fs-2 text-danger mb-2"></i>
-                                    {% else %}
-                                    <img src="{{ customer.current_bill_photo.url }}" class="img-fluid rounded mb-3 shadow-sm border" style="max-height:150px; width:100%; object-fit:contain;" alt="Electricity Bill">
-                                    {% endif %}
-                                    <p class="fw-bold mb-2 small">Current Electricity Bill</p>
-                                    <a href="{{ customer.current_bill_photo.url }}" target="_blank" class="btn btn-sm btn-outline-warning text-dark mt-auto">
-                                        <i class="bi bi-eye me-1"></i>View / Download
-                                    </a>
-                                </div>
-                            </div>
-                            {% else %}
-                            <div class="card border border-dashed text-center h-100">
-                                <div class="card-body d-flex flex-column align-items-center justify-content-center p-3 text-muted">
-                                    <i class="bi bi-file-earmark-x fs-2 mb-2 opacity-50"></i>
-                                    <small>Current Bill — Not Uploaded</small>
-                                </div>
-                            </div>
-                            {% endif %}
-                        </div>
-
-                        {# Bank Account Photo Section #}
-                        <div class="col-md-3">
-                            {% if customer.bank_account_photo %}
-                            <div class="card border shadow-sm text-center h-100">
-                                <div class="card-body d-flex flex-column align-items-center justify-content-center p-3">
-                                    {% if ".pdf" in customer.bank_account_photo.name|lower %}
-                                    <i class="bi bi-file-earmark-pdf fs-2 text-danger mb-2"></i>
-                                    {% else %}
-                                    <img src="{{ customer.bank_account_photo.url }}" class="img-fluid rounded mb-3 shadow-sm border" style="max-height:150px; width:100%; object-fit:contain;" alt="Bank Account Photo">
-                                    {% endif %}
-                                    <p class="fw-bold mb-2 small">Bank Account</p>
-                                    <a href="{{ customer.bank_account_photo.url }}" target="_blank" class="btn btn-sm btn-outline-secondary mt-auto">
-                                        <i class="bi bi-eye me-1"></i>View / Download
-                                    </a>
-                                </div>
-                            </div>
-                            {% else %}
-                            <div class="card border border-dashed text-center h-100">
-                                <div class="card-body d-flex flex-column align-items-center justify-content-center p-3 text-muted">
-                                    <i class="bi bi-file-earmark-x fs-2 mb-2 opacity-50"></i>
-                                    <small>Bank Account — Not Uploaded</small>
-                                </div>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         {# Field Engineer Remarks Section #}
         <div class="col-md-12">
             <div class="card bg-light">
@@ -424,7 +373,7 @@
                 </div>
             </div>
         </div>
-        {% endif %}
+        {% endif %} {# Ends General Customer Info access #}
     </div>
 </div>
 {% endblock %}

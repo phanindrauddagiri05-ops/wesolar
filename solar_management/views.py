@@ -646,12 +646,16 @@ def admin_dashboard(request):
     return render(request, 'solar/admin_dashboard.html', context)
 
 
-@staff_member_required
+@login_required
 def download_images(request, survey_id):
     """
-    Admin only: Download all images for a given CustomerSurvey as a ZIP file.
+    Download all images for a given CustomerSurvey as a ZIP file.
     Includes roof_photo, and all installation photos if an installation exists.
     """
+    if not (request.user.is_superuser or request.user.is_staff or getattr(request.user.userprofile, 'role', '') in ['Admin', 'Office']):
+        messages.error(request, 'You do not have permission to download these files.')
+        return redirect('dashboard')
+
     survey = get_object_or_404(CustomerSurvey, pk=survey_id)
 
     # Collect all (label, image_field) pairs
@@ -667,6 +671,8 @@ def download_images(request, survey_id):
         images.append((f'aadhar_card{os.path.splitext(survey.aadhar_photo.name)[1]}', survey.aadhar_photo))
     if survey.current_bill_photo:
         images.append((f'current_bill{os.path.splitext(survey.current_bill_photo.name)[1]}', survey.current_bill_photo))
+    if survey.bank_account_photo:
+        images.append((f'bank_account{os.path.splitext(survey.bank_account_photo.name)[1]}', survey.bank_account_photo))
 
     if hasattr(survey, 'installation'):
         inst = survey.installation
@@ -1227,11 +1233,9 @@ def toggle_registration(request, pk):
 
 @login_required
 @staff_member_required
-@login_required
-@staff_member_required
 def export_solar_data(request):
     """
-    Export data to CSV based on report type.
+    Export all details to CSV based on report type.
     Types: master (default), field_engineer, installer, enquiries, users.
     """
     report_type = request.GET.get('type', 'master')
@@ -1244,37 +1248,49 @@ def export_solar_data(request):
     # 1. FIELD ENGINEER REPORT
     if report_type == 'field_engineer':
         writer.writerow([
-            'Customer Name', 'SC No', 'Phone', 'Connection', 'Phase', 
-            'Roof Type', 'Structure', 'Height', 'Area', 'Lat/Long',
-            'Agreed Amount', 'Advance', 'Feasibility KW', 'Engineer', 'Date'
+            'Customer Name', 'SC No', 'Phone', 'Connection', 'Phase', 'Contracted Load (KW)', 'Feasibility KW',
+            'Aadhar No', 'PAN Card', 'Email', 'Aadhar Linked Phone', 'Bank Account No',
+            'Roof Type', 'Structure Type', 'Structure Height', 'Area', 'GPS Coordinates',
+            'Agreed Amount', 'Advance Paid', 'MEFMA Status', 'RP Name', 'RP Phone',
+            'FE Remarks', 'Reference Name', 'PMS Registration Number', 'Division', 'Registration Status',
+            'Discom Status', 'Net Metering Status', 'Subsidy Status', 'Office Remarks',
+            'Workflow Status', 'Installation Date', 'Engineer', 'Date Created'
         ])
         surveys = CustomerSurvey.objects.all().select_related('created_by').order_by('-created_at')
         for s in surveys:
             writer.writerow([
-                s.customer_name, s.sc_no, s.phone_number, s.connection_type, s.phase,
+                s.customer_name, s.sc_no, s.phone_number, s.connection_type, s.phase, s.contracted_load, s.feasibility_kw,
+                s.aadhar_no, s.pan_card, s.email, s.aadhar_linked_phone, s.bank_account_no,
                 s.roof_type, s.structure_type, s.structure_height, s.area, s.gps_coordinates,
-                s.agreed_amount, s.advance_paid, s.feasibility_kw, 
+                s.agreed_amount, s.advance_paid, 'Yes' if s.mefma_status else 'No', s.rp_name, s.rp_phone_number,
+                s.fe_remarks, s.reference_name, s.pms_registration_number, s.division, 'Yes' if s.registration_status else 'No',
+                s.discom_status, s.net_metering_status, s.subsidy_status, s.office_remarks,
+                s.workflow_status, s.installation_date.strftime("%Y-%m-%d") if s.installation_date else '',
                 s.created_by.get_full_name() if s.created_by else 'Unknown',
-                s.created_at.strftime("%Y-%m-%d")
+                s.created_at.strftime("%Y-%m-%d %H:%M")
             ])
 
     # 2. INSTALLER REPORT
     elif report_type == 'installer':
         writer.writerow([
-            'Customer Name', 'SC No', 'Phone', 'Installer', 'Install Date',
-            'Inverter Make', 'Inverter Phase', 'AC Cable (m)', 'DC Cable (m)', 
-            'LA Cable (m)', 'Pipes (m)', 'DC Volt', 'AC Volt', 'Earth Res', 'Status'
+            'Customer Name', 'SC No', 'Phone', 'Connection Type', 'Phase', 'Roof Type', 'Agreed Amount',
+            'Installer', 'Install Date', 'Inverter Make', 'Inverter Phase', 
+            'AC Cable (m)', 'DC Cable (m)', 'LA Cable (m)', 'Pipes (m)', 'Leftover Materials',
+            'DC Volt', 'AC Volt', 'Earth Resistance', 'Warranty Claimed', 'App Installed',
+            'Installer Remarks', 'Customer Remarks', 'Customer Rating', 'Status'
         ])
         installations = Installation.objects.all().select_related('survey', 'updated_by').order_by('-timestamp')
         for i in installations:
+            sur = i.survey
             writer.writerow([
-                i.survey.customer_name, i.survey.sc_no, i.survey.phone_number,
+                sur.customer_name, sur.sc_no, sur.phone_number, sur.connection_type, sur.phase, sur.roof_type, sur.agreed_amount,
                 i.updated_by.get_full_name() if i.updated_by else 'Unknown',
-                i.timestamp.strftime("%Y-%m-%d"),
+                i.timestamp.strftime("%Y-%m-%d %H:%M"),
                 i.inverter_make, i.inverter_phase, i.ac_cable_used, i.dc_cable_used,
-                i.la_cable_used, i.pipes_used, i.dc_voltage, i.ac_voltage, 
-                i.earthing_resistance, 
-                'Completed' if i.survey.workflow_status == 'Completed' else 'In Progress'
+                i.la_cable_used, i.pipes_used, i.leftover_materials, i.dc_voltage, i.ac_voltage, 
+                i.earthing_resistance, 'Yes' if i.warranty_claimed else 'No', 'Yes' if i.app_installation_status else 'No',
+                i.installer_remarks, i.customer_remarks, i.customer_rating,
+                sur.workflow_status
             ])
 
     # 3. ENQUIRIES REPORT
@@ -1298,25 +1314,68 @@ def export_solar_data(request):
                 p.user.date_joined.strftime("%Y-%m-%d")
             ])
 
-    # 5. MASTER REPORT (Default)
+    # 5. MASTER REPORT (Default) - ALL DATA FROM ALL TABLES
     else:
         writer.writerow([
-            'Customer Name', 'SC No', 'Phone', 'Phase', 'Roof Type', 
-            'Status', 'Inverter', 'AC Cable', 'Bank', 'UTR', 'Loan Status'
+            # FE Details
+            'Customer Name', 'SC No', 'Phone', 'Connection', 'Phase', 'Contracted Load (KW)', 'Feasibility KW',
+            'Aadhar No', 'PAN Card', 'Email', 'Aadhar Linked Phone', 'Bank Account No',
+            'Roof Type', 'Structure Type', 'Structure Height', 'Area', 'GPS Coordinates',
+            'Agreed Amount', 'Advance Paid', 'MEFMA Status', 'RP Name', 'RP Phone',
+            'FE Remarks', 'Reference Name', 'PMS Registration Number', 'Division', 'Registration Status',
+            'Discom Status', 'Net Metering Status', 'Subsidy Status', 'Office Remarks',
+            'Workflow Status', 'Installation Date', 'Engineer', 'Survey Date',
+            # Installation Details
+            'Installer', 'Install Date', 'Inverter Make', 'Inverter Phase', 
+            'AC Cable (m)', 'DC Cable (m)', 'LA Cable (m)', 'Pipes (m)', 'Leftover Materials',
+            'DC Volt', 'AC Volt', 'Earth Resistance', 'Warranty Claimed', 'App Installed',
+            'Installer Remarks', 'Customer Remarks', 'Customer Rating',
+            # Bank Details
+            'Parent Bank', 'Parent Bank A/C', 'Loan Applied Bank', 'Loan Applied IFSC', 'Loan Applied A/C', 
+            'Manager Number', 'Loan Status', 'First Loan Amount', 'First Loan UTR', 'First Loan Date',
+            'Second Loan Amount', 'Second Loan UTR', 'Second Loan Date'
         ])
         projects = CustomerSurvey.objects.all().select_related('installation', 'bank_details')
         for p in projects:
             has_i = hasattr(p, 'installation')
             has_b = hasattr(p, 'bank_details')
-            writer.writerow([
-                p.customer_name, p.sc_no, p.phone_number, p.phase, p.roof_type,
-                p.workflow_status,
-                p.installation.inverter_make if has_i else 'N/A',
-                p.installation.ac_cable_used if has_i else '0',
-                p.bank_details.loan_applied_bank if has_b else 'N/A',
-                p.bank_details.first_loan_utr if has_b else 'N/A',
-                p.bank_details.loan_pending_status if has_b else 'N/A'
-            ])
+            
+            row = [
+                # FE Details
+                p.customer_name, p.sc_no, p.phone_number, p.connection_type, p.phase, p.contracted_load, p.feasibility_kw,
+                p.aadhar_no, p.pan_card, p.email, p.aadhar_linked_phone, p.bank_account_no,
+                p.roof_type, p.structure_type, p.structure_height, p.area, p.gps_coordinates,
+                p.agreed_amount, p.advance_paid, 'Yes' if p.mefma_status else 'No', p.rp_name, p.rp_phone_number,
+                p.fe_remarks, p.reference_name, p.pms_registration_number, p.division, 'Yes' if p.registration_status else 'No',
+                p.discom_status, p.net_metering_status, p.subsidy_status, p.office_remarks,
+                p.workflow_status, p.installation_date.strftime("%Y-%m-%d") if p.installation_date else '',
+                p.created_by.get_full_name() if p.created_by else 'Unknown',
+                p.created_at.strftime("%Y-%m-%d %H:%M"),
+            ]
+            
+            # Installation Details
+            if has_i:
+                row.extend([
+                    p.installation.updated_by.get_full_name() if p.installation.updated_by else 'Unknown',
+                    p.installation.timestamp.strftime("%Y-%m-%d %H:%M"), p.installation.inverter_make, p.installation.inverter_phase,
+                    p.installation.ac_cable_used, p.installation.dc_cable_used, p.installation.la_cable_used, p.installation.pipes_used, p.installation.leftover_materials,
+                    p.installation.dc_voltage, p.installation.ac_voltage, p.installation.earthing_resistance, 'Yes' if p.installation.warranty_claimed else 'No', 'Yes' if p.installation.app_installation_status else 'No',
+                    p.installation.installer_remarks, p.installation.customer_remarks, p.installation.customer_rating
+                ])
+            else:
+                row.extend([''] * 17) # 17 installation columns
+                
+            # Bank Details
+            if has_b:
+                row.extend([
+                    p.bank_details.parent_bank, p.bank_details.parent_bank_ac_no, p.bank_details.loan_applied_bank, p.bank_details.loan_applied_ifsc, p.bank_details.loan_applied_ac_no,
+                    p.bank_details.manager_number, p.bank_details.loan_pending_status, p.bank_details.first_loan_amount, p.bank_details.first_loan_utr, p.bank_details.first_loan_date.strftime("%Y-%m-%d") if p.bank_details.first_loan_date else '',
+                    p.bank_details.second_loan_amount, p.bank_details.second_loan_utr, p.bank_details.second_loan_date.strftime("%Y-%m-%d") if p.bank_details.second_loan_date else ''
+                ])
+            else:
+                row.extend([''] * 13) # 13 bank columns
+
+            writer.writerow(row)
 
     return response
 
