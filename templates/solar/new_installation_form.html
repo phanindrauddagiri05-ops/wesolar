@@ -551,5 +551,37 @@
         // Show installation form
         document.getElementById('installation_form_container').style.display = 'block';
     }
+
+    // Image Previews for File Inputs
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('input[type="file"]').forEach(function (input) {
+            input.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (file) {
+                    let previewContainer = input.parentNode.querySelector('.img-preview');
+                    if (!previewContainer) {
+                        previewContainer = document.createElement('div');
+                        previewContainer.className = 'img-preview mt-2';
+                        input.parentNode.appendChild(previewContainer);
+                    }
+
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            previewContainer.innerHTML = `<img src="${e.target.result}" class="img-thumbnail shadow-sm mt-2" style="max-height: 150px; border-radius: 8px;">`;
+                        }
+                        reader.readAsDataURL(file);
+                    } else {
+                        previewContainer.innerHTML = `<span class="badge bg-secondary mt-2"><i class="bi bi-file-earmark me-1"></i>${file.name}</span>`;
+                    }
+                } else {
+                    const previewContainer = input.parentNode.querySelector('.img-preview');
+                    if (previewContainer) {
+                        previewContainer.innerHTML = '';
+                    }
+                }
+            });
+        });
+    });
 </script>
 {% endblock %}

@@ -24,7 +24,7 @@ class CustomerSurvey(models.Model):
     CONNECTION_CHOICES = [('Domestic', 'Domestic'), ('Commercial', 'Commercial'), ('GHS', 'GHS')]
     PHASE_CHOICES = [('Single Phase', 'Single Phase'), ('Three Phase', 'Three Phase')]
     ROOF_CHOICES = [('Normal', 'Normal'), ('Plastic shed', 'Plastic shed'), ('Cement shed', 'Cement shed')]
-    STRUCTURE_CHOICES = [('Normal', 'Normal'), ('Vertical', 'Vertical'), ('Horizontal', 'Horizontal')]
+    STRUCTURE_CHOICES = [('Normal', 'Normal'), ('Vertical', 'Vertical'), ('Horizontal', 'Horizontal'), ('Fabrication', 'Fabrication')]
 
     customer_name = models.CharField(max_length=255)
     connection_type = models.CharField(max_length=50, choices=CONNECTION_CHOICES)
@@ -52,20 +52,25 @@ class CustomerSurvey(models.Model):
     structure_height = models.FloatField(help_text="in Feet")
     gps_coordinates = models.CharField(max_length=100)
     area = models.CharField(max_length=255)
+    measurements = models.FloatField(help_text="Measurements (Square Feet)", null=True, blank=True)
     
     # Pricing & Status
     agreed_amount = models.DecimalField(max_digits=10, decimal_places=2)
     advance_paid = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
-    mefma_status = models.BooleanField(default=False, help_text="Is MEFMA approved?")
-    rp_name = models.CharField(max_length=255, blank=True, null=True)
-    rp_phone_number = models.CharField(max_length=15, blank=True, null=True)
-    
+    mefma_status = models.BooleanField(default=False, help_text="Yes if MEFMA, No if Not")
+    rp_name = models.CharField(max_length=255, null=True, blank=True)
+    rp_phone_number = models.CharField(max_length=15, null=True, blank=True)
+    co_name = models.CharField(max_length=255, null=True, blank=True)
+    co_phone_number = models.CharField(max_length=15, null=True, blank=True)
+    reference_name = models.CharField(max_length=255, null=True, blank=True, help_text="Reference Name if not MEFMA")
     fe_remarks = models.TextField(blank=True)
-    reference_name = models.CharField(max_length=255, blank=True) 
     pms_registration_number = models.CharField(max_length=50, blank=True) 
     division = models.CharField(max_length=100, blank=True) 
     registration_status = models.BooleanField(default=False) 
+    registration_date = models.DateField(null=True, blank=True)
     
+    parent_bank_photo = models.FileField(upload_to='surveys/documents/', null=True, blank=True, help_text="Photo/Scan of Parent Bank Front Page")
+
     # Office Tracking Fields
     STATUS_CHOICES = [('Pending', 'Pending'), ('Completed', 'Completed')]
     

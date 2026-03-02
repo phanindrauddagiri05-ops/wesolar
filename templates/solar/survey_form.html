@@ -47,8 +47,9 @@
                         <div class="col-md-6">{{ form.connection_type|as_crispy_field }}</div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">{{ form.sc_no|as_crispy_field }}</div>
-                        <div class="col-md-6">{{ form.phase|as_crispy_field }}</div>
+                        <div class="col-md-4">{{ form.sc_no|as_crispy_field }}</div>
+                        <div class="col-md-4">{{ form.current_bill_photo|as_crispy_field }}</div>
+                        <div class="col-md-4">{{ form.phase|as_crispy_field }}</div>
                     </div>
                     <div class="row">
                         <div class="col-md-6">{{ form.contracted_load|as_crispy_field }}</div>
@@ -58,9 +59,13 @@
                         <div class="col-md-6">{{ form.phone_number|as_crispy_field }}</div>
                         <div class="col-md-6">{{ form.email|as_crispy_field }}</div>
                     </div>
-                    <div class="row">
+                    <div class="row mb-3">
                         <div class="col-md-6">{{ form.aadhar_no|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.aadhar_photo|as_crispy_field }}</div>
+                    </div>
+                    <div class="row mb-3">
                         <div class="col-md-6">{{ form.pan_card|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.pan_card_photo|as_crispy_field }}</div>
                     </div>
 
                 </div>
@@ -71,7 +76,11 @@
                 <div class="bg-light p-3 rounded mb-4 border">
                     <div class="row">
                         <div class="col-md-6">{{ bank_form.parent_bank|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.bank_account_photo|as_crispy_field }}</div>
+                    </div>
+                    <div class="row mt-2">
                         <div class="col-md-6">{{ bank_form.parent_bank_ac_no|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.parent_bank_photo|as_crispy_field }}</div>
                     </div>
                     <div class="row mt-2">
                         <div class="col-md-6">{{ bank_form.loan_applied_bank|as_crispy_field }}</div>
@@ -101,26 +110,12 @@
                         <div class="col-md-6">{{ form.roof_photo|as_crispy_field }}</div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">{{ form.structure_type|as_crispy_field }}</div>
-                        <div class="col-md-6">{{ form.structure_height|as_crispy_field }}</div>
+                        <div class="col-md-6 mb-3">{{ form.structure_type|as_crispy_field }}</div>
+                        <div class="col-md-3 mb-3">{{ form.structure_height|as_crispy_field }}</div>
+                        <div class="col-md-3 mb-3">{{ form.measurements|as_crispy_field }}</div>
                     </div>
                 </div>
 
-                <!-- Section 4: Document Photos -->
-                <h5 class="text-primary border-bottom pb-2 mb-3"><i class="bi bi-file-earmark-image me-2"></i>Document
-                    Photos <span class="text-danger">*</span></h5>
-                <div class="bg-light p-3 rounded mb-4 border">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">{{ form.pan_card_photo|as_crispy_field }}</div>
-                        <div class="col-md-6 mb-3">{{ form.aadhar_photo|as_crispy_field }}</div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">{{ form.current_bill_photo|as_crispy_field }}</div>
-                        <div class="col-md-6 mb-3">{{ form.bank_account_photo|as_crispy_field }}</div>
-                    </div>
-                    <small class="text-muted"><i class="bi bi-info-circle me-1"></i>All file formats accepted — JPG,
-                        PNG, PDF, HEIC, etc. All 4 are mandatory.</small>
-                </div>
 
                 <!-- Section 5: Pricing & Approvals -->
                 <h5 class="text-primary border-bottom pb-2 mb-3"><i class="bi bi-currency-rupee me-2"></i>Pricing &
@@ -137,9 +132,11 @@
                     </div>
 
                     <!-- MEFMA = Yes -> Show RP Fields -->
-                    <div class="row mt-2" id="mefmaFields" style="display:none;">
-                        <div class="col-md-6">{{ form.rp_name|as_crispy_field }}</div>
-                        <div class="col-md-6">{{ form.rp_phone_number|as_crispy_field }}</div>
+                    <div class="row mt-3" id="mefmaFields" style="display:none;">
+                        <div class="col-md-6 mb-3">{{ form.rp_name|as_crispy_field }}</div>
+                        <div class="col-md-6 mb-3">{{ form.rp_phone_number|as_crispy_field }}</div>
+                        <div class="col-md-6 mb-3">{{ form.co_name|as_crispy_field }}</div>
+                        <div class="col-md-6 mb-3">{{ form.co_phone_number|as_crispy_field }}</div>
                     </div>
 
                     <!-- MEFMA = No -> Show Reference Field -->
@@ -150,6 +147,10 @@
                     <div class="row mt-3">
                         <div class="col-md-6">{{ form.pms_registration_number|as_crispy_field }}</div>
                         <div class="col-md-6">{{ form.registration_status|as_crispy_field }}</div>
+                    </div>
+
+                    <div class="row mt-2" id="registrationDateField" style="display:none;">
+                        <div class="col-md-12">{{ form.registration_date|as_crispy_field }}</div>
                     </div>
 
                     <div class="row mt-3">
@@ -304,6 +305,9 @@
         setNumericOnly('id_rp_phone_number');
         validateLength('id_rp_phone_number', 10, 'RP Phone Number');
 
+        setNumericOnly('id_co_phone_number');
+        validateLength('id_co_phone_number', 10, 'CO Phone Number');
+
         validatePan('id_pan_card');
 
         setNumericOnly('id_parent_bank_ac_no');
@@ -313,6 +317,7 @@
         // Apply Alpha-Only Restrictions
         setAlphaOnly('id_customer_name');
         setAlphaOnly('id_rp_name');
+        setAlphaOnly('id_co_name');
         setAlphaOnly('id_parent_bank');
         setAlphaOnly('id_loan_applied_bank');
 
@@ -339,6 +344,28 @@
         if (mefmaSelect) {
             mefmaSelect.addEventListener('change', toggleMefma);
             toggleMefma(); // Initial state
+        }
+
+        // Toggle Registration Date field
+        const registrationSelect = document.getElementById('id_registration_status');
+        const registrationDateField = document.getElementById('registrationDateField');
+
+        function toggleRegistrationDate() {
+            if (registrationSelect && registrationDateField) {
+                const val = registrationSelect.value;
+                const isConfirmed = val === 'True' || val === 'true';
+
+                if (isConfirmed) {
+                    registrationDateField.style.display = 'flex';
+                } else {
+                    registrationDateField.style.display = 'none';
+                }
+            }
+        }
+
+        if (registrationSelect) {
+            registrationSelect.addEventListener('change', toggleRegistrationDate);
+            toggleRegistrationDate(); // Initial state
         }
     });
 
@@ -378,5 +405,37 @@
                 statusSpan.className = "ms-2 small text-danger";
             });
     }
+
+    // Image Previews for File Inputs
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('input[type="file"]').forEach(function (input) {
+            input.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (file) {
+                    let previewContainer = input.parentNode.querySelector('.img-preview');
+                    if (!previewContainer) {
+                        previewContainer = document.createElement('div');
+                        previewContainer.className = 'img-preview mt-2';
+                        input.parentNode.appendChild(previewContainer);
+                    }
+
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            previewContainer.innerHTML = `<img src="${e.target.result}" class="img-thumbnail shadow-sm mt-2" style="max-height: 150px; border-radius: 8px;">`;
+                        }
+                        reader.readAsDataURL(file);
+                    } else {
+                        previewContainer.innerHTML = `<span class="badge bg-secondary mt-2"><i class="bi bi-file-earmark me-1"></i>${file.name}</span>`;
+                    }
+                } else {
+                    const previewContainer = input.parentNode.querySelector('.img-preview');
+                    if (previewContainer) {
+                        previewContainer.innerHTML = '';
+                    }
+                }
+            });
+        });
+    });
 </script>
 {% endblock %}

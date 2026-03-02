@@ -35,6 +35,9 @@
                         <div class="row">
                             <div class="col-md-12">{{ form.registration_status|as_crispy_field }}</div>
                         </div>
+                        <div class="row" id="registrationDateField" style="display:none;">
+                            <div class="col-md-12">{{ form.registration_date|as_crispy_field }}</div>
+                        </div>
                         <div class="row">
                             <div class="col-md-12">{{ form.pms_registration_number|as_crispy_field }}</div>
                         </div>
@@ -65,6 +68,28 @@
                     e.preventDefault();
                 }
             });
+        }
+
+        // Toggle Registration Date field
+        const registrationSelect = document.getElementById('id_registration_status');
+        const registrationDateField = document.getElementById('registrationDateField');
+
+        function toggleRegistrationDate() {
+            if (registrationSelect && registrationDateField) {
+                const val = registrationSelect.value;
+                const isConfirmed = val === 'True' || val === 'true';
+
+                if (isConfirmed) {
+                    registrationDateField.style.display = 'flex';
+                } else {
+                    registrationDateField.style.display = 'none';
+                }
+            }
+        }
+
+        if (registrationSelect) {
+            registrationSelect.addEventListener('change', toggleRegistrationDate);
+            toggleRegistrationDate(); // Initial state
         }
     });
 </script>

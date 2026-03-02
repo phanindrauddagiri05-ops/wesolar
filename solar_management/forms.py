@@ -13,16 +13,17 @@ class SurveyForm(forms.ModelForm):
             'customer_name', 'connection_type', 'sc_no', 'phase', 'contracted_load', 'feasibility_kw',
             'aadhar_no', 'pan_card', 'email', 'phone_number', 
             'area', 'gps_coordinates', 'roof_type', 'roof_photo', 'structure_type',
-            'structure_height', 'agreed_amount', 'advance_paid', 
-            'mefma_status', 'rp_name', 'rp_phone_number', 
+            'structure_height', 'measurements', 'agreed_amount', 'advance_paid', 
+            'mefma_status', 'rp_name', 'rp_phone_number', 'co_name', 'co_phone_number',
             'fe_remarks', 'reference_name', 
-            'pms_registration_number', 'division', 'registration_status',
-            'pan_card_photo', 'aadhar_photo', 'current_bill_photo', 'bank_account_photo',
+            'pms_registration_number', 'division', 'registration_status', 'registration_date',
+            'pan_card_photo', 'aadhar_photo', 'current_bill_photo', 'bank_account_photo', 'parent_bank_photo'
         ]
         labels = {
             'sc_no': 'Service Connection Number (16 Digits)',
             'contracted_load': 'Contracted Load (KW)',
             'structure_height': 'Structure Height (in Feet)',
+            'measurements': 'Measurements (Square Feet)',
             'feasibility_kw': 'Applied Solar Load (KW)',
             'aadhar_no': 'Aadhar Card (12 Digits)',
             'pan_card': 'Pan Card (10 Digits)',
@@ -33,24 +34,38 @@ class SurveyForm(forms.ModelForm):
             'mefma_status': 'Mefma (Yes/No)',
             'rp_name': 'RP Name',
             'rp_phone_number': 'Phone Number (RP)',
+            'co_name': 'CO Name',
+            'co_phone_number': 'Phone Number (CO)',
             'reference_name': 'Reference Name',
             'pms_registration_number': 'PM Surya Ghar National Portal Reg. No.',
             'division': 'Division',
             'fe_remarks': 'Remarks',
             'registration_status': 'Registration Status',
+            'registration_date': 'Registration Date',
             'pan_card_photo': 'PAN Card Photo',
             'aadhar_photo': 'Aadhar Card Photo',
             'current_bill_photo': 'Current Electricity Bill Photo',
             'bank_account_photo': 'Bank Account Photo',
+            'parent_bank_photo': 'Parent Bank Front Page Photo',
         }
         widgets = {
              'gps_coordinates': forms.TextInput(attrs={'placeholder': 'Latitude, Longitude', 'readonly': 'readonly'}),
              'mefma_status': forms.Select(choices=[(True, 'Yes'), (False, 'No')]),
              'registration_status': forms.Select(choices=[(True, 'Yes'), (False, 'No')]),
+             'registration_date': forms.DateInput(attrs={'type': 'date'}),
              'customer_name': forms.TextInput(attrs={'pattern': '[a-zA-Z\s]+', 'oninput': "this.value = this.value.replace(/[^a-zA-Z\s]/g, '')", 'title': 'Name must contain only letters.'}),
              'phone_number': forms.TextInput(attrs={'pattern': '\d{10}', 'maxlength': '10', 'minlength': '10', 'oninput': "this.value = this.value.replace(/[^0-9]/g, '')", 'title': 'Phone number must be exactly 10 digits.'}),
              'email': forms.EmailInput(attrs={'pattern': '[^, ]+', 'title': 'Enter a single valid email address.'}),
              'rp_name': forms.TextInput(attrs={'pattern': '[a-zA-Z\s]+', 'oninput': "this.value = this.value.replace(/[^a-zA-Z\s]/g, '')", 'title': 'RP Name must contain only letters.'}),
+             'co_name': forms.TextInput(attrs={'pattern': '[a-zA-Z\s]+', 'oninput': "this.value = this.value.replace(/[^a-zA-Z\s]/g, '')", 'title': 'CO Name must contain only letters.'}),
+             'co_phone_number': forms.TextInput(attrs={'pattern': '\d{10}', 'maxlength': '10', 'minlength': '10', 'oninput': "this.value = this.value.replace(/[^0-9]/g, '')", 'title': 'Phone number must be exactly 10 digits.'}),
+             'measurements': forms.TextInput(attrs={'title': 'Alphanumeric values allowed.'}),
+             'roof_photo': forms.ClearableFileInput(attrs={'accept': 'image/*', 'capture': 'environment'}),
+             'pan_card_photo': forms.ClearableFileInput(attrs={'accept': 'image/*', 'capture': 'environment'}),
+             'aadhar_photo': forms.ClearableFileInput(attrs={'accept': 'image/*', 'capture': 'environment'}),
+             'current_bill_photo': forms.ClearableFileInput(attrs={'accept': 'image/*', 'capture': 'environment'}),
+             'bank_account_photo': forms.ClearableFileInput(attrs={'accept': 'image/*', 'capture': 'environment'}),
+             'parent_bank_photo': forms.ClearableFileInput(attrs={'accept': 'image/*', 'capture': 'environment'}),
         }
 
     def clean_sc_no(self):
@@ -96,6 +111,18 @@ class SurveyForm(forms.ModelForm):
         if name and any(char.isdigit() for char in name):
              raise ValidationError("Customer Name must contain only text (no numbers).")
         return name
+        
+    def clean_co_name(self):
+        name = self.cleaned_data.get('co_name')
+        if name and any(char.isdigit() for char in name):
+             raise ValidationError("CO Name must contain only text (no numbers).")
+        return name
+
+    def clean_co_phone_number(self):
+         phone = self.cleaned_data.get('co_phone_number')
+         if phone and not re.match(r'^\d{10}$', phone):
+             raise ValidationError("CO Phone Number must be exactly 10 digits.")
+         return phone
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
@@ -110,11 +137,24 @@ class SurveyForm(forms.ModelForm):
         mefma_status = cleaned_data.get('mefma_status')
         rp_name = cleaned_data.get('rp_name')
         rp_phone = cleaned_data.get('rp_phone_number')
+        co_name = cleaned_data.get('co_name')
+        co_phone = cleaned_data.get('co_phone_number')
         reference_name = cleaned_data.get('reference_name')
         roof_photo = cleaned_data.get('roof_photo')
         pan_card_photo = cleaned_data.get('pan_card_photo')
         aadhar_photo = cleaned_data.get('aadhar_photo')
         current_bill_photo = cleaned_data.get('current_bill_photo')
+        parent_bank_photo = cleaned_data.get('parent_bank_photo')
+        registration_status = cleaned_data.get('registration_status')
+        registration_date = cleaned_data.get('registration_date')
+
+        # Registration Date conditional validation
+        if registration_status and not registration_date:
+            self.add_error('registration_date', "Registration Date is mandatory if Registration Status is Yes.")
+
+        if not registration_status:
+            # Clear it if no it's not applicable
+            cleaned_data['registration_date'] = None
 
         # Roof photo is mandatory
         if not roof_photo:
@@ -133,12 +173,20 @@ class SurveyForm(forms.ModelForm):
         if not current_bill_photo:
             if not (self.instance.pk and self.instance.current_bill_photo):
                 self.add_error('current_bill_photo', "Current Electricity Bill photo is mandatory.")
+                
+        if not parent_bank_photo:
+            if not (self.instance.pk and self.instance.parent_bank_photo):
+                self.add_error('parent_bank_photo', "Parent Bank Front Page photo is mandatory.")
 
         if mefma_status:
             if not rp_name:
                 self.add_error('rp_name', "RP Name is mandatory if MEFMA is Yes.")
             if not rp_phone:
                 self.add_error('rp_phone_number', "RP Phone Number is mandatory if MEFMA is Yes.")
+            if not co_name:
+                self.add_error('co_name', "CO Name is mandatory if MEFMA is Yes.")
+            if not co_phone:
+                self.add_error('co_phone_number', "CO Phone Number is mandatory if MEFMA is Yes.")
         else:
             if not reference_name:
                 self.add_error('reference_name', "Reference Name is mandatory if MEFMA is No.")
@@ -192,6 +240,10 @@ class InstallationForm(forms.ModelForm):
             'customer_rating': 'Customer Rating (1-5)',
         }
         widgets = {
+            'inverter_serial_photo': forms.ClearableFileInput(attrs={'accept': 'image/*', 'capture': 'environment'}),
+            'inverter_acdb_photo': forms.ClearableFileInput(attrs={'accept': 'image/*', 'capture': 'environment'}),
+            'panel_serial_photo': forms.ClearableFileInput(attrs={'accept': 'image/*', 'capture': 'environment'}),
+            'site_photos_with_customer': forms.ClearableFileInput(attrs={'accept': 'image/*', 'capture': 'environment'}),
             'installer_remarks': forms.Textarea(attrs={'rows': 3}),
             'customer_remarks': forms.Textarea(attrs={'rows': 3}),
             'leftover_materials': forms.Textarea(attrs={'rows': 3}),
@@ -425,13 +477,15 @@ class FEUpdateForm(forms.ModelForm):
 
     class Meta:
         model = CustomerSurvey
-        fields = ['registration_status', 'pms_registration_number']
+        fields = ['registration_status', 'registration_date', 'pms_registration_number']
         labels = {
             'registration_status': 'Registration Status',
+            'registration_date': 'Registration Date',
             'pms_registration_number': 'PM Surya Ghar National Portal Reg. No.',
         }
         widgets = {
             'registration_status': forms.Select(choices=[(True, 'Yes'), (False, 'No')]),
+            'registration_date': forms.DateInput(attrs={'type': 'date'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -441,6 +495,19 @@ class FEUpdateForm(forms.ModelForm):
             self.fields['loan_applied_bank'].initial = bank_details.loan_applied_bank
             self.fields['loan_applied_ifsc'].initial = bank_details.loan_applied_ifsc
             self.fields['loan_applied_ac_no'].initial = bank_details.loan_applied_ac_no
+
+    def clean(self):
+        cleaned_data = super().clean()
+        registration_status = cleaned_data.get('registration_status')
+        registration_date = cleaned_data.get('registration_date')
+
+        if registration_status and not registration_date:
+            self.add_error('registration_date', "Registration Date is mandatory if Registration Status is Yes.")
+
+        if not registration_status:
+            cleaned_data['registration_date'] = None
+
+        return cleaned_data
 
 class OfficeBankDetailsForm(forms.ModelForm):
     """
