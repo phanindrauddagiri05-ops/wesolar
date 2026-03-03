@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+
+            <div class="card glass-card border-0 shadow-sm">
+                <div class="card-body p-5">
+                    <div class="text-center mb-5">
+                        <i class="bi bi-shield-lock-fill display-4 text-success mb-3 d-block"></i>
+                        <h1 class="fw-bold text-dark">Privacy Policy</h1>
+                        <p class="text-muted">Last updated: March 2026</p>
+                    </div>
+
+                    <div class="text-dark" style="line-height: 1.9;">
+
+                        <h5 class="fw-bold text-success mt-4 mb-2">1. Introduction</h5>
+                        <p>WeSolar ("we", "our", or "us") is committed to protecting the privacy of all individuals who
+                            use our platform. This Privacy Policy explains how we collect, use, store, and protect
+                            personal information submitted through the WeSolar management platform.</p>
+
+                        <h5 class="fw-bold text-success mt-4 mb-2">2. Information We Collect</h5>
+                        <p>We collect the following types of information through this platform:</p>
+                        <ul>
+                            <li><strong>Customer Information:</strong> Name, mobile number, email address, Aadhar
+                                number, PAN card number, bank account details, GPS coordinates, and address.</li>
+                            <li><strong>Employee/Contractor Information:</strong> Name, role, mobile number, Aadhar and
+                                PAN card photos provided during account registration.</li>
+                            <li><strong>Installation Records:</strong> Equipment photos, electrical readings, material
+                                usage data, and completion photos.</li>
+                            <li><strong>Login Data:</strong> Usernames and encrypted passwords used to access the
+                                platform.</li>
+                        </ul>
+
+                        <h5 class="fw-bold text-success mt-4 mb-2">3. How We Use Your Information</h5>
+                        <p>The data collected is used exclusively for:</p>
+                        <ul>
+                            <li>Managing solar installation projects and tracking progress.</li>
+                            <li>Verifying the identity of employees and contractors.</li>
+                            <li>Processing loan applications and subsidy claims on behalf of customers.</li>
+                            <li>Generating reports and maintaining project records.</li>
+                            <li>Communicating important updates to customers and staff.</li>
+                        </ul>
+
+                        <h5 class="fw-bold text-success mt-4 mb-2">4. Data Security</h5>
+                        <p>We implement appropriate technical and organizational measures to protect your personal data
+                            against unauthorized access, alteration, disclosure, or destruction. Sensitive fields such
+                            as Aadhar numbers and bank account details are masked in the platform and accessible only to
+                            authorized admin and office staff.</p>
+
+                        <h5 class="fw-bold text-success mt-4 mb-2">5. Data Sharing</h5>
+                        <p>We do not sell, trade, or rent personal information to third parties. Data may only be
+                            shared:</p>
+                        <ul>
+                            <li>With authorized government bodies for subsidy processing (e.g., PM Surya Ghar scheme).
+                            </li>
+                            <li>With financial institutions involved in loan processing, with customer consent.</li>
+                            <li>As required by applicable law or court order.</li>
+                        </ul>
+
+                        <h5 class="fw-bold text-success mt-4 mb-2">6. Data Retention</h5>
+                        <p>Customer and installation data is retained for as long as necessary to fulfill the purposes
+                            outlined in this policy and to comply with legal obligations. Employee records are retained
+                            during the period of employment or contract and for a reasonable period thereafter.</p>
+
+                        <h5 class="fw-bold text-success mt-4 mb-2">7. Your Rights</h5>
+                        <p>Individuals whose data is collected have the right to:</p>
+                        <ul>
+                            <li>Request access to the personal data we hold about them.</li>
+                            <li>Request correction of inaccurate information.</li>
+                            <li>Request deletion of their data where applicable.</li>
+                            <li>Withdraw consent where processing is based on consent.</li>
+                        </ul>
+                        <p>To exercise these rights, contact your WeSolar administrator or reach out to
+                            <strong>support@wesolar.in</strong>.</p>
+
+                        <h5 class="fw-bold text-success mt-4 mb-2">8. Cookies</h5>
+                        <p>This platform uses session cookies necessary for authentication and platform functionality.
+                            No third-party tracking cookies are used.</p>
+
+                        <h5 class="fw-bold text-success mt-4 mb-2">9. Changes to This Policy</h5>
+                        <p>We may update this Privacy Policy from time to time. Any changes will be reflected on this
+                            page with an updated date. Continued use of the platform after changes constitutes
+                            acceptance of the revised policy.</p>
+
+                        <h5 class="fw-bold text-success mt-4 mb-2">10. Contact Us</h5>
+                        <p>If you have any questions about this Privacy Policy or the handling of your data, please
+                            contact:</p>
+                        <div class="alert alert-light border mt-2">
+                            <strong>WeSolar Support</strong><br>
+                            <i class="bi bi-envelope me-2 text-success"></i>support@wesolar.in<br>
+                            <i class="bi bi-geo-alt me-2 text-success"></i>Andhra Pradesh, India
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <a href="javascript:history.back()" class="btn btn-outline-secondary me-2">
+                            <i class="bi bi-arrow-left me-2"></i>Go Back
+                        </a>
+                        <a href="{% url 'terms_and_conditions' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-file-earmark-text me-2"></i>Terms & Conditions
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

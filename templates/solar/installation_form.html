@@ -32,22 +32,23 @@
                             <input type="text" class="form-control bg-light" value="{{ survey.phase }}" readonly>
                         </div>
                         <div class="col-md-3">
-                            <label class="small text-muted text-uppercase fw-bold">Feasibility (KW)</label>
-                            <input type="text" class="form-control bg-light" value="{{ survey.feasibility_kw }}"
-                                readonly>
-                        </div>
-                        <div class="col-md-3">
                             <label class="small text-muted text-uppercase fw-bold">Type of Roof</label>
                             <input type="text" class="form-control bg-light" value="{{ survey.roof_type }}" readonly>
                         </div>
                         <div class="col-md-3">
-                            <label class="small text-muted text-uppercase fw-bold">Structure Type</label>
-                            <input type="text" class="form-control bg-light" value="{{ survey.structure_type }}"
+                            <label class="small text-muted text-uppercase fw-bold">Feasibility (KW)</label>
+                            <input type="text" class="form-control bg-light" value="{{ survey.feasibility_kw }} KW"
                                 readonly>
                         </div>
                         <div class="col-md-3">
-                            <label class="small text-muted text-uppercase fw-bold">Structure Height</label>
-                            <input type="text" class="form-control bg-light" value="{{ survey.structure_height }} ft"
+                            <label class="small text-muted text-uppercase fw-bold">Structure</label>
+                            <input type="text" class="form-control bg-light"
+                                value="{{ survey.structure_type }} ({{ survey.structure_height }} ft)" readonly>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="small text-muted text-uppercase fw-bold">Floors / Area</label>
+                            <input type="text" class="form-control bg-light"
+                                value="{{ survey.floors|default:'-' }} Floors / {{ survey.measurements|default:'-' }} SqFt"
                                 readonly>
                         </div>
                     </div>
@@ -132,8 +133,31 @@
                         <div class="col-md-6">{{ form.installer_remarks|as_crispy_field }}</div>
                     </div>
 
-                    <div class="d-grid gap-2 mt-5">
-                        <button type="submit" class="btn btn-premium btn-lg shadow hover-lift fw-bold">
+                    <!-- Terms & Conditions Agreement -->
+                    <div class="card border-warning bg-warning bg-opacity-10 mt-5 mb-3">
+                        <div class="card-body py-3 px-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="agree_terms" required>
+                                <label class="form-check-label fw-semibold text-dark" for="agree_terms">
+                                    I agree to the
+                                    <a href="{% url 'terms_and_conditions' %}" target="_blank"
+                                        class="text-primary fw-bold">Terms &amp; Conditions</a>
+                                    and
+                                    <a href="{% url 'privacy_policy' %}" target="_blank"
+                                        class="text-primary fw-bold">Privacy Policy</a>
+                                    of WeSolar.
+                                </label>
+                            </div>
+                            <div id="tc_error" class="text-danger small mt-1" style="display:none;">
+                                <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                                You must agree to the Terms &amp; Conditions before submitting.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-3">
+                        <button type="submit" class="btn btn-premium btn-lg shadow hover-lift fw-bold" id="submit_btn"
+                            disabled>
                             <i class="bi bi-send-fill me-2"></i> Submit Installation Report
                         </button>
                     </div>
@@ -145,22 +169,31 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Terms & Conditions checkbox controls submit button
+        const agreeCheckbox = document.getElementById('agree_terms');
+        const submitBtn = document.getElementById('submit_btn');
+        const tcError = document.getElementById('tc_error');
+
+        if (agreeCheckbox && submitBtn) {
+            agreeCheckbox.addEventListener('change', function () {
+                submitBtn.disabled = !this.checked;
+                if (this.checked && tcError) tcError.style.display = 'none';
+            });
+        }
+
         // Real-time Numeric Validation
         function setNumericOnly(fieldId) {
             const field = document.getElementById(fieldId);
             if (field) {
                 field.addEventListener('input', function (e) {
-                    // Allow digits and one decimal point
                     this.value = this.value.replace(/[^0-9.]/g, '');
                     if ((this.value.match(/\./g) || []).length > 1) {
-                        this.value = this.value.replace(/\.$/, ""); // Remove second decimal
+                        this.value = this.value.replace(/\.$/, "");
                     }
                 });
             }
         }
 
-        // Apply to Cable/Voltage/Resistance fields based on ID generated by Django
-        // Django generated IDs are usually id_fieldname
         const numericFields = [
             'id_ac_cable_used', 'id_dc_cable_used', 'id_la_cable_used', 'id_pipes_used',
             'id_dc_voltage', 'id_ac_voltage', 'id_earthing_resistance'

@@ -13,7 +13,7 @@ class SurveyForm(forms.ModelForm):
             'customer_name', 'connection_type', 'sc_no', 'phase', 'contracted_load', 'feasibility_kw',
             'aadhar_no', 'pan_card', 'email', 'phone_number', 
             'area', 'gps_coordinates', 'roof_type', 'roof_photo', 'structure_type',
-            'structure_height', 'measurements', 'agreed_amount', 'advance_paid', 
+            'structure_height', 'floors', 'measurements', 'agreed_amount', 'advance_paid', 
             'mefma_status', 'rp_name', 'rp_phone_number', 'co_name', 'co_phone_number',
             'fe_remarks', 'reference_name', 
             'pms_registration_number', 'division', 'registration_status', 'registration_date',
@@ -23,6 +23,7 @@ class SurveyForm(forms.ModelForm):
             'sc_no': 'Service Connection Number (16 Digits)',
             'contracted_load': 'Contracted Load (KW)',
             'structure_height': 'Structure Height (in Feet)',
+            'floors': 'Number of Floors',
             'measurements': 'Measurements (Square Feet)',
             'feasibility_kw': 'Applied Solar Load (KW)',
             'aadhar_no': 'Aadhar Card (12 Digits)',
@@ -66,6 +67,13 @@ class SurveyForm(forms.ModelForm):
              'current_bill_photo': forms.ClearableFileInput(attrs={'accept': 'image/*', 'capture': 'environment'}),
              'bank_account_photo': forms.ClearableFileInput(attrs={'accept': 'image/*', 'capture': 'environment'}),
              'parent_bank_photo': forms.ClearableFileInput(attrs={'accept': 'image/*', 'capture': 'environment'}),
+        }
+        help_texts = {
+            'structure_height': '',
+            'floors': '',
+            'measurements': '',
+            'contracted_load': '',
+            'feasibility_kw': '',
         }
 
     def clean_sc_no(self):
@@ -396,6 +404,16 @@ class SignUpForm(forms.ModelForm):
         })
     )
     role = forms.ChoiceField(choices=UserProfile.ROLE_CHOICES, required=True)
+    aadhar_photo = forms.FileField(
+        required=True, 
+        help_text="Upload a clear photo or scan of your Aadhar Card.",
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control'})
+    )
+    pan_card_photo = forms.FileField(
+        required=True, 
+        help_text="Upload a clear photo or scan of your PAN Card.",
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control'})
+    )
     email = forms.EmailField(
         required=True,
         widget=forms.EmailInput(attrs={
@@ -540,3 +558,36 @@ class OfficeBankDetailsForm(forms.ModelForm):
         ]
         for field in mandatory_fields:
             self.fields[field].required = True
+
+class ProfileUpdateForm(forms.ModelForm):
+    first_name = forms.CharField(max_length=150, required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    last_name = forms.CharField(max_length=150, required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'class': 'form-control'}))
+    
+    # User profile fields
+    aadhar_photo = forms.FileField(required=False, widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
+    pan_card_photo = forms.FileField(required=False, widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
+    
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email']
+
+    def __init__(self, *args, **kwargs):
+        self.user_profile = kwargs.pop('user_profile', None)
+        super().__init__(*args, **kwargs)
+        if self.user_profile:
+            # We don't set initial for FileFields as browsers don't allow it, 
+            # but we can handle it in the save method.
+            pass
+
+    def save(self, commit=True):
+        user = super().save(commit=commit)
+        if self.user_profile:
+            # Only update if a new file is uploaded or it's being cleared
+            if 'aadhar_photo' in self.changed_data:
+                self.user_profile.aadhar_photo = self.cleaned_data.get('aadhar_photo')
+            if 'pan_card_photo' in self.changed_data:
+                self.user_profile.pan_card_photo = self.cleaned_data.get('pan_card_photo')
+            if commit:
+                self.user_profile.save()
+        return user

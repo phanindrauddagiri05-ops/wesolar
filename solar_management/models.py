@@ -15,6 +15,8 @@ class UserProfile(models.Model):
     mobile_number = models.CharField(max_length=15, unique=True)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
     is_approved = models.BooleanField(default=False)
+    aadhar_photo = models.FileField(upload_to='users/documents/', null=True, blank=True, help_text="Photo/Scan of Aadhar Card")
+    pan_card_photo = models.FileField(upload_to='users/documents/', null=True, blank=True, help_text="Photo/Scan of PAN Card")
 
     def __str__(self):
         return f"{self.user.username} - {self.role}"
@@ -50,6 +52,7 @@ class CustomerSurvey(models.Model):
     bank_account_photo = models.FileField(upload_to='surveys/documents/', null=True, blank=True, help_text="Photo/Scan of Bank Account")
     structure_type = models.CharField(max_length=100, choices=STRUCTURE_CHOICES)
     structure_height = models.FloatField(help_text="in Feet")
+    floors = models.PositiveIntegerField(null=True, blank=True, help_text="Number of Floors")
     gps_coordinates = models.CharField(max_length=100)
     area = models.CharField(max_length=255)
     measurements = models.FloatField(help_text="Measurements (Square Feet)", null=True, blank=True)

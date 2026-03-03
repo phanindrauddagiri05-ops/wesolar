@@ -22,6 +22,9 @@ urlpatterns = [
     path('office/update/', views.office_update_home, name='office_update_home'),
     path('office/update-status/<int:pk>/', views.office_update_status, name='office_update_status'),
 
+    # Profile Update
+    path('profile/update/', views.update_profile, name='update_profile'),
+
     # Master Dashboard
     path('dashboard/', views.master_dashboard, name='dashboard'),
     path('loan-dashboard/', views.loan_dashboard, name='loan_dashboard'),
@@ -66,4 +69,8 @@ urlpatterns = [
     path('admin/delete-application/<int:survey_id>/', views.delete_application, name='delete_application'),
     path('portal/download-images/<int:survey_id>/', views.download_images, name='download_images'),
     path('admin/toggle-maintenance/', views.toggle_maintenance_mode, name='toggle_maintenance_mode'),
+
+    # Static Pages
+    path('terms-and-conditions/', views.terms_and_conditions, name='terms_and_conditions'),
+    path('privacy-policy/', views.privacy_policy, name='privacy_policy'),
 ]

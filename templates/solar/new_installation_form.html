@@ -99,35 +99,45 @@
                     <!-- Site Details -->
                     <h6 class="text-primary fw-bold mb-3 mt-3"><i class="bi bi-geo-alt-fill me-2"></i>Site Details</h6>
                     <div class="row g-3 mb-4">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label class="small text-muted text-uppercase fw-bold">Area</label>
                             <input type="text" id="preview_area" class="form-control bg-light" readonly
                                 value="{{ survey.area|default:'' }}">
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label class="small text-muted text-uppercase fw-bold">GPS Coordinates</label>
                             <input type="text" id="preview_gps_coordinates" class="form-control bg-light" readonly
                                 value="{{ survey.gps_coordinates|default:'' }}">
                         </div>
-                        <div class="col-md-4">
-                            <label class="small text-muted text-uppercase fw-bold">Feasibility (KW)</label>
-                            <input type="text" id="preview_feasibility_kw" class="form-control bg-light" readonly
-                                value="{% if survey %}{{ survey.feasibility_kw }} KW{% endif %}">
-                        </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label class="small text-muted text-uppercase fw-bold">Type of Roof</label>
                             <input type="text" id="preview_roof_type" class="form-control bg-light" readonly
                                 value="{{ survey.roof_type|default:'' }}">
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
+                            <label class="small text-muted text-uppercase fw-bold">Feasibility (KW)</label>
+                            <input type="text" id="preview_feasibility_kw" class="form-control bg-light" readonly
+                                value="{% if survey %}{{ survey.feasibility_kw }} KW{% endif %}">
+                        </div>
+                        <div class="col-md-3">
                             <label class="small text-muted text-uppercase fw-bold">Structure Type</label>
                             <input type="text" id="preview_structure_type" class="form-control bg-light" readonly
                                 value="{{ survey.structure_type|default:'' }}">
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label class="small text-muted text-uppercase fw-bold">Structure Height</label>
                             <input type="text" id="preview_structure_height" class="form-control bg-light" readonly
                                 value="{% if survey %}{{ survey.structure_height }} ft{% endif %}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="small text-muted text-uppercase fw-bold">Number of Floors</label>
+                            <input type="text" id="preview_floors" class="form-control bg-light" readonly
+                                value="{{ survey.floors|default:'' }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="small text-muted text-uppercase fw-bold">Measurements (SqFt)</label>
+                            <input type="text" id="preview_measurements" class="form-control bg-light" readonly
+                                value="{{ survey.measurements|default:'' }}">
                         </div>
                     </div>
 
@@ -283,8 +293,31 @@
                         <div class="col-md-6">{{ form.installer_remarks|as_crispy_field }}</div>
                     </div>
 
-                    <div class="d-grid gap-2 mt-5">
-                        <button type="submit" class="btn btn-premium btn-lg shadow hover-lift fw-bold" id="submit_btn">
+                    <!-- Terms & Conditions Agreement -->
+                    <div class="card border-warning bg-warning bg-opacity-10 mt-5 mb-3" id="tc_agreement_card">
+                        <div class="card-body py-3 px-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="agree_terms" required>
+                                <label class="form-check-label fw-semibold text-dark" for="agree_terms">
+                                    I agree to the
+                                    <a href="{% url 'terms_and_conditions' %}" target="_blank"
+                                        class="text-primary fw-bold">Terms &amp; Conditions</a>
+                                    and
+                                    <a href="{% url 'privacy_policy' %}" target="_blank"
+                                        class="text-primary fw-bold">Privacy Policy</a>
+                                    of WeSolar.
+                                </label>
+                            </div>
+                            <div id="tc_error" class="text-danger small mt-1" style="display:none;">
+                                <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                                You must agree to the Terms &amp; Conditions before submitting.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-3">
+                        <button type="submit" class="btn btn-premium btn-lg shadow hover-lift fw-bold" id="submit_btn"
+                            disabled>
                             <i class="bi bi-send-fill me-2"></i> Submit Installation Report
                         </button>
                         <a href="{% url 'dashboard' %}" class="btn btn-light btn-lg border">Cancel</a>
@@ -295,8 +328,21 @@
     </div>
 </div>
 
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Terms & Conditions checkbox controls submit button
+        const agreeCheckbox = document.getElementById('agree_terms');
+        const submitBtn = document.getElementById('submit_btn');
+        const tcError = document.getElementById('tc_error');
+
+        if (agreeCheckbox && submitBtn) {
+            agreeCheckbox.addEventListener('change', function () {
+                submitBtn.disabled = !this.checked;
+                if (this.checked && tcError) tcError.style.display = 'none';
+            });
+        }
+
         // Real-time Numeric Validation
         function setNumericOnly(fieldId) {
             const field = document.getElementById(fieldId);
@@ -456,6 +502,8 @@
         document.getElementById('preview_roof_type').value = data.roof_type;
         document.getElementById('preview_structure_type').value = data.structure_type;
         document.getElementById('preview_structure_height').value = data.structure_height + ' ft';
+        document.getElementById('preview_floors').value = data.floors || '0';
+        document.getElementById('preview_measurements').value = (data.measurements || '0') + ' SqFt';
 
         // Pricing & Payment
         document.getElementById('preview_agreed_amount').value = '₹ ' + data.agreed_amount;

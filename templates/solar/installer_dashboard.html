@@ -7,9 +7,14 @@
             <h2 class="fw-bold text-dark mb-1"><i class="bi bi-tools text-warning me-2"></i>Installer Dashboard</h2>
             <p class="text-muted small mb-0">Installer Dashboard - Full Visibility</p>
         </div>
-        <a href="{% url 'new_installation' %}" class="btn btn-premium btn-lg shadow">
-            <i class="bi bi-plus-circle me-2"></i>New Installation
-        </a>
+        <div>
+            <a href="{% url 'update_profile' %}" class="btn btn-outline-primary shadow-sm mb-2 mb-md-0 me-md-2">
+                <i class="bi bi-person-lines-fill me-2"></i>Update Profile
+            </a>
+            <a href="{% url 'new_installation' %}" class="btn btn-premium btn-lg shadow">
+                <i class="bi bi-plus-circle me-2"></i>New Installation
+            </a>
+        </div>
     </div>
 
     <!-- Basic Details Table (FE Data) -->

@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+
+            <div class="card glass-card border-0 shadow-sm">
+                <div class="card-body p-5">
+                    <div class="text-center mb-5">
+                        <i class="bi bi-file-earmark-text-fill display-4 text-primary mb-3 d-block"></i>
+                        <h1 class="fw-bold text-dark">Terms & Conditions</h1>
+                        <p class="text-muted">Last updated: March 2026</p>
+                    </div>
+
+                    <div class="text-dark" style="line-height: 1.9;">
+
+                        <h5 class="fw-bold text-primary mt-4 mb-2">1. Acceptance of Terms</h5>
+                        <p>By accessing and using the WeSolar platform, you confirm that you have read, understood, and
+                            agree to be bound by these Terms and Conditions. If you do not agree with any of these
+                            terms, you are prohibited from using this platform.</p>
+
+                        <h5 class="fw-bold text-primary mt-4 mb-2">2. User Responsibilities</h5>
+                        <p>Users of the WeSolar platform are responsible for:</p>
+                        <ul>
+                            <li>Providing accurate and truthful information during registration and form submission.
+                            </li>
+                            <li>Maintaining the confidentiality of their login credentials.</li>
+                            <li>Ensuring that all submitted data (photos, measurements, documents) is genuine and up to
+                                date.</li>
+                            <li>Reporting any errors in submitted information promptly to their manager or admin.</li>
+                        </ul>
+
+                        <h5 class="fw-bold text-primary mt-4 mb-2">3. Installer Obligations</h5>
+                        <p>Installers using this platform agree to:</p>
+                        <ul>
+                            <li>Submit only authentic installation records for actual on-site work completed.</li>
+                            <li>Upload genuine photos of the installed equipment (inverter serial numbers, panel photos,
+                                site completion photos, etc.).</li>
+                            <li>Provide accurate readings including DC voltage, AC voltage, and earthing resistance
+                                values.</li>
+                            <li>Not submit duplicate or fraudulent records.</li>
+                            <li>Confirm that all materials listed are actually used at the customer's site.</li>
+                        </ul>
+
+                        <h5 class="fw-bold text-primary mt-4 mb-2">4. Data Accuracy</h5>
+                        <p>All data submitted through this platform — including customer details, site specifications,
+                            and installation records — must be accurate and reflect the actual state of work. Submitting
+                            false or misleading information may result in disciplinary action or account suspension.</p>
+
+                        <h5 class="fw-bold text-primary mt-4 mb-2">5. Confidentiality</h5>
+                        <p>Users must treat all customer data (Aadhar numbers, PAN card details, bank account
+                            information, GPS coordinates) as strictly confidential. This data must not be shared outside
+                            of authorized WeSolar channels.</p>
+
+                        <h5 class="fw-bold text-primary mt-4 mb-2">6. Intellectual Property</h5>
+                        <p>All content on this platform, including designs, workflows, and data structures, are the
+                            intellectual property of WeSolar. Unauthorized reproduction or distribution is strictly
+                            prohibited.</p>
+
+                        <h5 class="fw-bold text-primary mt-4 mb-2">7. Platform Usage</h5>
+                        <p>This platform is intended solely for authorized WeSolar employees and contractors. Any
+                            unauthorized access will be treated as a breach of these terms and may be subject to legal
+                            action.</p>
+
+                        <h5 class="fw-bold text-primary mt-4 mb-2">8. Limitation of Liability</h5>
+                        <p>WeSolar shall not be liable for any indirect, incidental, or consequential damages arising
+                            from the use or inability to use this platform. All data submissions are the sole
+                            responsibility of the submitting user.</p>
+
+                        <h5 class="fw-bold text-primary mt-4 mb-2">9. Modifications to Terms</h5>
+                        <p>WeSolar reserves the right to modify these Terms and Conditions at any time. Users will be
+                            notified of significant changes. Continued use of the platform constitutes acceptance of the
+                            updated terms.</p>
+
+                        <h5 class="fw-bold text-primary mt-4 mb-2">10. Governing Law</h5>
+                        <p>These Terms and Conditions are governed by the laws of India. Any disputes shall be subject
+                            to the exclusive jurisdiction of the courts in India.</p>
+
+                        <div class="alert alert-light border mt-5">
+                            <i class="bi bi-envelope me-2 text-primary"></i>
+                            For questions regarding these Terms and Conditions, contact us at
+                            <strong>support@wesolar.in</strong>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <a href="javascript:history.back()" class="btn btn-outline-secondary me-2">
+                            <i class="bi bi-arrow-left me-2"></i>Go Back
+                        </a>
+                        <a href="{% url 'privacy_policy' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-shield-check me-2"></i>Privacy Policy
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
