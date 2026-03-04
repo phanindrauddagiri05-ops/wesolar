@@ -88,11 +88,16 @@
 
                         <hr class="my-4">
 
-                        <!-- Loan & Finance Details -->
                         <h5 class="fw-bold text-dark mb-3"><i class="bi bi-bank me-2"></i>Loan & Finance Details</h5>
 
                         <div class="mb-3">
-                            {{ bank_form.loan_pending_status|as_crispy_field }}
+                            <label class="form-label fw-bold small text-uppercase">Current Loan Status</label>
+                            <div
+                                class="form-control bg-light border {% if bank_form.instance.loan_pending_status == 'Completed' %}border-success text-success{% else %}border-warning text-warning{% endif %} fw-bold readonly">
+                                {{ bank_form.instance.loan_pending_status|default:"Pending" }}
+                            </div>
+                            <small class="text-muted d-block mt-1">Updates to Completed when both loans have Amounts,
+                                UTRs, and Dates filled.</small>
                         </div>
 
                         <div class="row g-3">

@@ -1330,26 +1330,24 @@ def export_solar_data(request):
         # 5. MASTER REPORT (Default) - ALL DATA FROM ALL TABLES
         else:
             headers = [
-                # FE Details
                 'Customer Name', 'SC No', 'Phone', 'Connection', 'Phase', 'Contracted Load (KW)', 'Feasibility KW',
                 'Aadhar No', 'PAN Card', 'Email', 'Aadhar Linked Phone', 'Bank Account No',
                 'Roof Type', 'Structure Type', 'Structure Height', 'Floors', 'Area', 'GPS Coordinates',
                 'Agreed Amount', 'Advance Paid', 'MEFMA Status', 'RP Name', 'RP Phone',
                 'FE Remarks', 'Reference Name', 'PMS Registration Number', 'Division', 'Registration Status',
                 'Discom Status', 'Net Metering Status', 'Subsidy Status', 'Office Remarks',
-                'Workflow Status', 'Installation Date', 'Engineer', 'Survey Date',
-                # Installation Details
-                'Installer', 'Install Date', 'Inverter Make', 'Inverter Phase', 
+                'Workflow Status', 'Installation Date', 'Field Engineer Name', 'Survey Date',
+                'Installer', 'Install Date', 'Inverter Make', 'Inverter Phase',
                 'AC Cable (m)', 'DC Cable (m)', 'LA Cable (m)', 'Pipes (m)', 'Leftover Materials',
                 'DC Volt', 'AC Volt', 'Earth Resistance', 'Warranty Claimed', 'App Installed',
                 'Installer Remarks', 'Customer Remarks', 'Customer Rating',
-                # Bank Details
-                'Parent Bank', 'Parent Bank A/C', 'Loan Applied Bank', 'Loan Applied IFSC', 'Loan Applied A/C', 
+                'Parent Bank', 'Parent Bank A/C', 'Loan Applied Bank', 'Loan Applied IFSC', 'Loan Applied A/C',
                 'Manager Number', 'Loan Status', 'First Loan Amount', 'First Loan UTR', 'First Loan Date',
                 'Second Loan Amount', 'Second Loan UTR', 'Second Loan Date'
             ]
             ws.append(headers)
-            projects = CustomerSurvey.objects.all().select_related('installation', 'bank_details').order_by('id').distinct()
+            projects = CustomerSurvey.objects.all().select_related('created_by', 'installation', 'bank_details').order_by('id').distinct()
+            
             for p in projects:
                 has_i = hasattr(p, 'installation')
                 has_b = hasattr(p, 'bank_details')
@@ -1364,14 +1362,14 @@ def export_solar_data(request):
                     p.discom_status, p.net_metering_status, p.subsidy_status, p.office_remarks,
                     p.workflow_status, p.installation_date.strftime("%Y-%m-%d") if p.installation_date else '',
                     p.created_by.get_full_name() if p.created_by else 'Unknown',
-                    p.created_at.strftime("%Y-%m-%d %H:%M"),
+                    p.created_at.strftime("%Y-%m-%d %I:%M %p"),
                 ]
                 
                 # Installation Details
                 if has_i:
                     row.extend([
-                        p.installation.updated_by.get_full_name() if p.installation.updated_by else 'Unknown',
-                        p.installation.timestamp.strftime("%Y-%m-%d %H:%M"), p.installation.inverter_make, p.installation.inverter_phase,
+                        p.installation.updated_by.get_full_name() if p.installation.updated_by else '',
+                        p.installation.timestamp.strftime("%Y-%m-%d %I:%M %p"), p.installation.inverter_make, p.installation.inverter_phase,
                         p.installation.ac_cable_used, p.installation.dc_cable_used, p.installation.la_cable_used, p.installation.pipes_used, p.installation.leftover_materials,
                         p.installation.dc_voltage, p.installation.ac_voltage, p.installation.earthing_resistance, 'Yes' if p.installation.warranty_claimed else 'No', 'Yes' if p.installation.app_installation_status else 'No',
                         p.installation.installer_remarks, p.installation.customer_remarks, p.installation.customer_rating

@@ -1,15 +1,20 @@
 /* WeSolar Custom Styles */
 
 :root {
-    --wesolar-primary: #0d6efd;
-    --wesolar-success: #198754;
-    --wesolar-warning: #f1c40f;
-    --wesolar-dark: #212529;
+    --wesolar-primary: #10b981;
+    /* Emerald Green */
+    --wesolar-success: #0ea5e9;
+    /* Sky Blue */
+    --wesolar-warning: #f59e0b;
+    /* Amber */
+    --wesolar-dark: #0f172a;
+    /* Slate 900 */
 }
 
 /* 1. Dashboard Table Polish */
 .table-hover tbody tr:hover {
-    background-color: rgba(13, 110, 253, 0.05); /* Soft blue highlight */
+    background-color: rgba(16, 185, 129, 0.05);
+    /* Soft green highlight */
     transition: background-color 0.2s ease;
 }
 
@@ -35,13 +40,14 @@
 
 /* 4. Form Styling for Students/Installers */
 .card-shadow {
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     border: none;
 }
 
-input:focus, select:focus {
+input:focus,
+select:focus {
     border-color: var(--wesolar-primary) !important;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+    box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.25) !important;
 }
 
 /* 5. Responsive Image Thumbnails (For Installation Gallery) */

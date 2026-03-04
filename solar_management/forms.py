@@ -385,6 +385,23 @@ class BankDetailsForm(forms.ModelForm):
              'first_loan_date': forms.DateInput(attrs={'type': 'date'}),
              'second_loan_date': forms.DateInput(attrs={'type': 'date'}),
         }
+        
+    def clean(self):
+        cleaned_data = super().clean()
+        
+        # Determine Loan Status Automatically
+        first_amt = cleaned_data.get('first_loan_amount') or 0
+        second_amt = cleaned_data.get('second_loan_amount') or 0
+        
+        loan1_completed = first_amt > 0 and bool(cleaned_data.get('first_loan_utr')) and bool(cleaned_data.get('first_loan_date'))
+        loan2_completed = second_amt > 0 and bool(cleaned_data.get('second_loan_utr')) and bool(cleaned_data.get('second_loan_date'))
+        
+        if loan1_completed and loan2_completed:
+            cleaned_data['loan_pending_status'] = 'Completed'
+        else:
+            cleaned_data['loan_pending_status'] = 'Pending'
+            
+        return cleaned_data
 
 
 class SignUpForm(forms.ModelForm):
@@ -550,14 +567,31 @@ class OfficeBankDetailsForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Make all fields mandatory as per requirement
+        # Make all fields mandatory except status, which we calculate
         mandatory_fields = [
-            'loan_pending_status',
             'first_loan_amount', 'first_loan_utr', 'first_loan_date',
             'second_loan_amount', 'second_loan_utr', 'second_loan_date'
         ]
         for field in mandatory_fields:
             self.fields[field].required = True
+        self.fields['loan_pending_status'].required = False
+        
+    def clean(self):
+        cleaned_data = super().clean()
+        
+        # Determine Loan Status Automatically
+        first_amt = cleaned_data.get('first_loan_amount') or 0
+        second_amt = cleaned_data.get('second_loan_amount') or 0
+        
+        loan1_completed = first_amt > 0 and bool(cleaned_data.get('first_loan_utr')) and bool(cleaned_data.get('first_loan_date'))
+        loan2_completed = second_amt > 0 and bool(cleaned_data.get('second_loan_utr')) and bool(cleaned_data.get('second_loan_date'))
+        
+        if loan1_completed and loan2_completed:
+            cleaned_data['loan_pending_status'] = 'Completed'
+        else:
+            cleaned_data['loan_pending_status'] = 'Pending'
+            
+        return cleaned_data
 
 class ProfileUpdateForm(forms.ModelForm):
     first_name = forms.CharField(max_length=150, required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))

@@ -73,7 +73,7 @@
 
 <body>
 
-    <div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 1050;">
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1050; margin-top: 70px;">
         {% if messages and not hide_toast %}
         {% for message in messages %}
         <div class="toast align-items-center text-white bg-{% if message.tags == 'error' %}danger{% else %}{{ message.tags|default:'primary' }}{% endif %} border-0"
@@ -159,7 +159,13 @@
                     {% if user.is_authenticated %}
                     <li class="nav-item d-flex align-items-center me-3 mb-2 mb-lg-0">
                         <i class="bi bi-person-circle text-primary me-2"></i>
-                        <span class="navbar-text text-dark fw-bold">{{ user.username }}</span>
+                        <span class="navbar-text text-dark fw-bold">
+                            {% if user.first_name or user.last_name %}
+                            {{ user.first_name }} {{ user.last_name }}
+                            {% else %}
+                            {{ user.username }}
+                            {% endif %}
+                        </span>
                     </li>
                     <li class="nav-item">
                         <a class="btn btn-premium-outline btn-sm w-100 w-lg-auto" href="{% url 'logout' %}">Logout</a>
@@ -175,7 +181,7 @@
     </nav>
 
     <main class="py-4">
-        <div class="container">
+        <div class="container animate-fade-in-up">
             {% if user.is_authenticated %}
             <div class="row mb-4">
                 <div class="col-md-6 mx-auto">

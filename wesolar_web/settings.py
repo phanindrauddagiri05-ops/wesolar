@@ -84,9 +84,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 USE_I18N = True
 USE_TZ = True
+
+# Date and Time Formats
+DATETIME_FORMAT = 'N j, Y, h:i A'
+TIME_FORMAT = 'h:i A'
 
 # Static files (CSS, JavaScript, Images)
 # 1. The URL used to access static files (already exists)

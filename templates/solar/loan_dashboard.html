@@ -200,7 +200,15 @@
                         <h5 class="text-primary mb-3"><i class="bi bi-cash-stack me-2"></i>Loan Status & Tracking</h5>
                         <div class="bg-light p-4 rounded-3 border mb-4">
                             <div class="row mb-3">
-                                <div class="col-md-12">{{ form.loan_pending_status|as_crispy_field }}</div>
+                                <div class="col-md-12">
+                                    <label class="form-label fw-bold">Current Loan Status</label>
+                                    <div
+                                        class="form-control bg-white border {% if bank_details.loan_pending_status == 'Completed' %}border-success text-success{% else %}border-warning text-warning{% endif %} fw-bold readonly">
+                                        {{ bank_details.loan_pending_status|default:"Pending" }}
+                                    </div>
+                                    <small class="text-muted d-block mt-1">Status automatically updates to Completed
+                                        strictly when both loans have Amounts, UTRs, and Dates filled.</small>
+                                </div>
                             </div>
 
                             <!-- First Loan -->
@@ -274,12 +282,10 @@
                                 </td>
                                 <td>
                                     {% if cust.cached_loan_status %}
-                                    {% if cust.cached_loan_status == 'Pending' %}
-                                    <span class="badge bg-warning text-dark">Pending</span>
-                                    {% elif cust.cached_loan_status == 'Both' %}
+                                    {% if cust.cached_loan_status == 'Completed' %}
                                     <span class="badge bg-success">Completed</span>
                                     {% else %}
-                                    <span class="badge bg-info">{{ cust.cached_loan_status }}</span>
+                                    <span class="badge bg-warning text-dark">Pending</span>
                                     {% endif %}
                                     {% else %}
                                     <span class="badge bg-light text-muted border">Not Started</span>
@@ -287,7 +293,7 @@
                                 </td>
                                 <td>
                                     <div class="small">{{ cust.created_at|date:"M d, Y" }}</div>
-                                    <div class="text-secondary" style="font-size:0.82em;">{{cust.created_at|date:"H:i"}}
+                                    <div class="text-secondary" style="font-size:0.82em;">{{cust.created_at|date:"h:i A"}}
                                     </div>
                                 </td>
                                 <td class="text-end pe-4">
@@ -309,12 +315,10 @@
                             <div class="mobile-header">
                                 <div class="fw-bold text-dark">{{ cust.customer_name }}</div>
                                 {% if cust.cached_loan_status %}
-                                {% if cust.cached_loan_status == 'Pending' %}
-                                <span class="badge bg-warning text-dark">Pending</span>
-                                {% elif cust.cached_loan_status == 'Both' %}
+                                {% if cust.cached_loan_status == 'Completed' %}
                                 <span class="badge bg-success">Completed</span>
                                 {% else %}
-                                <span class="badge bg-info">{{ cust.cached_loan_status }}</span>
+                                <span class="badge bg-warning text-dark">Pending</span>
                                 {% endif %}
                                 {% else %}
                                 <span class="badge bg-light text-muted border">Not Started</span>

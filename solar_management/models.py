@@ -164,8 +164,8 @@ class BankDetails(models.Model):
     manager_number = models.CharField(max_length=15, blank=True, null=True) # New field for Loan Dashboard
     
     # Loan Tracking
-    LOAN_STATUS_CHOICES = [('First', 'First'), ('Second', 'Second'), ('Both', 'Both'), ('Pending', 'Pending')]
-    loan_pending_status = models.CharField(max_length=20, choices=LOAN_STATUS_CHOICES)
+    LOAN_STATUS_CHOICES = [('Pending', 'Pending'), ('Completed', 'Completed')]
+    loan_pending_status = models.CharField(max_length=20, choices=LOAN_STATUS_CHOICES, default='Pending')
     
     # First Loan
     first_loan_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
