@@ -65,8 +65,7 @@
                             <div class="d-flex flex-column">
                                 <span class="fw-bold text-dark fs-6">{{ item.customer_name }}</span>
                                 <small class="text-info-emphasis">SC: {{ item.sc_no }}</small>
-                                <small class="text-muted"><i class="bi bi-shield-lock me-1"></i>ID: {{
-                                    item.masked_aadhar }}</small>
+                                <small class="text-muted"><i class="bi bi-shield-lock me-1"></i>ID: {{item.masked_aadhar }}</small>
                             </div>
                         </td>
 
@@ -113,8 +112,7 @@
                             {% if item.bank_details %}
                             <div class="p-2 rounded bg-light border-start border-success border-4 shadow-sm"
                                 style="max-width: 180px;">
-                                <small class="d-block text-truncate text-secondary"><strong>UTR:</strong> {{
-                                    item.bank_details.first_loan_utr }}</small>
+                                <small class="d-block text-truncate text-secondary"><strong>UTR:</strong> {{item.bank_details.first_loan_utr }}</small>
                                 <small class="d-block text-success fw-bold">₹{{ item.bank_details.first_loan_amount
                                     }}</small>
                             </div>

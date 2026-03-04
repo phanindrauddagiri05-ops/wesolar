@@ -136,8 +136,7 @@
                         <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light">
                             <span class="mobile-label">Phone</span>
                             <span
-                                class="mobile-value">{{survey.phone_number|default:survey.aadhar_linked_phone|default:"-"
-                                }}</span>
+                                class="mobile-value">{{survey.phone_number|default:survey.aadhar_linked_phone|default:"-"}}</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light">
                             <span class="mobile-label">Date</span>
@@ -146,26 +145,22 @@
                         <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light">
                             <span class="mobile-label">Installation</span>
                             <span
-                                class="badge {% if survey.workflow_status == 'Completed' %}bg-success{% else %}bg-warning text-dark{% endif %} status-badge">{{survey.workflow_status
-                                }}</span>
+                                class="badge {% if survey.workflow_status == 'Completed' %}bg-success{% else %}bg-warning text-dark{% endif %} status-badge">{{survey.workflow_status}}</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light">
                             <span class="mobile-label">Discom</span>
                             <span
-                                class="badge {% if survey.discom_status == 'Completed' %}bg-success{% else %}bg-warning text-dark{% endif %} status-badge">{{survey.discom_status
-                                }}</span>
+                                class="badge {% if survey.discom_status == 'Completed' %}bg-success{% else %}bg-warning text-dark{% endif %} status-badge">{{survey.discom_status}}</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light">
                             <span class="mobile-label">Net Metering</span>
                             <span
-                                class="badge {% if survey.net_metering_status == 'Completed' %}bg-success{% else %}bg-warning text-dark{% endif %} status-badge">{{survey.net_metering_status
-                                }}</span>
+                                class="badge {% if survey.net_metering_status == 'Completed' %}bg-success{% else %}bg-warning text-dark{% endif %} status-badge">{{survey.net_metering_status}}</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light">
                             <span class="mobile-label">Subsidy</span>
                             <span
-                                class="badge {% if survey.subsidy_status == 'Completed' %}bg-success{% else %}bg-warning text-dark{% endif %} status-badge">{{survey.subsidy_status
-                                }}</span>
+                                class="badge {% if survey.subsidy_status == 'Completed' %}bg-success{% else %}bg-warning text-dark{% endif %} status-badge">{{survey.subsidy_status}}</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-start pt-2">
                             <span class="mobile-label mt-1">Remarks</span>

@@ -96,8 +96,7 @@
                                     style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:0.8rem;">
                                     {{ profile.user.first_name|first|default:profile.user.username|first }}
                                 </div>
-                                <div class="fw-bold text-dark">{{
-                                    profile.user.get_full_name|default:profile.user.username}}
+                                <div class="fw-bold text-dark">{{profile.user.get_full_name|default:profile.user.username}}
                                 </div>
                             </div>
                             <span class="badge bg-light text-dark border">{{ profile.role }}</span>
@@ -111,13 +110,11 @@
                             </div>
                             <div class="col-6">
                                 <div class="text-muted text-uppercase" style="font-size:0.75rem;">Joined</div>
-                                <div class="fw-medium text-dark" style="font-size:0.9rem;">{{
-                                    profile.user.date_joined|date:"d M Y" }}</div>
+                                <div class="fw-medium text-dark" style="font-size:0.9rem;">{{profile.user.date_joined|date:"d M Y" }}</div>
                             </div>
                             <div class="col-12">
                                 <div class="text-muted text-uppercase" style="font-size:0.75rem;">Email</div>
-                                <div class="fw-medium text-dark text-break" style="font-size:0.9rem;">{{
-                                    profile.user.email }}</div>
+                                <div class="fw-medium text-dark text-break" style="font-size:0.9rem;">{{profile.user.email }}</div>
                             </div>
                         </div>
 
