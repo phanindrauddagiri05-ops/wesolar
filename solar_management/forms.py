@@ -61,12 +61,12 @@ class SurveyForm(forms.ModelForm):
              'co_name': forms.TextInput(attrs={'pattern': '[a-zA-Z\s]+', 'oninput': "this.value = this.value.replace(/[^a-zA-Z\s]/g, '')", 'title': 'CO Name must contain only letters.'}),
              'co_phone_number': forms.TextInput(attrs={'pattern': '\d{10}', 'maxlength': '10', 'minlength': '10', 'oninput': "this.value = this.value.replace(/[^0-9]/g, '')", 'title': 'Phone number must be exactly 10 digits.'}),
              'measurements': forms.TextInput(attrs={'title': 'Alphanumeric values allowed.'}),
-             'roof_photo': forms.ClearableFileInput(attrs={'accept': 'image/*', 'capture': 'environment'}),
-             'pan_card_photo': forms.ClearableFileInput(attrs={'accept': 'image/*', 'capture': 'environment'}),
-             'aadhar_photo': forms.ClearableFileInput(attrs={'accept': 'image/*', 'capture': 'environment'}),
-             'current_bill_photo': forms.ClearableFileInput(attrs={'accept': 'image/*', 'capture': 'environment'}),
-             'bank_account_photo': forms.ClearableFileInput(attrs={'accept': 'image/*', 'capture': 'environment'}),
-             'parent_bank_photo': forms.ClearableFileInput(attrs={'accept': 'image/*', 'capture': 'environment'}),
+             'roof_photo': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
+             'pan_card_photo': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
+             'aadhar_photo': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
+             'current_bill_photo': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
+             'bank_account_photo': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
+             'parent_bank_photo': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
         }
         help_texts = {
             'structure_height': '',
@@ -248,10 +248,10 @@ class InstallationForm(forms.ModelForm):
             'customer_rating': 'Customer Rating (1-5)',
         }
         widgets = {
-            'inverter_serial_photo': forms.ClearableFileInput(attrs={'accept': 'image/*', 'capture': 'environment'}),
-            'inverter_acdb_photo': forms.ClearableFileInput(attrs={'accept': 'image/*', 'capture': 'environment'}),
-            'panel_serial_photo': forms.ClearableFileInput(attrs={'accept': 'image/*', 'capture': 'environment'}),
-            'site_photos_with_customer': forms.ClearableFileInput(attrs={'accept': 'image/*', 'capture': 'environment'}),
+            'inverter_serial_photo': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
+            'inverter_acdb_photo': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
+            'panel_serial_photo': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
+            'site_photos_with_customer': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
             'installer_remarks': forms.Textarea(attrs={'rows': 3}),
             'customer_remarks': forms.Textarea(attrs={'rows': 3}),
             'leftover_materials': forms.Textarea(attrs={'rows': 3}),
@@ -444,12 +444,12 @@ class SignUpForm(forms.ModelForm):
     aadhar_photo = forms.FileField(
         required=True, 
         help_text="Upload a clear photo or scan of your Aadhar Card.",
-        widget=forms.ClearableFileInput(attrs={'class': 'form-control'})
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control', 'accept': 'image/*'})
     )
     pan_card_photo = forms.FileField(
         required=True, 
         help_text="Upload a clear photo or scan of your PAN Card.",
-        widget=forms.ClearableFileInput(attrs={'class': 'form-control'})
+        widget=forms.ClearableFileInput(attrs={'class': 'form-control', 'accept': 'image/*'})
     )
     email = forms.EmailField(
         required=True,
@@ -639,8 +639,8 @@ class ProfileUpdateForm(forms.ModelForm):
     email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'class': 'form-control'}))
     
     # User profile fields
-    aadhar_photo = forms.FileField(required=False, widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
-    pan_card_photo = forms.FileField(required=False, widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
+    aadhar_photo = forms.FileField(required=False, widget=forms.ClearableFileInput(attrs={'class': 'form-control', 'accept': 'image/*'}))
+    pan_card_photo = forms.FileField(required=False, widget=forms.ClearableFileInput(attrs={'class': 'form-control', 'accept': 'image/*'}))
     
     class Meta:
         model = User
