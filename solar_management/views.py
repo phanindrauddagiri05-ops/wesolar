@@ -1479,7 +1479,9 @@ def create_enquiry(request):
             return redirect('login')
         else:
             messages.error(request, "Please correct the errors in the enquiry form.")
-    return redirect('login')
+    else:
+        form = EnquiryForm()
+    return render(request, 'solar/enquiry_form.html', {'form': form})
 
 @login_required
 def enquiry_list(request):

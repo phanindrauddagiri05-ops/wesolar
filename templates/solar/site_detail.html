@@ -215,15 +215,15 @@
                             <span class="text-muted mb-0">Aadhar Number:</span>
                             <div class="text-end d-flex align-items-center justify-content-end flex-wrap gap-2">
                                 {% if request.user.is_superuser or request.user.is_staff or request.user.userprofile.role == 'Admin' or request.user.userprofile.role == 'Office' %}
-                                    <span class="font-monospace text-wrap" style="word-break: break-all;">{{ customer.aadhar_no }}</span>
-                                    {% if customer.aadhar_photo %}
-                                    <img src="{{ customer.aadhar_photo.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="Aadhaar">
-                                    {% endif %}
+                                <span class="font-monospace text-wrap" style="word-break: break-all;">{{ customer.aadhar_no }}</span>
+                                {% if customer.aadhar_photo %}
+                                <img src="{{ customer.aadhar_photo.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="Aadhaar">
+                                {% endif %}
                                 {% else %}
-                                    <span class="font-monospace">{{ customer.masked_aadhar }}</span>
-                                    {% if customer.aadhar_photo %}
-                                    <i class="bi bi-image text-success ms-2" title="Image Uploaded"></i>
-                                    {% endif %}
+                                <span class="font-monospace">{{ customer.masked_aadhar }}</span>
+                                {% if customer.aadhar_photo %}
+                                <i class="bi bi-image text-success ms-2" title="Image Uploaded"></i>
+                                {% endif %}
                                 {% endif %}
                             </div>
                         </li>
@@ -231,15 +231,15 @@
                             <span class="text-muted mb-0">PAN Card:</span>
                             <div class="text-end d-flex align-items-center justify-content-end flex-wrap gap-2">
                                 {% if request.user.is_superuser or request.user.is_staff or request.user.userprofile.role == 'Admin' or request.user.userprofile.role == 'Office' %}
-                                    <span class="font-monospace text-wrap" style="word-break: break-all;">{{ customer.pan_card }}</span>
-                                    {% if customer.pan_card_photo %}
-                                    <img src="{{ customer.pan_card_photo.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="PAN Card">
-                                    {% endif %}
+                                <span class="font-monospace text-wrap" style="word-break: break-all;">{{ customer.pan_card }}</span>
+                                {% if customer.pan_card_photo %}
+                                <img src="{{ customer.pan_card_photo.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="PAN Card">
+                                {% endif %}
                                 {% else %}
-                                    <span class="font-monospace">{{ customer.masked_pan }}</span>
-                                    {% if customer.pan_card_photo %}
-                                    <i class="bi bi-image text-success ms-2" title="Image Uploaded"></i>
-                                    {% endif %}
+                                <span class="font-monospace">{{ customer.masked_pan }}</span>
+                                {% if customer.pan_card_photo %}
+                                <i class="bi bi-image text-success ms-2" title="Image Uploaded"></i>
+                                {% endif %}
                                 {% endif %}
                             </div>
                         </li>
@@ -369,11 +369,18 @@
 <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content bg-transparent border-0">
-            <div class="modal-header border-0 pb-0 justify-content-end">
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1); opacity: 1;"></button>
+            <div class="modal-header border-0 pb-0 justify-content-end position-relative" style="z-index: 1055;">
+                <button type="button" class="btn btn-light rounded-circle shadow p-2 d-flex align-items-center justify-content-center" data-bs-dismiss="modal" aria-label="Close" style="width: 44px; height: 44px; margin-right: -10px;">
+                    <i class="bi bi-x-lg fs-5 text-dark"></i>
+                </button>
             </div>
-            <div class="modal-body text-center p-0">
-                <img id="fullScreenImage" src="" class="img-fluid rounded shadow-lg" alt="Full Screen" style="max-height: 90vh;">
+            <div class="modal-body text-center p-0 mt-2 position-relative">
+                <img id="fullScreenImage" src="" class="img-fluid rounded shadow-lg" alt="Full Screen" style="max-height: 80vh;">
+            </div>
+            <div class="modal-footer border-0 justify-content-center mt-3">
+                <button type="button" class="btn btn-light rounded-pill px-5 py-2 shadow-sm border border-secondary fw-bold text-dark" data-bs-dismiss="modal">
+                    Close Image
+                </button>
             </div>
         </div>
     </div>

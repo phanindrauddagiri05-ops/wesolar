@@ -278,6 +278,7 @@
     </div>
 </div>
 
+{% block extra_modals %}
 <!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteWorkerModal" tabindex="-1" aria-labelledby="deleteWorkerModalLabel"
     aria-hidden="true">
@@ -308,6 +309,7 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
 <style>
     /* Mobile-specific styles for worker profiles */
@@ -418,7 +420,7 @@
                 workerRoleSpan.textContent = userRole;
 
                 // Update form action
-                deleteForm.action = `/admin/delete-worker/${userId}/`;
+                deleteForm.action = `/admin-portal/delete-worker/${userId}/`;
 
                 // Show modal
                 deleteModal.show();

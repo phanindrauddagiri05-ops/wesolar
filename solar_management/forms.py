@@ -389,14 +389,34 @@ class BankDetailsForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         
-        # Determine Loan Status Automatically
-        first_amt = cleaned_data.get('first_loan_amount') or 0
-        second_amt = cleaned_data.get('second_loan_amount') or 0
+        first_amt = float(cleaned_data.get('first_loan_amount') or 0.0)
+        second_amt = float(cleaned_data.get('second_loan_amount') or 0.0)
+
+        first_utr_str = str(cleaned_data.get('first_loan_utr') or '0').strip()
+        second_utr_str = str(cleaned_data.get('second_loan_utr') or '0').strip()
         
-        loan1_completed = first_amt > 0 and bool(cleaned_data.get('first_loan_utr')) and bool(cleaned_data.get('first_loan_date'))
-        loan2_completed = second_amt > 0 and bool(cleaned_data.get('second_loan_utr')) and bool(cleaned_data.get('second_loan_date'))
-        
-        if loan1_completed and loan2_completed:
+        if not first_utr_str: first_utr_str = '0'
+        if not second_utr_str: second_utr_str = '0'
+
+        first_utr_amt = 0.0
+        try:
+            first_utr_amt = float(first_utr_str)
+        except ValueError:
+            self.add_error('first_loan_utr', "Please enter a valid numeric amount.")
+
+        second_utr_amt = 0.0
+        try:
+            second_utr_amt = float(second_utr_str)
+        except ValueError:
+            self.add_error('second_loan_utr', "Please enter a valid numeric amount.")
+
+        if first_amt > 0 and first_utr_amt > first_amt:
+            self.add_error('first_loan_utr', "UTR amount cannot be greater than the loan amount.")
+            
+        if second_amt > 0 and second_utr_amt > second_amt:
+            self.add_error('second_loan_utr', "UTR amount cannot be greater than the loan amount.")
+
+        if (first_amt > 0 or second_amt > 0) and (first_amt == first_utr_amt) and (second_amt == second_utr_amt):
             cleaned_data['loan_pending_status'] = 'Completed'
         else:
             cleaned_data['loan_pending_status'] = 'Pending'
@@ -579,14 +599,34 @@ class OfficeBankDetailsForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         
-        # Determine Loan Status Automatically
-        first_amt = cleaned_data.get('first_loan_amount') or 0
-        second_amt = cleaned_data.get('second_loan_amount') or 0
+        first_amt = float(cleaned_data.get('first_loan_amount') or 0.0)
+        second_amt = float(cleaned_data.get('second_loan_amount') or 0.0)
+
+        first_utr_str = str(cleaned_data.get('first_loan_utr') or '0').strip()
+        second_utr_str = str(cleaned_data.get('second_loan_utr') or '0').strip()
         
-        loan1_completed = first_amt > 0 and bool(cleaned_data.get('first_loan_utr')) and bool(cleaned_data.get('first_loan_date'))
-        loan2_completed = second_amt > 0 and bool(cleaned_data.get('second_loan_utr')) and bool(cleaned_data.get('second_loan_date'))
-        
-        if loan1_completed and loan2_completed:
+        if not first_utr_str: first_utr_str = '0'
+        if not second_utr_str: second_utr_str = '0'
+
+        first_utr_amt = 0.0
+        try:
+            first_utr_amt = float(first_utr_str)
+        except ValueError:
+            self.add_error('first_loan_utr', "Please enter a valid numeric amount.")
+
+        second_utr_amt = 0.0
+        try:
+            second_utr_amt = float(second_utr_str)
+        except ValueError:
+            self.add_error('second_loan_utr', "Please enter a valid numeric amount.")
+
+        if first_amt > 0 and first_utr_amt > first_amt:
+            self.add_error('first_loan_utr', "UTR amount cannot be greater than the loan amount.")
+            
+        if second_amt > 0 and second_utr_amt > second_amt:
+            self.add_error('second_loan_utr', "UTR amount cannot be greater than the loan amount.")
+
+        if (first_amt > 0 or second_amt > 0) and (first_amt == first_utr_amt) and (second_amt == second_utr_amt):
             cleaned_data['loan_pending_status'] = 'Completed'
         else:
             cleaned_data['loan_pending_status'] = 'Pending'

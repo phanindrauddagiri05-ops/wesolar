@@ -2,7 +2,7 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="container d-flex align-items-center justify-content-center" style="min-height: 80vh;">
+<div class="container d-flex flex-column align-items-center justify-content-center" style="min-height: 80vh;">
     <div class="card glass-card shadow-lg" style="max-width: 400px; width: 100%;">
         <div class="card-header text-center py-4 border-0">
             <h2 class="mb-0 text-gradient">Login</h2>
@@ -108,5 +108,13 @@
             </div>
         </div>
     </div>
+
+    <!-- Enquiry Link -->
+    <div class="mt-4">
+        <a href="{% url 'create_enquiry' %}" target="_blank" class="btn btn-premium btn-lg shadow-sm px-5">
+            <i class="bi bi-envelope-fill me-2"></i>Have an Enquiry? Contact Us
+        </a>
+    </div>
+
 </div>
 {% endblock %}

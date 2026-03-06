@@ -82,6 +82,7 @@
     </div>
 </div>
 
+{% block extra_modals %}
 <!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteApplicationModal" tabindex="-1" aria-labelledby="deleteApplicationModalLabel"
     aria-hidden="true">
@@ -118,6 +119,7 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -134,7 +136,7 @@
 
                 modalCustomerName.textContent = customerName;
                 modalScNo.textContent = scNo;
-                deleteForm.action = `/admin/delete-application/${surveyId}/`;
+                deleteForm.action = `/admin-portal/delete-application/${surveyId}/`;
 
                 deleteModal.show();
             });

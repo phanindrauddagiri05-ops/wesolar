@@ -65,8 +65,8 @@ urlpatterns = [
     path('office-portal/fe-data/', views.office_fe_data, name='office_fe_data'),
     path('office-portal/installer-data/', views.office_installer_data, name='office_installer_data'),
     path('office-portal/workers-profiles/', views.office_workers_profiles, name='office_workers_profiles'),
-    path('admin/delete-worker/<int:user_id>/', views.delete_worker, name='delete_worker'),
-    path('admin/delete-application/<int:survey_id>/', views.delete_application, name='delete_application'),
+    path('admin-portal/delete-worker/<int:user_id>/', views.delete_worker, name='delete_worker'),
+    path('admin-portal/delete-application/<int:survey_id>/', views.delete_application, name='delete_application'),
     path('portal/download-images/<int:survey_id>/', views.download_images, name='download_images'),
     path('admin/toggle-maintenance/', views.toggle_maintenance_mode, name='toggle_maintenance_mode'),
 

@@ -207,7 +207,7 @@
                                         {{ bank_details.loan_pending_status|default:"Pending" }}
                                     </div>
                                     <small class="text-muted d-block mt-1">Status automatically updates to Completed
-                                        strictly when both loans have Amounts, UTRs, and Dates filled.</small>
+                                        strictly when both loan amounts match their respective UTR amounts.</small>
                                 </div>
                             </div>
 
@@ -293,7 +293,7 @@
                                 </td>
                                 <td>
                                     <div class="small">{{ cust.created_at|date:"M d, Y" }}</div>
-                                    <div class="text-secondary" style="font-size:0.82em;">{{cust.created_at|date:"h:i A"}}
+                                    <div class="text-secondary" style="font-size:0.82em;">{{cust.created_at|date:"h:iA"}}
                                     </div>
                                 </td>
                                 <td class="text-end pe-4">
