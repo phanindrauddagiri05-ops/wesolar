@@ -1,0 +1,304 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    @media (max-width: 767px) {
+        .table-responsive {
+            border: none;
+        }
+
+        .table thead {
+            display: none;
+        }
+
+        .table tbody tr {
+            display: block;
+            margin-bottom: 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1rem;
+            background: white;
+        }
+
+        .table tbody td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0 !important;
+            border: none !important;
+            text-align: right;
+        }
+
+        .table tbody td::before {
+            content: attr(data-label);
+            font-weight: 600;
+            color: #6c757d;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            text-align: left;
+            position: static !important;
+            width: auto !important;
+        }
+
+        .table tbody td:first-child {
+            padding-top: 0 !important;
+        }
+
+        .table tbody td:last-child {
+            padding-bottom: 0 !important;
+            justify-content: center;
+            margin-top: 0.5rem;
+            padding-top: 1rem !important;
+            border-top: 1px solid #e0e0e0 !important;
+        }
+
+        .table tbody td:last-child::before {
+            display: none;
+        }
+
+        .table tbody td[data-label="Customer"] {
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+        }
+
+        .table tbody td[data-label="Customer"]::before {
+            margin-bottom: 0.25rem;
+        }
+
+        .delete-media-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="container-fluid px-4 py-4 mt-2">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <h2 class="fw-bold text-dark mb-0"><i class="bi bi-hdd-network-fill text-primary me-2"></i>Storage
+                Management</h2>
+            <p class="text-muted small">Manage server storage and delete older media files.</p>
+        </div>
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary btn-mobile-full">
+            <i class="bi bi-arrow-left me-2"></i>Back to Admin
+        </a>
+    </div>
+
+    <!-- Storage Overview Card -->
+    <div class="card glass-card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+            <h5 class="fw-bold mb-3 text-dark">System Storage (Media Files)</h5>
+            <div class="row align-items-center">
+                <div class="col-md-9 mb-3 mb-md-0">
+                    <div class="d-flex justify-content-between small text-muted mb-1 fw-bold">
+                        <span>Used: {{ used_storage_gb }} GB</span>
+                        <span>Remaining: {{ remaining_storage_gb }} GB</span>
+                    </div>
+                    <div class="progress" style="height: 12px; border-radius: 10px; background-color: #e9ecef;">
+                        <div class="progress-bar {% if storage_percentage > 90 %}bg-danger{% elif storage_percentage > 75 %}bg-warning{% else %}bg-primary{% endif %} progress-bar-striped progress-bar-animated"
+                            role="progressbar" style="width: {{ storage_percentage|stringformat:'.2f'|default:0 }}%"
+                            aria-valuenow="{{ storage_percentage }}" aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 text-md-end">
+                    <h3
+                        class="fw-bold {% if storage_percentage > 90 %}text-danger{% elif storage_percentage > 75 %}text-warning{% else %}text-primary{% endif %} mb-0">
+                        {{ storage_percentage }}%
+                    </h3>
+                    <p class="text-muted small mb-0">of 5.0 GB limit</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Storage List -->
+    <div class="card glass-card border-0">
+        <div
+            class="card-header bg-transparent border-0 pt-4 pb-2 d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h5 class="fw-bold text-dark mb-0"><i class="bi bi-card-list me-2"></i>Projects with Media Files</h5>
+            {% if surveys %}
+            <button class="btn btn-danger btn-sm rounded-pill fw-bold" data-bs-toggle="modal"
+                data-bs-target="#deleteAllMediaModal">
+                <i class="bi bi-trash3-fill me-1"></i>Delete All Media
+            </button>
+            {% endif %}
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4 border-0">App ID</th>
+                            <th class="border-0">Customer / Project</th>
+                            <th class="border-0">Created Date</th>
+                            <th class="border-0">Status</th>
+                            <th class="border-0 text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for survey in surveys %}
+                        <tr>
+                            <td class="ps-4" data-label="App ID">
+                                <span class="badge bg-dark text-white rounded-pill"
+                                    style="font-family: monospace; font-size: 0.7rem;">{{survey.application_id|default:"-" }}</span>
+                            </td>
+                            <td data-label="Customer">
+                                <div class="fw-bold text-dark">{{ survey.customer_name }}</div>
+                                <div class="text-muted small">SC: {{ survey.sc_no|default:"N/A" }} | Phone:
+                                    {{survey.phone_number }}</div>
+                            </td>
+                            <td data-label="Created Date">
+                                <span class="small">{{ survey.created_at|date:"M d, Y" }}</span>
+                            </td>
+                            <td data-label="Status">
+                                <span class="badge bg-secondary-subtle text-secondary rounded-pill border">{{survey.workflow_status }}</span>
+                            </td>
+                            <td class="text-center" data-label="Actions">
+                                <a href="{% url 'site_detail' survey.id %}"
+                                    class="btn btn-sm btn-outline-primary me-2 mb-1" target="_blank">
+                                    <i class="bi bi-eye me-1"></i>View
+                                </a>
+                                <button class="btn btn-sm btn-outline-danger delete-media-btn mb-1"
+                                    data-bs-toggle="modal" data-bs-target="#deleteMediaModal"
+                                    data-survey-id="{{ survey.id }}" data-customer-name="{{ survey.customer_name }}">
+                                    <i class="bi bi-trash me-1"></i>Delete Media
+                                </button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-4 text-muted">
+                                <div class="mb-2"><i class="bi bi-inbox fs-1 text-secondary opacity-50"></i></div>
+                                No projects currently storing media files.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% if surveys.has_other_pages %}
+            <div class="px-4 py-3 border-top bg-light">
+                <ul class="pagination pagination-sm justify-content-end mb-0">
+                    {% if surveys.has_previous %}
+                    <li class="page-item"><a class="page-link"
+                            href="?page={{ surveys.previous_page_number }}">&laquo;</a></li>
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+                    {% endif %}
+
+                    {% for i in surveys.paginator.page_range %}
+                    {% if surveys.number == i %}
+                    <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+                    {% else %}
+                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if surveys.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ surveys.next_page_number }}">&raquo;</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+                    {% endif %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_modals %}
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteMediaModal" tabindex="-1" aria-labelledby="deleteMediaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title" id="deleteMediaModalLabel">
+                    <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>Confirm Media Deletion
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete all <strong class="text-danger">photos and documents</strong> for:
+                </p>
+                <div class="alert alert-warning py-2 mb-3 shadow-sm border-0 border-start border-warning border-4">
+                    <span id="customerName" class="fw-bold"></span>
+                </div>
+                <ul class="small text-muted mb-0">
+                    <li>This will permanently remove image files from the server, freeing up storage (Roof photo,
+                        Aadhar, PAN, Installation photos).</li>
+                    <li><strong class="text-dark">The project text data will NOT be deleted.</strong> You will still see
+                        this project in the dashboard.</li>
+                    <li>This action cannot be undone.</li>
+                </ul>
+            </div>
+            <div class="modal-footer border-0 bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="POST" id="deleteMediaForm" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash-fill me-1"></i>Yes, Delete Media
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete All Media Modal -->
+<div class="modal fade" id="deleteAllMediaModal" tabindex="-1" aria-labelledby="deleteAllMediaModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title" id="deleteAllMediaModalLabel">
+                    <i class="bi bi-exclamation-circle-fill text-danger me-2"></i>Bulk Deletion Warning
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <strong class="text-danger">ALL</strong> media files across all
+                    projects?</p>
+                <ul class="small text-muted mb-0">
+                    <li>This will permanently remove <strong>every photo and document</strong> stored on the server to
+                        maximize your free space.</li>
+                    <li><strong class="text-dark">No project records will be deleted.</strong> You will still be able to
+                        access all project data in your dashboards.</li>
+                    <li>This action cannot be undone.</li>
+                </ul>
+            </div>
+            <div class="modal-footer border-0 bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="POST" action="{% url 'delete_all_media' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash3-fill me-1"></i>Yes, Delete ALL Media
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const deleteModal = document.getElementById('deleteMediaModal');
+        if (deleteModal) {
+            deleteModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const surveyId = button.getAttribute('data-survey-id');
+                const customerName = button.getAttribute('data-customer-name');
+
+                document.getElementById('customerName').textContent = customerName;
+                document.getElementById('deleteMediaForm').action = `/admin-portal/storage/delete/${surveyId}/`;
+            });
+        }
+    });
+</script>

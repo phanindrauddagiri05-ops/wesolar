@@ -636,7 +636,7 @@
                         reader.onload = function (e) {
                             // Slight delay for animation effect
                             setTimeout(() => {
-                                previewContainer.innerHTML = `<img src="${e.target.result}" class="img-thumbnail shadow-sm mt-2" style="max-height: 150px; border-radius: 8px; animation: fadeInUp 0.3s ease-out;">`;
+                                previewContainer.innerHTML = `<img src="${e.target.result}" class="img-fluid img-thumbnail shadow-sm mt-2" style="max-height: 150px; border-radius: 8px; animation: fadeInUp 0.3s ease-out;">`;
                             }, 400);
                         }
                         reader.readAsDataURL(file);

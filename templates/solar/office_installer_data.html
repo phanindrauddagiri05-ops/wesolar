@@ -18,7 +18,8 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="bg-light text-secondary small text-uppercase">
                         <tr>
-                            <th class="ps-4 py-3 border-0">Reference Survey</th>
+                            <th class="ps-4 py-3 border-0">App ID</th>
+                            <th class="py-3 border-0">Reference Survey</th>
                             <th class="py-3 border-0">Uploaded By</th>
                             <th class="py-3 border-0">Inverter Make</th>
                             <th class="py-3 border-0">Date</th>
@@ -28,7 +29,11 @@
                     <tbody>
                         {% for item in installations %}
                         <tr>
-                            <td class="ps-4" data-label="Ref Survey">
+                            <td class="ps-4" data-label="App ID">
+                                <span class="badge bg-dark text-white rounded-pill"
+                                    style="font-family: monospace; font-size: 0.7rem;">{{ item.survey.application_id|default:"-" }}</span>
+                            </td>
+                            <td data-label="Ref Survey">
                                 <span class="fw-bold text-dark d-block">{{ item.survey.customer_name }}</span>
                                 <small class="text-muted">{{ item.survey.sc_no }}</small>
                             </td>

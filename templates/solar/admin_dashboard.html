@@ -84,9 +84,49 @@
 </style>
 
 
+<!-- Storage Management Overview -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card glass-card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-hdd-network-fill text-primary me-2"></i>System Storage (Media Files)
+                    </h5>
+                    <a href="{% url 'manage_storage' %}" class="btn btn-outline-primary btn-sm rounded-pill fw-bold">
+                        <i class="bi bi-pie-chart-fill me-1"></i>Manage Storage
+                    </a>
+                </div>
+
+                <div class="row align-items-center">
+                    <div class="col-md-8 mb-3 mb-md-0">
+                        <div class="d-flex justify-content-between small text-muted mb-1 fw-bold">
+                            <span>Used: {{ used_storage_gb }} GB</span>
+                            <span>Remaining: {{ remaining_storage_gb }} GB</span>
+                        </div>
+                        <div class="progress" style="height: 12px; border-radius: 10px; background-color: #e9ecef;">
+                            <div class="progress-bar {% if storage_percentage > 90 %}bg-danger{% elif storage_percentage > 75 %}bg-warning{% else %}bg-primary{% endif %} progress-bar-striped progress-bar-animated"
+                                role="progressbar" style="width: {{ storage_percentage|stringformat:'.2f'|default:0 }}%"
+                                aria-valuenow="{{ storage_percentage }}" aria-valuemin="0" aria-valuemax="100">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <h3
+                            class="fw-bold {% if storage_percentage > 90 %}text-danger{% elif storage_percentage > 75 %}text-warning{% else %}text-primary{% endif %} mb-0">
+                            {{ storage_percentage }}%
+                        </h3>
+                        <p class="text-muted small mb-0">of 5.0 GB limit</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Navigation Grid -->
 <div class="row g-4 mb-5 mt-2">
-    
+
 
     <!-- Admin Dashboard -->
     <div class="col-6 col-md-4 col-lg-3">

@@ -262,6 +262,7 @@
                     <table class="table table-hover align-middle mb-0">
                         <thead class="bg-light">
                             <tr>
+                                <th class="ps-4">App ID</th>
                                 <th class="ps-4">Customer Name</th>
                                 <th>Phone</th>
                                 <th>Loan Status</th>
@@ -272,6 +273,10 @@
                         <tbody>
                             {% for cust in recent_customers %}
                             <tr>
+                                <td class="ps-4">
+                                    <span class="badge bg-dark text-white rounded-pill"
+                                        style="font-family: monospace; font-size: 0.7rem;">{{cust.application_id|default:"-" }}</span>
+                                </td>
                                 <td class="ps-4 fw-medium">{{ cust.customer_name }}</td>
                                 <td>
                                     {% if cust.phone_number %}
@@ -293,7 +298,8 @@
                                 </td>
                                 <td>
                                     <div class="small">{{ cust.created_at|date:"M d, Y" }}</div>
-                                    <div class="text-secondary" style="font-size:0.82em;">{{cust.created_at|date:"h:iA"}}
+                                    <div class="text-secondary" style="font-size:0.82em;">
+                                        {{cust.created_at|date:"h:iA"}}
                                     </div>
                                 </td>
                                 <td class="text-end pe-4">

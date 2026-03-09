@@ -11,6 +11,7 @@ from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponse
+from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login, logout
@@ -532,7 +533,11 @@ def fe_dashboard(request):
     else:
         my_surveys = CustomerSurvey.objects.filter(created_by=request.user).order_by('-created_at')
     
-    return render(request, 'solar/fe_dashboard.html', {'surveys': my_surveys, 'query': query})
+    paginator = Paginator(my_surveys, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    return render(request, 'solar/fe_dashboard.html', {'surveys': page_obj, 'query': query})
 
 
 @login_required
@@ -565,9 +570,17 @@ def installer_dashboard(request):
             # No installation yet -> Available for anyone to claim
             pending_installations.append(survey)
             
+    pending_paginator = Paginator(pending_installations, 10)
+    pending_page = request.GET.get('pending_page')
+    pending_page_obj = pending_paginator.get_page(pending_page)
+
+    completed_paginator = Paginator(completed_installations, 10)
+    completed_page = request.GET.get('completed_page')
+    completed_page_obj = completed_paginator.get_page(completed_page)
+            
     return render(request, 'solar/installer_dashboard.html', {
-        'pending_installations': pending_installations,
-        'completed_installations': completed_installations,
+        'pending_installations': pending_page_obj,
+        'completed_installations': completed_page_obj,
         'query': query
     })
 
@@ -588,6 +601,22 @@ def pending_approvals(request):
         'query': query,
     }
     return render(request, 'solar/pending_approvals.html', context)
+
+
+def get_directory_size(directory):
+    """Returns the `directory` size in bytes."""
+    total_size = 0
+    try:
+        for dirpath, _, filenames in os.walk(directory):
+            for f in filenames:
+                fp = os.path.join(dirpath, f)
+                # skip if it is symbolic link
+                if not os.path.islink(fp):
+                    total_size += os.path.getsize(fp)
+    except Exception as e:
+        print(f"Error calculating directory size: {e}")
+    return total_size
+
 
 @staff_member_required
 def admin_dashboard(request):
@@ -639,12 +668,24 @@ def admin_dashboard(request):
         # 5. Loan Data (Recent 5 loan applications)
         loan_data = BankDetails.objects.all().select_related('survey').order_by('-id')[:5]
     
+    # Calculate Storage Limit (5GB)
+    total_limit_bytes = 5 * 1024 * 1024 * 1024  # 5 GB in bytes
+    used_storage_bytes = get_directory_size(settings.MEDIA_ROOT)
+    
+    # Calculate percentages and readable formats
+    used_storage_gb = used_storage_bytes / (1024 * 1024 * 1024)
+    remaining_storage_gb = max(0, 5.0 - used_storage_gb)
+    storage_percentage = min(100, (used_storage_bytes / total_limit_bytes) * 100)
+
     context = {
         'fe_data': fe_data,
         'installer_data': installer_data,
         'office_data': office_data,
         'loan_data': loan_data,
         'query': query,
+        'used_storage_gb': round(used_storage_gb, 2),
+        'remaining_storage_gb': round(remaining_storage_gb, 2),
+        'storage_percentage': round(storage_percentage, 1),
         'maintenance_mode': SiteSettings.get_settings().maintenance_mode,
     }
     return render(request, 'solar/admin_dashboard.html', context)
@@ -728,7 +769,11 @@ def office_dashboard(request):
     else:
         surveys = CustomerSurvey.objects.all().select_related('installation').order_by('-created_at')
         
-    return render(request, 'solar/office_dashboard.html', {'surveys': surveys, 'query': query})
+    paginator = Paginator(surveys, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+        
+    return render(request, 'solar/office_dashboard.html', {'surveys': page_obj, 'query': query})
 
 @login_required
 @user_passes_test(is_office_staff)
@@ -1599,7 +1644,164 @@ def fe_update_survey(request, pk):
     else:
         form = FEUpdateForm(instance=survey, bank_details=bank_details)
 
-    return render(request, 'solar/fe_update_form.html', {'form': form, 'survey': survey})
+    return render(request, 'solar/fe_update_form.html', {
+        'form': form,
+        'survey': survey,
+    })
+
+# ==========================================
+# STORAGE MANAGEMENT
+# ==========================================
+@user_passes_test(lambda u: hasattr(u, 'userprofile') and u.userprofile.role == 'Admin')
+def manage_storage(request):
+    """View for admins to see storage usage and delete old media."""
+    # Build list of surveys that have at least one media file
+    has_media = (
+        (~Q(roof_photo='') & ~Q(roof_photo__isnull=True)) |
+        (~Q(pan_card_photo='') & ~Q(pan_card_photo__isnull=True)) |
+        (~Q(aadhar_photo='') & ~Q(aadhar_photo__isnull=True)) |
+        (~Q(current_bill_photo='') & ~Q(current_bill_photo__isnull=True)) |
+        (~Q(bank_account_photo='') & ~Q(bank_account_photo__isnull=True)) |
+        (~Q(installation__inverter_serial_photo='') & ~Q(installation__inverter_serial_photo__isnull=True)) |
+        (~Q(installation__inverter_acdb_photo='') & ~Q(installation__inverter_acdb_photo__isnull=True)) |
+        (~Q(installation__panel_serial_photo='') & ~Q(installation__panel_serial_photo__isnull=True)) |
+        (~Q(installation__site_photos_with_customer='') & ~Q(installation__site_photos_with_customer__isnull=True))
+    )
+    surveys_with_media = CustomerSurvey.objects.filter(has_media).distinct().order_by('created_at') # Oldest first
+
+    # Calculate overall stats
+    total_limit_bytes = 5 * 1024 * 1024 * 1024
+    used_storage_bytes = get_directory_size(settings.MEDIA_ROOT)
+    
+    used_storage_gb = used_storage_bytes / (1024 * 1024 * 1024)
+    remaining_storage_gb = max(0, 5.0 - used_storage_gb)
+    storage_percentage = min(100, (used_storage_bytes / total_limit_bytes) * 100)
+    
+    paginator = Paginator(surveys_with_media, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'surveys': page_obj,
+        'used_storage_gb': round(used_storage_gb, 2),
+        'remaining_storage_gb': round(remaining_storage_gb, 2),
+        'storage_percentage': round(storage_percentage, 1),
+    }
+    return render(request, 'solar/storage_management.html', context)
+
+@user_passes_test(lambda u: hasattr(u, 'userprofile') and u.userprofile.role == 'Admin')
+def delete_survey_media(request, survey_id):
+    """Deletes media files from OS and nulls fields to free space."""
+    if request.method == 'POST':
+        survey = get_object_or_404(CustomerSurvey, id=survey_id)
+        
+        # Helper to safely delete file
+        def safe_delete_file(file_field):
+            if file_field and hasattr(file_field, 'path') and os.path.isfile(file_field.path):
+                try:
+                    os.remove(file_field.path)
+                except Exception as e:
+                    print(f"Error deleting file: {e}")
+
+        # Delete from filesystem
+        safe_delete_file(survey.roof_photo)
+        safe_delete_file(survey.pan_card_photo)
+        safe_delete_file(survey.aadhar_photo)
+        safe_delete_file(survey.current_bill_photo)
+        safe_delete_file(survey.bank_account_photo)
+        
+        # Nullify DB fields
+        survey.roof_photo = None
+        survey.pan_card_photo = None
+        survey.aadhar_photo = None
+        survey.current_bill_photo = None
+        survey.bank_account_photo = None
+        survey.save()
+        
+        # Do the same for Installation if exists
+        try:
+            inst = survey.installation
+            safe_delete_file(inst.inverter_serial_photo)
+            safe_delete_file(inst.inverter_acdb_photo)
+            safe_delete_file(inst.panel_serial_photo)
+            safe_delete_file(inst.site_photos_with_customer)
+            
+            inst.inverter_serial_photo = None
+            inst.inverter_acdb_photo = None
+            inst.panel_serial_photo = None
+            inst.site_photos_with_customer = None
+            inst.save()
+        except CustomerSurvey.installation.RelatedObjectDoesNotExist:
+            pass
+            
+        messages.success(request, f"Media files successfully deleted for {survey.customer_name}. The project text data is preserved.")
+        return redirect('manage_storage')
+        
+    return redirect('manage_storage')
+
+@user_passes_test(lambda u: hasattr(u, 'userprofile') and u.userprofile.role == 'Admin')
+def delete_all_media(request):
+    """Deletes media files for ALL projects to free space."""
+    if request.method == 'POST':
+        # Helper to safely delete file
+        def safe_delete_file(file_field):
+            if file_field and hasattr(file_field, 'path') and os.path.isfile(file_field.path):
+                try:
+                    os.remove(file_field.path)
+                except Exception as e:
+                    print(f"Error deleting file: {e}")
+
+        has_media = (
+            (~Q(roof_photo='') & ~Q(roof_photo__isnull=True)) |
+            (~Q(pan_card_photo='') & ~Q(pan_card_photo__isnull=True)) |
+            (~Q(aadhar_photo='') & ~Q(aadhar_photo__isnull=True)) |
+            (~Q(current_bill_photo='') & ~Q(current_bill_photo__isnull=True)) |
+            (~Q(bank_account_photo='') & ~Q(bank_account_photo__isnull=True)) |
+            (~Q(installation__inverter_serial_photo='') & ~Q(installation__inverter_serial_photo__isnull=True)) |
+            (~Q(installation__inverter_acdb_photo='') & ~Q(installation__inverter_acdb_photo__isnull=True)) |
+            (~Q(installation__panel_serial_photo='') & ~Q(installation__panel_serial_photo__isnull=True)) |
+            (~Q(installation__site_photos_with_customer='') & ~Q(installation__site_photos_with_customer__isnull=True))
+        )
+        surveys_with_media = CustomerSurvey.objects.filter(has_media)
+        
+        count = 0
+        for survey in surveys_with_media:
+            # Delete from filesystem
+            safe_delete_file(survey.roof_photo)
+            safe_delete_file(survey.pan_card_photo)
+            safe_delete_file(survey.aadhar_photo)
+            safe_delete_file(survey.current_bill_photo)
+            safe_delete_file(survey.bank_account_photo)
+            
+            # Nullify DB fields
+            survey.roof_photo = None
+            survey.pan_card_photo = None
+            survey.aadhar_photo = None
+            survey.current_bill_photo = None
+            survey.bank_account_photo = None
+            survey.save()
+            
+            # Do the same for Installation if exists
+            try:
+                inst = survey.installation
+                safe_delete_file(inst.inverter_serial_photo)
+                safe_delete_file(inst.inverter_acdb_photo)
+                safe_delete_file(inst.panel_serial_photo)
+                safe_delete_file(inst.site_photos_with_customer)
+                
+                inst.inverter_serial_photo = None
+                inst.inverter_acdb_photo = None
+                inst.panel_serial_photo = None
+                inst.site_photos_with_customer = None
+                inst.save()
+            except CustomerSurvey.installation.RelatedObjectDoesNotExist:
+                pass
+            count += 1
+            
+        messages.success(request, f"Successfully deleted media files for {count} projects.")
+        return redirect('manage_storage')
+        
+    return redirect('manage_storage')
 
 
 # ==========================================

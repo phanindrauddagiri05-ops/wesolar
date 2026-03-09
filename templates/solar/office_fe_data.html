@@ -18,7 +18,8 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="bg-light text-secondary small text-uppercase">
                         <tr>
-                            <th class="ps-4 py-3 border-0">Customer / SC No</th>
+                            <th class="ps-4 py-3 border-0">App ID</th>
+                            <th class="py-3 border-0">Customer / SC No</th>
                             <th class="py-3 border-0">Submitted By</th>
                             <th class="py-3 border-0">Status</th>
                             <th class="py-3 border-0">Date</th>
@@ -28,7 +29,11 @@
                     <tbody>
                         {% for item in surveys %}
                         <tr>
-                            <td class="ps-4" data-label="Customer">
+                            <td class="ps-4" data-label="App ID">
+                                <span class="badge bg-dark text-white rounded-pill"
+                                    style="font-family: monospace; font-size: 0.7rem;">{{item.application_id|default:"-" }}</span>
+                            </td>
+                            <td data-label="Customer">
                                 <span class="fw-bold text-dark d-block">{{ item.customer_name }}</span>
                                 <small class="text-muted">{{ item.sc_no }}</small>
                             </td>

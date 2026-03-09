@@ -56,7 +56,11 @@ urlpatterns = [
     path('api/get-survey-by-phone/', views.get_survey_by_phone, name='get_survey_by_phone'),
     path('api/get-survey-by-phone-all/', views.get_survey_by_phone_all, name='get_survey_by_phone_all'),
     path('api/get-survey-by-id/', views.get_survey_by_id, name='get_survey_by_id'),
-    
+    # Storage Management
+    path('admin-portal/storage/manage/', views.manage_storage, name='manage_storage'),
+    path('admin-portal/storage/delete/<int:survey_id>/', views.delete_survey_media, name='delete_survey_media'),
+    path('admin-portal/storage/delete-all/', views.delete_all_media, name='delete_all_media'),
+
     # Enquiry System
     path('enquiry/new/', views.create_enquiry, name='create_enquiry'),
     path('enquiry/list/', views.enquiry_list, name='enquiry_list'),

@@ -12,11 +12,19 @@ class UserProfile(models.Model):
         ('Loan', 'Loan'),
     ]
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    worker_id = models.CharField(max_length=20, unique=True, blank=True, null=True)
     mobile_number = models.CharField(max_length=15, unique=True)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
     is_approved = models.BooleanField(default=False)
     aadhar_photo = models.FileField(upload_to='users/documents/', null=True, blank=True, help_text="Photo/Scan of Aadhar Card")
     pan_card_photo = models.FileField(upload_to='users/documents/', null=True, blank=True, help_text="Photo/Scan of PAN Card")
+
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        super().save(*args, **kwargs)
+        if is_new or not self.worker_id:
+            self.worker_id = f"WS-USR-{self.id:04d}"
+            super().save(update_fields=['worker_id'])
 
     def __str__(self):
         return f"{self.user.username} - {self.role}"
@@ -29,6 +37,7 @@ class CustomerSurvey(models.Model):
     STRUCTURE_CHOICES = [('Normal', 'Normal'), ('Vertical', 'Vertical'), ('Horizontal', 'Horizontal'), ('Fabrication', 'Fabrication')]
 
     customer_name = models.CharField(max_length=255)
+    application_id = models.CharField(max_length=20, unique=True, blank=True, null=True)
     connection_type = models.CharField(max_length=50, choices=CONNECTION_CHOICES)
     sc_no = models.CharField(max_length=16, help_text="16 Digits")
     phase = models.CharField(max_length=20, choices=PHASE_CHOICES)
@@ -90,6 +99,13 @@ class CustomerSurvey(models.Model):
     # Metadata
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        super().save(*args, **kwargs)
+        if is_new or not self.application_id:
+            self.application_id = f"WS-APP-{self.id:05d}"
+            super().save(update_fields=['application_id'])
 
     def __str__(self):
         return f"{self.customer_name} ({self.sc_no})"

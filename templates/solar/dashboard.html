@@ -47,6 +47,7 @@
             <table class="table table-hover align-middle mb-0" id="projectTable">
                 <thead class="text-uppercase small text-muted bg-light">
                     <tr>
+                        <th class="py-3 bg-light text-secondary border-0">App ID</th>
                         <th class="py-3 bg-light text-secondary border-0">Customer Name</th>
                         <th class="py-3 bg-light text-secondary border-0">SC No</th>
                         {% if user.is_staff or user.groups.all.0.name == 'Office' %}
@@ -62,10 +63,14 @@
                     {% for item in all_data %}
                     <tr>
                         <td class="ps-4">
+                            <span class="badge bg-dark text-white rounded-pill"
+                                style="font-family: monospace; font-size: 0.7rem;">{{ item.application_id|default:"-"}}</span>
+                        </td>
+                        <td class="ps-4">
                             <div class="d-flex flex-column">
                                 <span class="fw-bold text-dark fs-6">{{ item.customer_name }}</span>
                                 <small class="text-info-emphasis">SC: {{ item.sc_no }}</small>
-                                <small class="text-muted"><i class="bi bi-shield-lock me-1"></i>ID: {{item.masked_aadhar }}</small>
+                                <small class="text-muted"><i class="bi bi-shield-lock me-1"></i>ID: {{item.masked_aadhar}}</small>
                             </div>
                         </td>
 
@@ -112,9 +117,9 @@
                             {% if item.bank_details %}
                             <div class="p-2 rounded bg-light border-start border-success border-4 shadow-sm"
                                 style="max-width: 180px;">
-                                <small class="d-block text-truncate text-secondary"><strong>UTR:</strong> {{item.bank_details.first_loan_utr }}</small>
-                                <small class="d-block text-success fw-bold">₹{{ item.bank_details.first_loan_amount
-                                    }}</small>
+                                <small class="d-block text-truncate text-secondary"><strong>UTR:</strong>
+                                    {{item.bank_details.first_loan_utr }}</small>
+                                <small class="d-block text-success fw-bold">₹{{ item.bank_details.first_loan_amount}}</small>
                             </div>
                             {% else %}
                             <span class="text-danger small fw-semibold"><i class="bi bi-cash-stack me-1"></i> Pending
@@ -124,7 +129,8 @@
 
                         <td>
                             <div class="small text-muted">{{ item.created_at|date:"M d, Y" }}</div>
-                            <div class="text-secondary" style="font-size:0.82em;">{{ item.created_at|date:"h:i A" }}</div>
+                            <div class="text-secondary" style="font-size:0.82em;">{{ item.created_at|date:"h:i A" }}
+                            </div>
                         </td>
                         <td class="text-center pe-4">
                             <div class="dropdown">
