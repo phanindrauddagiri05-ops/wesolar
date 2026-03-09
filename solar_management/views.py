@@ -1655,28 +1655,35 @@ def fe_update_survey(request, pk):
 @user_passes_test(lambda u: hasattr(u, 'userprofile') and u.userprofile.role == 'Admin')
 def manage_storage(request):
     """View for admins to see storage usage and delete old media."""
-    # Build list of surveys that have at least one media file
-    has_media = (
-        (~Q(roof_photo='') & ~Q(roof_photo__isnull=True)) |
-        (~Q(pan_card_photo='') & ~Q(pan_card_photo__isnull=True)) |
-        (~Q(aadhar_photo='') & ~Q(aadhar_photo__isnull=True)) |
-        (~Q(current_bill_photo='') & ~Q(current_bill_photo__isnull=True)) |
-        (~Q(bank_account_photo='') & ~Q(bank_account_photo__isnull=True)) |
-        (~Q(installation__inverter_serial_photo='') & ~Q(installation__inverter_serial_photo__isnull=True)) |
-        (~Q(installation__inverter_acdb_photo='') & ~Q(installation__inverter_acdb_photo__isnull=True)) |
-        (~Q(installation__panel_serial_photo='') & ~Q(installation__panel_serial_photo__isnull=True)) |
-        (~Q(installation__site_photos_with_customer='') & ~Q(installation__site_photos_with_customer__isnull=True))
-    )
-    surveys_with_media = CustomerSurvey.objects.filter(has_media).distinct().order_by('created_at') # Oldest first
+    try:
+        # Build list of surveys that have at least one media file
+        has_media = (
+            (~Q(roof_photo='') & ~Q(roof_photo__isnull=True)) |
+            (~Q(pan_card_photo='') & ~Q(pan_card_photo__isnull=True)) |
+            (~Q(aadhar_photo='') & ~Q(aadhar_photo__isnull=True)) |
+            (~Q(current_bill_photo='') & ~Q(current_bill_photo__isnull=True)) |
+            (~Q(bank_account_photo='') & ~Q(bank_account_photo__isnull=True)) |
+            (~Q(installation__inverter_serial_photo='') & ~Q(installation__inverter_serial_photo__isnull=True)) |
+            (~Q(installation__inverter_acdb_photo='') & ~Q(installation__inverter_acdb_photo__isnull=True)) |
+            (~Q(installation__panel_serial_photo='') & ~Q(installation__panel_serial_photo__isnull=True)) |
+            (~Q(installation__site_photos_with_customer='') & ~Q(installation__site_photos_with_customer__isnull=True))
+        )
+        surveys_with_media = CustomerSurvey.objects.filter(has_media).distinct().order_by('created_at')
+    except Exception:
+        surveys_with_media = CustomerSurvey.objects.none()
 
-    # Calculate overall stats
+    # Calculate overall stats — guard against missing media directory on server
     total_limit_bytes = 5 * 1024 * 1024 * 1024
-    used_storage_bytes = get_directory_size(settings.MEDIA_ROOT)
-    
+    media_root = getattr(settings, 'MEDIA_ROOT', '')
+    if media_root and os.path.isdir(media_root):
+        used_storage_bytes = get_directory_size(media_root)
+    else:
+        used_storage_bytes = 0
+
     used_storage_gb = used_storage_bytes / (1024 * 1024 * 1024)
     remaining_storage_gb = max(0, 5.0 - used_storage_gb)
     storage_percentage = min(100, (used_storage_bytes / total_limit_bytes) * 100)
-    
+
     paginator = Paginator(surveys_with_media, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)

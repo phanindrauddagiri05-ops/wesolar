@@ -13,7 +13,16 @@ DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
 ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '*').split(',')
 
-CSRF_TRUSTED_ORIGINS = os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS', 'http://localhost:8000').split(',')
+CSRF_TRUSTED_ORIGINS = os.environ.get(
+    'DJANGO_CSRF_TRUSTED_ORIGINS',
+    'http://localhost:8000,http://127.0.0.1:8000,http://0.0.0.0:8000,http://173.249.38.225,http://173.249.38.225:8000'
+).split(',')
+
+# In production (DEBUG=False), also trust the server IP passed via env
+if not DEBUG:
+    _extra_origins = os.environ.get('SERVER_URL', '')
+    if _extra_origins:
+        CSRF_TRUSTED_ORIGINS += [_extra_origins]
 
 
 # Application definition
