@@ -1652,9 +1652,16 @@ def fe_update_survey(request, pk):
 # ==========================================
 # STORAGE MANAGEMENT
 # ==========================================
-@user_passes_test(lambda u: u.is_superuser or u.is_staff or (hasattr(u, 'userprofile') and u.userprofile.role == 'Admin'))
+@login_required
 def manage_storage(request):
     """View for admins to see storage usage and delete old media."""
+    # Allow superusers, staff, or users with Admin/Office role
+    profile = getattr(request.user, 'userprofile', None)
+    user_role = getattr(profile, 'role', '') if profile else ''
+    if not (request.user.is_superuser or request.user.is_staff or user_role in ('Admin', 'Office')):
+        from django.http import HttpResponseForbidden
+        return HttpResponseForbidden('You do not have permission to access this page.')
+
     try:
         # Build list of surveys that have at least one media file
         has_media = (
@@ -1696,7 +1703,7 @@ def manage_storage(request):
     }
     return render(request, 'solar/storage_management.html', context)
 
-@user_passes_test(lambda u: u.is_superuser or u.is_staff or (hasattr(u, 'userprofile') and u.userprofile.role == 'Admin'))
+@login_required
 def delete_survey_media(request, survey_id):
     """Deletes media files from OS and nulls fields to free space."""
     if request.method == 'POST':
@@ -1746,7 +1753,7 @@ def delete_survey_media(request, survey_id):
         
     return redirect('manage_storage')
 
-@user_passes_test(lambda u: u.is_superuser or u.is_staff or (hasattr(u, 'userprofile') and u.userprofile.role == 'Admin'))
+@login_required
 def delete_all_media(request):
     """Deletes media files for ALL projects to free space."""
     if request.method == 'POST':
