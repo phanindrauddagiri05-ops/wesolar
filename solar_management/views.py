@@ -1652,7 +1652,7 @@ def fe_update_survey(request, pk):
 # ==========================================
 # STORAGE MANAGEMENT
 # ==========================================
-@user_passes_test(lambda u: hasattr(u, 'userprofile') and u.userprofile.role == 'Admin')
+@user_passes_test(lambda u: u.is_superuser or u.is_staff or (hasattr(u, 'userprofile') and u.userprofile.role == 'Admin'))
 def manage_storage(request):
     """View for admins to see storage usage and delete old media."""
     try:
@@ -1696,7 +1696,7 @@ def manage_storage(request):
     }
     return render(request, 'solar/storage_management.html', context)
 
-@user_passes_test(lambda u: hasattr(u, 'userprofile') and u.userprofile.role == 'Admin')
+@user_passes_test(lambda u: u.is_superuser or u.is_staff or (hasattr(u, 'userprofile') and u.userprofile.role == 'Admin'))
 def delete_survey_media(request, survey_id):
     """Deletes media files from OS and nulls fields to free space."""
     if request.method == 'POST':
@@ -1746,7 +1746,7 @@ def delete_survey_media(request, survey_id):
         
     return redirect('manage_storage')
 
-@user_passes_test(lambda u: hasattr(u, 'userprofile') and u.userprofile.role == 'Admin')
+@user_passes_test(lambda u: u.is_superuser or u.is_staff or (hasattr(u, 'userprofile') and u.userprofile.role == 'Admin'))
 def delete_all_media(request):
     """Deletes media files for ALL projects to free space."""
     if request.method == 'POST':
