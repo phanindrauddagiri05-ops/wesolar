@@ -76,6 +76,18 @@ class SurveyForm(forms.ModelForm):
             'feasibility_kw': '',
         }
 
+
+    # Image fields that should be optional when editing
+    IMAGE_FIELDS = ['roof_photo', 'pan_card_photo', 'aadhar_photo', 'current_bill_photo', 'bank_account_photo', 'parent_bank_photo']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # If editing an existing record, make all image fields optional
+        if self.instance and self.instance.pk:
+            for field_name in self.IMAGE_FIELDS:
+                if field_name in self.fields:
+                    self.fields[field_name].required = False
+
     def clean_sc_no(self):
         sc_no = self.cleaned_data.get('sc_no')
         if not re.match(r'^\d{16}$', sc_no):
