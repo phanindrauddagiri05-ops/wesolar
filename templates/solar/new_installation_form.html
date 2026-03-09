@@ -427,6 +427,17 @@
                     window.scrollTo({ top: document.getElementById('installation_form_container').offsetTop - 100, behavior: 'smooth' });
                     return false;
                 }
+
+                // Add loading state to the submit button
+                const submitBtn = document.getElementById('submit_btn');
+                if (submitBtn) {
+                    // Disable and show spinner immediately on successful validation
+                    // Set timeout slightly so form submit happens before disabled attribute stops it
+                    setTimeout(() => {
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Uploading Data & Images...';
+                    }, 10);
+                }
             });
         }
     });
@@ -600,7 +611,7 @@
         document.getElementById('installation_form_container').style.display = 'block';
     }
 
-    // Image Previews for File Inputs
+    // Image Previews for File Inputs with loading animation
     document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('input[type="file"]').forEach(function (input) {
             input.addEventListener('change', function (e) {
@@ -614,9 +625,19 @@
                     }
 
                     if (file.type.startsWith('image/')) {
+                        // Show loading animation
+                        previewContainer.innerHTML = `
+                            <div class="d-flex align-items-center mt-2 text-primary">
+                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                <span class="small fw-bold">Uploading preview...</span>
+                            </div>`;
+
                         const reader = new FileReader();
                         reader.onload = function (e) {
-                            previewContainer.innerHTML = `<img src="${e.target.result}" class="img-thumbnail shadow-sm mt-2" style="max-height: 150px; border-radius: 8px;">`;
+                            // Slight delay for animation effect
+                            setTimeout(() => {
+                                previewContainer.innerHTML = `<img src="${e.target.result}" class="img-thumbnail shadow-sm mt-2" style="max-height: 150px; border-radius: 8px; animation: fadeInUp 0.3s ease-out;">`;
+                            }, 400);
                         }
                         reader.readAsDataURL(file);
                     } else {

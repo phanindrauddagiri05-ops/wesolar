@@ -55,7 +55,7 @@ class CustomerSurvey(models.Model):
     floors = models.PositiveIntegerField(null=True, blank=True, help_text="Number of Floors")
     gps_coordinates = models.CharField(max_length=100)
     area = models.CharField(max_length=255)
-    measurements = models.FloatField(help_text="Measurements (Square Feet)", null=True, blank=True)
+    measurements = models.CharField(max_length=255, help_text="Measurements (Square Feet)", null=True, blank=True)
     
     # Pricing & Status
     agreed_amount = models.DecimalField(max_digits=10, decimal_places=2)
