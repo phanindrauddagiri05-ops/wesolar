@@ -127,6 +127,8 @@ class CustomerSurvey(models.Model):
         return hasattr(self, 'installation')
 
 class Installation(models.Model):
+    STRUCTURE_KIT_CHOICES = [('Normal', 'Normal'), ('Fabrication', 'Fabrication')]
+    INVERTER_PHASE_TYPE_CHOICES = [('Single Phase', 'Single Phase'), ('Three Phase', 'Three Phase')]
     # --- Installer Section ---
     survey = models.OneToOneField(CustomerSurvey, on_delete=models.CASCADE, related_name='installation')
     
@@ -157,7 +159,31 @@ class Installation(models.Model):
     dc_voltage = models.FloatField(default=0.0, help_text="in Volts") # New Field
     ac_voltage = models.FloatField(default=0.0, help_text="in Volts") # New Field
     earthing_resistance = models.FloatField(default=0.0, help_text="in Ohms") # New Field
-    
+
+    # --- Materials Used Section ---
+    panels_count = models.PositiveIntegerField(default=0, blank=True, help_text="Number of Panels")
+    structure_kit_type = models.CharField(max_length=20, choices=STRUCTURE_KIT_CHOICES, blank=True, default='Normal', help_text="Normal / Fabrication")
+    inverter_kw = models.FloatField(default=0.0, blank=True, help_text="Inverter capacity in kW")
+    inverter_phase_type = models.CharField(max_length=20, choices=INVERTER_PHASE_TYPE_CHOICES, blank=True, default='Single Phase', help_text="Single / Three Phase")
+    ac_cable_red = models.FloatField(default=0.0, blank=True, help_text="AC Cable Red in Meters")
+    ac_cable_black = models.FloatField(default=0.0, blank=True, help_text="AC Cable Black in Meters")
+    dc_cable_red_black = models.FloatField(default=0.0, blank=True, help_text="DC Cable Red & Black in Meters")
+    la_cable_mtrs = models.FloatField(default=0.0, blank=True, help_text="LA Cable in Meters")
+    pipes_count = models.PositiveIntegerField(default=0, blank=True, help_text="Number of Pipes")
+    earthing_kit_count = models.PositiveIntegerField(default=0, blank=True, help_text="Number of Earthing Kits")
+    acdb_count = models.PositiveIntegerField(default=0, blank=True, help_text="Number of ACDBs")
+    dcdb_count = models.PositiveIntegerField(default=0, blank=True, help_text="Number of DCDBs")
+    mc4_connectors_count = models.PositiveIntegerField(default=0, blank=True, help_text="Number of MC4 Connectors")
+    long_l_bands_count = models.PositiveIntegerField(default=0, blank=True, help_text="Number of Long L Bands")
+    short_l_bands_count = models.PositiveIntegerField(default=0, blank=True, help_text="Number of Short L Bands")
+    t_bands_count = models.PositiveIntegerField(default=0, blank=True, help_text="Number of T Bands")
+    tapes_red_count = models.PositiveIntegerField(default=0, blank=True, help_text="Number of Red Tapes")
+    tapes_black_count = models.PositiveIntegerField(default=0, blank=True, help_text="Number of Black Tapes")
+    tags_count = models.PositiveIntegerField(default=0, blank=True, help_text="Number of Tags")
+    nail_clamps_2side_count = models.PositiveIntegerField(default=0, blank=True, help_text="Number of 2-Side Nail Clamps")
+    nail_clamps_1side_count = models.PositiveIntegerField(default=0, blank=True, help_text="Number of 1-Side Nail Clamps")
+    anchor_hardener_count = models.PositiveIntegerField(default=0, blank=True, help_text="Number of Anchor Hardeners")
+
     timestamp = models.DateTimeField(auto_now_add=True)
     updated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 

@@ -237,6 +237,29 @@ class InstallationForm(forms.ModelForm):
             'ac_voltage',
             'earthing_resistance',
             'customer_rating',
+            # Materials Used
+            'panels_count',
+            'structure_kit_type',
+            'inverter_kw',
+            'inverter_phase_type',
+            'ac_cable_red',
+            'ac_cable_black',
+            'dc_cable_red_black',
+            'la_cable_mtrs',
+            'pipes_count',
+            'earthing_kit_count',
+            'acdb_count',
+            'dcdb_count',
+            'mc4_connectors_count',
+            'long_l_bands_count',
+            'short_l_bands_count',
+            't_bands_count',
+            'tapes_red_count',
+            'tapes_black_count',
+            'tags_count',
+            'nail_clamps_2side_count',
+            'nail_clamps_1side_count',
+            'anchor_hardener_count',
         ]
         labels = {
             'inverter_make': 'Inverter Make',
@@ -258,6 +281,29 @@ class InstallationForm(forms.ModelForm):
             'ac_voltage': 'AC Voltage',
             'earthing_resistance': 'Earthing Resistance',
             'customer_rating': 'Customer Rating (1-5)',
+            # Materials Used
+            'panels_count': 'Panels (Count)',
+            'structure_kit_type': 'Structure Kit (Normal / Fabrication)',
+            'inverter_kw': 'Inverter (kW)',
+            'inverter_phase_type': 'Inverter Phase (Single / Three Phase)',
+            'ac_cable_red': 'AC Cable Red (Mtrs)',
+            'ac_cable_black': 'AC Cable Black (Mtrs)',
+            'dc_cable_red_black': 'DC Cable Red & Black (Mtrs)',
+            'la_cable_mtrs': 'LA Cable (Mtrs)',
+            'pipes_count': 'Pipes (Count)',
+            'earthing_kit_count': 'Earthing Kit (Count)',
+            'acdb_count': 'ACDB (Count)',
+            'dcdb_count': 'DCDB (Count)',
+            'mc4_connectors_count': 'MC4 Connectors (Count)',
+            'long_l_bands_count': 'Long L Bands (Count)',
+            'short_l_bands_count': 'Short L Bands (Count)',
+            't_bands_count': 'T Bands (Count)',
+            'tapes_red_count': 'Tapes Red (Count)',
+            'tapes_black_count': 'Tapes Black (Count)',
+            'tags_count': 'Tags (Count)',
+            'nail_clamps_2side_count': 'Nail Clamps 2 Side (Count)',
+            'nail_clamps_1side_count': 'Nail Clamps 1 Side (Count)',
+            'anchor_hardener_count': 'Anchor Hardener (Count)',
         }
         widgets = {
             'inverter_serial_photo': forms.ClearableFileInput(),
@@ -267,6 +313,29 @@ class InstallationForm(forms.ModelForm):
             'installer_remarks': forms.Textarea(attrs={'rows': 3}),
             'customer_remarks': forms.Textarea(attrs={'rows': 3}),
             'leftover_materials': forms.Textarea(attrs={'rows': 3}),
+            # Material fields - styled for compact mobile layout
+            'panels_count': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
+            'structure_kit_type': forms.Select(attrs={'class': 'form-select form-select-sm'}),
+            'inverter_kw': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0', 'step': '0.01'}),
+            'inverter_phase_type': forms.Select(attrs={'class': 'form-select form-select-sm'}),
+            'ac_cable_red': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0', 'step': '0.01'}),
+            'ac_cable_black': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0', 'step': '0.01'}),
+            'dc_cable_red_black': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0', 'step': '0.01'}),
+            'la_cable_mtrs': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0', 'step': '0.01'}),
+            'pipes_count': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
+            'earthing_kit_count': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
+            'acdb_count': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
+            'dcdb_count': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
+            'mc4_connectors_count': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
+            'long_l_bands_count': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
+            'short_l_bands_count': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
+            't_bands_count': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
+            'tapes_red_count': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
+            'tapes_black_count': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
+            'tags_count': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
+            'nail_clamps_2side_count': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
+            'nail_clamps_1side_count': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
+            'anchor_hardener_count': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -282,10 +351,38 @@ class InstallationForm(forms.ModelForm):
         self.fields['customer_rating'].initial = 5
         
         # Ensure numeric fields have correct input type for mobile keyboards
-        numeric_fields = ['ac_cable_used', 'dc_cable_used', 'la_cable_used', 'pipes_used', 'dc_voltage', 'ac_voltage', 'earthing_resistance']
-        for field in numeric_fields:
+        numeric_float_fields = [
+            'ac_cable_used', 'dc_cable_used', 'la_cable_used', 'pipes_used',
+            'dc_voltage', 'ac_voltage', 'earthing_resistance',
+            'inverter_kw', 'ac_cable_red', 'ac_cable_black', 'dc_cable_red_black', 'la_cable_mtrs',
+        ]
+        for field in numeric_float_fields:
             self.fields[field].widget.attrs['type'] = 'number'
             self.fields[field].widget.attrs['step'] = '0.01'
+            self.fields[field].widget.attrs['min'] = '0'
+
+        numeric_int_fields = [
+            'panels_count', 'pipes_count', 'earthing_kit_count', 'acdb_count', 'dcdb_count',
+            'mc4_connectors_count', 'long_l_bands_count', 'short_l_bands_count', 't_bands_count',
+            'tapes_red_count', 'tapes_black_count', 'tags_count',
+            'nail_clamps_2side_count', 'nail_clamps_1side_count', 'anchor_hardener_count',
+        ]
+        for field in numeric_int_fields:
+            self.fields[field].widget.attrs['type'] = 'number'
+            self.fields[field].widget.attrs['step'] = '1'
+            self.fields[field].widget.attrs['min'] = '0'
+
+        # Make all Materials Used fields optional
+        materials_fields = [
+            'panels_count', 'structure_kit_type', 'inverter_kw', 'inverter_phase_type',
+            'ac_cable_red', 'ac_cable_black', 'dc_cable_red_black', 'la_cable_mtrs',
+            'pipes_count', 'earthing_kit_count', 'acdb_count', 'dcdb_count',
+            'mc4_connectors_count', 'long_l_bands_count', 'short_l_bands_count', 't_bands_count',
+            'tapes_red_count', 'tapes_black_count', 'tags_count',
+            'nail_clamps_2side_count', 'nail_clamps_1side_count', 'anchor_hardener_count',
+        ]
+        for field in materials_fields:
+            self.fields[field].required = False
 
 class OfficeStatusForm(forms.ModelForm):
     class Meta:

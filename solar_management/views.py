@@ -1332,7 +1332,14 @@ def export_solar_data(request):
                 'Installer', 'Install Date', 'Inverter Make', 'Inverter Phase', 
                 'AC Cable (m)', 'DC Cable (m)', 'LA Cable (m)', 'Pipes (m)', 'Leftover Materials',
                 'DC Volt', 'AC Volt', 'Earth Resistance', 'Warranty Claimed', 'App Installed',
-                'Installer Remarks', 'Customer Remarks', 'Customer Rating', 'Status'
+                'Installer Remarks', 'Customer Remarks', 'Customer Rating', 'Status',
+                # Materials Dispatched
+                'Panels (Count)', 'Structure Kit', 'Inverter (kW)', 'Inverter Phase Type',
+                'AC Cable Red (m)', 'AC Cable Black (m)', 'DC Cable R&B (m)', 'LA Cable (m)',
+                'Pipes Count', 'Earthing Kit', 'ACDB', 'DCDB', 'MC4 Connectors',
+                'Long L Bands', 'Short L Bands', 'T Bands',
+                'Tapes Red', 'Tapes Black', 'Tags',
+                'Nail Clamps 2 Side', 'Nail Clamps 1 Side', 'Anchor Hardener',
             ]
             ws.append(headers)
             installations = Installation.objects.all().select_related('survey', 'updated_by').order_by('id').distinct()
@@ -1346,7 +1353,14 @@ def export_solar_data(request):
                     i.la_cable_used, i.pipes_used, i.leftover_materials, i.dc_voltage, i.ac_voltage, 
                     i.earthing_resistance, 'Yes' if i.warranty_claimed else 'No', 'Yes' if i.app_installation_status else 'No',
                     i.installer_remarks, i.customer_remarks, i.customer_rating,
-                    sur.workflow_status
+                    sur.workflow_status,
+                    # Materials Dispatched
+                    i.panels_count, i.structure_kit_type, i.inverter_kw, i.inverter_phase_type,
+                    i.ac_cable_red, i.ac_cable_black, i.dc_cable_red_black, i.la_cable_mtrs,
+                    i.pipes_count, i.earthing_kit_count, i.acdb_count, i.dcdb_count, i.mc4_connectors_count,
+                    i.long_l_bands_count, i.short_l_bands_count, i.t_bands_count,
+                    i.tapes_red_count, i.tapes_black_count, i.tags_count,
+                    i.nail_clamps_2side_count, i.nail_clamps_1side_count, i.anchor_hardener_count,
                 ])
 
         # 3. ENQUIRIES REPORT
@@ -1382,10 +1396,7 @@ def export_solar_data(request):
                 'FE Remarks', 'Reference Name', 'PMS Registration Number', 'Division', 'Registration Status',
                 'Discom Status', 'Net Metering Status', 'Subsidy Status', 'Office Remarks',
                 'Workflow Status', 'Installation Date', 'Field Engineer Name', 'Survey Date',
-                'Installer', 'Install Date', 'Inverter Make', 'Inverter Phase',
-                'AC Cable (m)', 'DC Cable (m)', 'LA Cable (m)', 'Pipes (m)', 'Leftover Materials',
-                'DC Volt', 'AC Volt', 'Earth Resistance', 'Warranty Claimed', 'App Installed',
-                'Installer Remarks', 'Customer Remarks', 'Customer Rating',
+                # Bank Details
                 'Parent Bank', 'Parent Bank A/C', 'Loan Applied Bank', 'Loan Applied IFSC', 'Loan Applied A/C',
                 'Manager Number', 'Loan Status', 'First Loan Amount', 'First Loan UTR', 'First Loan Date',
                 'Second Loan Amount', 'Second Loan UTR', 'Second Loan Date'
@@ -1398,7 +1409,7 @@ def export_solar_data(request):
                 has_b = hasattr(p, 'bank_details')
                 
                 row = [
-                    # FE Details
+                    # FE / Survey Details
                     p.customer_name, p.sc_no, p.phone_number, p.connection_type, p.phase, p.contracted_load, p.feasibility_kw,
                     p.aadhar_no, p.pan_card, p.email, p.aadhar_linked_phone, p.bank_account_no,
                     p.roof_type, p.structure_type, p.structure_height, p.floors if p.floors is not None else '', p.area, p.gps_coordinates,
@@ -1409,19 +1420,7 @@ def export_solar_data(request):
                     p.created_by.get_full_name() if p.created_by else 'Unknown',
                     p.created_at.strftime("%Y-%m-%d %I:%M %p"),
                 ]
-                
-                # Installation Details
-                if has_i:
-                    row.extend([
-                        p.installation.updated_by.get_full_name() if p.installation.updated_by else '',
-                        p.installation.timestamp.strftime("%Y-%m-%d %I:%M %p"), p.installation.inverter_make, p.installation.inverter_phase,
-                        p.installation.ac_cable_used, p.installation.dc_cable_used, p.installation.la_cable_used, p.installation.pipes_used, p.installation.leftover_materials,
-                        p.installation.dc_voltage, p.installation.ac_voltage, p.installation.earthing_resistance, 'Yes' if p.installation.warranty_claimed else 'No', 'Yes' if p.installation.app_installation_status else 'No',
-                        p.installation.installer_remarks, p.installation.customer_remarks, p.installation.customer_rating
-                    ])
-                else:
-                    row.extend([''] * 17) # 17 installation columns
-                    
+
                 # Bank Details
                 if has_b:
                     row.extend([

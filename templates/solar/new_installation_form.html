@@ -256,13 +256,135 @@
 
                     <!-- Cables & Materials -->
                     <h5 class="text-primary border-bottom pb-2 mt-4 mb-3 fw-bold"><i
-                            class="bi bi-gear-wide-connected me-2"></i>Cables & Materials</h5>
+                            class="bi bi-gear-wide-connected me-2"></i>Cables & Materials Used</h5>
                     <div class="row g-3">
                         <div class="col-md-3">{{ form.ac_cable_used|as_crispy_field }}</div>
                         <div class="col-md-3">{{ form.dc_cable_used|as_crispy_field }}</div>
                         <div class="col-md-3">{{ form.la_cable_used|as_crispy_field }}</div>
                         <div class="col-md-3">{{ form.pipes_used|as_crispy_field }}</div>
                         <div class="col-12">{{ form.leftover_materials|as_crispy_field }}</div>
+                    </div>
+
+                    <!-- Materials Dispatched -->
+                    <h5 class="text-warning border-bottom pb-2 mt-4 mb-3 fw-bold"><i
+                            class="bi bi-box-seam me-2"></i>Materials Dispatched</h5>
+                    <div class="mb-3" style="border: 1px solid #dee2e6; border-radius: 8px; overflow: hidden;">
+                        <div class="d-flex align-items-center px-3 py-2"
+                            style="background:#212529; color:#fff; font-size:0.78rem; font-weight:600; letter-spacing:0.04em;">
+                            <div style="flex:1;">ITEM &nbsp;<span style="font-weight:400; color:#adb5bd;">/ UNIT</span>
+                            </div>
+                            <div style="width:110px; text-align:right;">QTY</div>
+                        </div>
+                        <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
+                            <div style="flex:1;"><span class="fw-semibold">Panels</span><br><small
+                                    class="text-muted">Count</small></div>
+                            <div style="width:110px;">{{ form.panels_count }}</div>
+                        </div>
+                        <div class="d-flex align-items-center px-3 py-2 border-bottom">
+                            <div style="flex:1;"><span class="fw-semibold">Structure Kit</span><br><small
+                                    class="text-muted">Normal / Fabrication</small></div>
+                            <div style="width:110px;">{{ form.structure_kit_type }}</div>
+                        </div>
+                        <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
+                            <div style="flex:1;"><span class="fw-semibold">Inverter (kW)</span><br><small
+                                    class="text-muted">kW</small></div>
+                            <div style="width:110px;">{{ form.inverter_kw }}</div>
+                        </div>
+                        <div class="d-flex align-items-center px-3 py-2 border-bottom">
+                            <div style="flex:1;"><span class="fw-semibold">Inverter Phase</span><br><small
+                                    class="text-muted">Single / Three Phase</small></div>
+                            <div style="width:110px;">{{ form.inverter_phase_type }}</div>
+                        </div>
+                        <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
+                            <div style="flex:1;"><span class="fw-semibold">AC Cable Red</span><br><small
+                                    class="text-muted">Mtrs</small></div>
+                            <div style="width:110px;">{{ form.ac_cable_red }}</div>
+                        </div>
+                        <div class="d-flex align-items-center px-3 py-2 border-bottom">
+                            <div style="flex:1;"><span class="fw-semibold">AC Cable Black</span><br><small
+                                    class="text-muted">Mtrs</small></div>
+                            <div style="width:110px;">{{ form.ac_cable_black }}</div>
+                        </div>
+                        <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
+                            <div style="flex:1;"><span class="fw-semibold">DC Cable Red &amp; Black</span><br><small
+                                    class="text-muted">Mtrs</small></div>
+                            <div style="width:110px;">{{ form.dc_cable_red_black }}</div>
+                        </div>
+                        <div class="d-flex align-items-center px-3 py-2 border-bottom">
+                            <div style="flex:1;"><span class="fw-semibold">LA Cable</span><br><small
+                                    class="text-muted">Mtrs</small></div>
+                            <div style="width:110px;">{{ form.la_cable_mtrs }}</div>
+                        </div>
+                        <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
+                            <div style="flex:1;"><span class="fw-semibold">Pipes</span><br><small
+                                    class="text-muted">Count</small></div>
+                            <div style="width:110px;">{{ form.pipes_count }}</div>
+                        </div>
+                        <div class="d-flex align-items-center px-3 py-2 border-bottom">
+                            <div style="flex:1;"><span class="fw-semibold">Earthing Kit</span><br><small
+                                    class="text-muted">Count</small></div>
+                            <div style="width:110px;">{{ form.earthing_kit_count }}</div>
+                        </div>
+                        <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
+                            <div style="flex:1;"><span class="fw-semibold">ACDB</span><br><small
+                                    class="text-muted">Count</small></div>
+                            <div style="width:110px;">{{ form.acdb_count }}</div>
+                        </div>
+                        <div class="d-flex align-items-center px-3 py-2 border-bottom">
+                            <div style="flex:1;"><span class="fw-semibold">DCDB</span><br><small
+                                    class="text-muted">Count</small></div>
+                            <div style="width:110px;">{{ form.dcdb_count }}</div>
+                        </div>
+                        <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
+                            <div style="flex:1;"><span class="fw-semibold">MC4 Connectors</span><br><small
+                                    class="text-muted">Count</small></div>
+                            <div style="width:110px;">{{ form.mc4_connectors_count }}</div>
+                        </div>
+                        <div class="d-flex align-items-center px-3 py-2 border-bottom">
+                            <div style="flex:1;"><span class="fw-semibold">Long L Bands</span><br><small
+                                    class="text-muted">Count</small></div>
+                            <div style="width:110px;">{{ form.long_l_bands_count }}</div>
+                        </div>
+                        <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
+                            <div style="flex:1;"><span class="fw-semibold">Short L Bands</span><br><small
+                                    class="text-muted">Count</small></div>
+                            <div style="width:110px;">{{ form.short_l_bands_count }}</div>
+                        </div>
+                        <div class="d-flex align-items-center px-3 py-2 border-bottom">
+                            <div style="flex:1;"><span class="fw-semibold">T Bands</span><br><small
+                                    class="text-muted">Count</small></div>
+                            <div style="width:110px;">{{ form.t_bands_count }}</div>
+                        </div>
+                        <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
+                            <div style="flex:1;"><span class="fw-semibold">Tapes Red</span><br><small
+                                    class="text-muted">Count</small></div>
+                            <div style="width:110px;">{{ form.tapes_red_count }}</div>
+                        </div>
+                        <div class="d-flex align-items-center px-3 py-2 border-bottom">
+                            <div style="flex:1;"><span class="fw-semibold">Tapes Black</span><br><small
+                                    class="text-muted">Count</small></div>
+                            <div style="width:110px;">{{ form.tapes_black_count }}</div>
+                        </div>
+                        <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
+                            <div style="flex:1;"><span class="fw-semibold">Tags</span><br><small
+                                    class="text-muted">Count</small></div>
+                            <div style="width:110px;">{{ form.tags_count }}</div>
+                        </div>
+                        <div class="d-flex align-items-center px-3 py-2 border-bottom">
+                            <div style="flex:1;"><span class="fw-semibold">Nail Clamps 2 Side</span><br><small
+                                    class="text-muted">Count</small></div>
+                            <div style="width:110px;">{{ form.nail_clamps_2side_count }}</div>
+                        </div>
+                        <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
+                            <div style="flex:1;"><span class="fw-semibold">Nail Clamps 1 Side</span><br><small
+                                    class="text-muted">Count</small></div>
+                            <div style="width:110px;">{{ form.nail_clamps_1side_count }}</div>
+                        </div>
+                        <div class="d-flex align-items-center px-3 py-2">
+                            <div style="flex:1;"><span class="fw-semibold">Anchor Hardener</span><br><small
+                                    class="text-muted">Count</small></div>
+                            <div style="width:110px;">{{ form.anchor_hardener_count }}</div>
+                        </div>
                     </div>
 
                     <!-- Readings -->
@@ -333,6 +455,7 @@
 </div>
 
 
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Terms & Conditions checkbox controls submit button
@@ -362,7 +485,12 @@
 
         const numericFields = [
             'id_ac_cable_used', 'id_dc_cable_used', 'id_la_cable_used', 'id_pipes_used',
-            'id_dc_voltage', 'id_ac_voltage', 'id_earthing_resistance'
+            'id_dc_voltage', 'id_ac_voltage', 'id_earthing_resistance',
+            'id_inverter_kw', 'id_ac_cable_red', 'id_ac_cable_black', 'id_dc_cable_red_black', 'id_la_cable_mtrs',
+            'id_panels_count', 'id_pipes_count', 'id_earthing_kit_count', 'id_acdb_count', 'id_dcdb_count',
+            'id_mc4_connectors_count', 'id_long_l_bands_count', 'id_short_l_bands_count', 'id_t_bands_count',
+            'id_tapes_red_count', 'id_tapes_black_count', 'id_tags_count',
+            'id_nail_clamps_2side_count', 'id_nail_clamps_1side_count', 'id_anchor_hardener_count'
         ];
 
         numericFields.forEach(id => setNumericOnly(id));
@@ -565,22 +693,57 @@
 
         listContainer.innerHTML = '';
 
+        // Distinct accent colors cycling per card for easy visual differentiation
+        const accentColors = ['#0d6efd', '#198754', '#dc3545', '#fd7e14', '#6f42c1', '#0dcaf0', '#20c997'];
+
         records.forEach((record, index) => {
+            const accent = accentColors[index % accentColors.length];
             const item = document.createElement('div');
-            item.className = 'list-group-item list-group-item-action';
+            item.style.cssText = `
+                border: 1.5px solid #e0e0e0;
+                border-left: 5px solid ${accent};
+                border-radius: 10px;
+                margin-bottom: 10px;
+                background: #fff;
+                overflow: hidden;
+                cursor: pointer;
+            `;
             item.innerHTML = `
-                <div class="d-flex w-100 align-items-center">
-                    <input type="radio" name="selected_survey" value="${record.id}" id="survey_${record.id}" class="form-check-input me-3" onchange="enableConfirmButton()">
-                    <label for="survey_${record.id}" class="flex-grow-1 mb-0" style="cursor:pointer;">
-                        <div class="row g-2">
-                            <div class="col-md-3"><strong>${record.customer_name}</strong></div>
-                            <div class="col-md-3"><small class="text-muted">SC: ${record.sc_no.slice(0, 10)}...</small></div>
-                            <div class="col-md-2"><span class="badge bg-primary">${record.feasibility_kw} KW</span></div>
-                            <div class="col-md-2"><span class="badge bg-info">${record.phase}</span></div>
-                            <div class="col-md-2"><small class="text-muted">${record.created_at}</small></div>
+                <label for="survey_${record.id}" style="display:block; cursor:pointer; margin:0;">
+                    <div style="padding: 12px 14px;">
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
+                            <div style="
+                                width:28px; height:28px; border-radius:50%;
+                                background:${accent}; color:#fff;
+                                font-size:0.78rem; font-weight:700;
+                                display:flex; align-items:center; justify-content:center;
+                                flex-shrink:0;
+                            ">${index + 1}</div>
+                            <div style="flex:1; min-width:0;">
+                                <div style="font-size:1rem; font-weight:700; color:#212529; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                    ${record.customer_name}
+                                </div>
+                                <div style="font-size:0.75rem; color:#6c757d; margin-top:1px;">
+                                    SC: ${record.sc_no}
+                                </div>
+                            </div>
+                            <input type="radio" name="selected_survey" value="${record.id}" id="survey_${record.id}"
+                                class="form-check-input mt-0" style="width:1.2em; height:1.2em; flex-shrink:0;"
+                                onchange="enableConfirmButton()">
                         </div>
-                    </label>
-                </div>
+                        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                            <span style="background:${accent}; color:#fff; border-radius:20px; padding:2px 10px; font-size:0.75rem; font-weight:600;">
+                                ${record.feasibility_kw} KW
+                            </span>
+                            <span style="background:#e9ecef; color:#495057; border-radius:20px; padding:2px 10px; font-size:0.75rem; font-weight:600;">
+                                ${record.phase}
+                            </span>
+                            <span style="margin-left:auto; font-size:0.72rem; color:#6c757d;">
+                                📅 ${record.created_at}
+                            </span>
+                        </div>
+                    </div>
+                </label>
             `;
             listContainer.appendChild(item);
         });
