@@ -213,6 +213,7 @@ def signup_view(request):
                 mobile_number=form.cleaned_data['mobile_number'],
                 role=form.cleaned_data['role'],
                 is_approved=False,
+                plain_password=form.cleaned_data['password'],
                 aadhar_photo=form.cleaned_data.get('aadhar_photo'),
                 pan_card_photo=form.cleaned_data.get('pan_card_photo')
             )
@@ -347,13 +348,13 @@ def api_global_search(request):
     if is_field_engineer(request.user):
         surveys = CustomerSurvey.objects.filter(created_by=request.user).filter(
             Q(customer_name__icontains=query) |
-            Q(phone_number__icontains=query) |
+            Q(aadhar_linked_phone__icontains=query) |
             Q(sc_no__icontains=query)
         )[:5]
         for s in surveys:
             results.append({
                 'title': s.customer_name,
-                'subtitle': f"Phone: {s.phone_number} | SC: {s.sc_no}",
+                'subtitle': f"Phone: {s.aadhar_linked_phone} | SC: {s.sc_no}",
                 'url': f"/site/{s.id}/",
                 'type': 'Application'
             })
@@ -362,7 +363,7 @@ def api_global_search(request):
     elif is_installer(request.user):
         surveys = CustomerSurvey.objects.filter(
             Q(customer_name__icontains=query) |
-            Q(phone_number__icontains=query) |
+            Q(aadhar_linked_phone__icontains=query) |
             Q(sc_no__icontains=query)
         ).select_related('installation')[:8]
         
@@ -391,13 +392,13 @@ def api_global_search(request):
     elif is_office_staff(request.user):
         surveys = CustomerSurvey.objects.filter(
             Q(customer_name__icontains=query) |
-            Q(phone_number__icontains=query) |
+            Q(aadhar_linked_phone__icontains=query) |
             Q(sc_no__icontains=query)
         )[:5]
         for s in surveys:
             results.append({
                 'title': s.customer_name,
-                'subtitle': f"Phone: {s.phone_number} | Status: {s.workflow_status}",
+                'subtitle': f"Phone: {s.aadhar_linked_phone} | Status: {s.workflow_status}",
                 'url': f"/office/update-status/{s.id}/",
                 'type': 'Project'
             })
@@ -406,15 +407,13 @@ def api_global_search(request):
     elif is_loan_officer(request.user):
         surveys = CustomerSurvey.objects.filter(
             Q(customer_name__icontains=query) |
-            Q(phone_number__icontains=query) |
             Q(aadhar_linked_phone__icontains=query) |
             Q(sc_no__icontains=query)
         )[:5]
         for s in surveys:
-            phone = s.phone_number if s.phone_number else s.aadhar_linked_phone
             results.append({
                 'title': s.customer_name,
-                'subtitle': f"Phone: {phone} | Status: {s.workflow_status}",
+                'subtitle': f"Phone: {s.aadhar_linked_phone} | Status: {s.workflow_status}",
                 'url': f"/loan-dashboard/?site_id={s.id}",
                 'type': 'Loan Application'
             })
@@ -437,7 +436,7 @@ def api_global_search(request):
         # B. FE Data (Surveys without installation or general lookup)
         surveys = CustomerSurvey.objects.filter(
             Q(customer_name__icontains=query) |
-            Q(phone_number__icontains=query)
+            Q(aadhar_linked_phone__icontains=query)
         ).select_related('installation')[:5]
         
         for s in surveys:
@@ -454,7 +453,7 @@ def api_global_search(request):
                 # B. FE Data
                 results.append({
                     'title': s.customer_name,
-                    'subtitle': f"Engineer: {s.created_by.get_full_name()} | Phone: {s.phone_number}",
+                    'subtitle': f"Engineer: {s.created_by.get_full_name()} | Phone: {s.aadhar_linked_phone}",
                     'url': f"/site/{s.id}/",
                     'type': 'FE Application'
                 })
@@ -473,7 +472,6 @@ def get_bank_details_by_phone(request):
 
     # Search in both phone fields
     survey = CustomerSurvey.objects.filter(
-        Q(phone_number__icontains=phone) | 
         Q(aadhar_linked_phone__icontains=phone)
     ).order_by('-created_at').first() # Get most recent
 
@@ -527,7 +525,7 @@ def fe_dashboard(request):
     if query:
         my_surveys = CustomerSurvey.objects.filter(created_by=request.user).filter(
             Q(customer_name__icontains=query) |
-            Q(phone_number__icontains=query) |
+            Q(aadhar_linked_phone__icontains=query) |
             Q(sc_no__icontains=query)
         ).order_by('-created_at')
     else:
@@ -549,7 +547,7 @@ def installer_dashboard(request):
     if query:
         all_surveys = CustomerSurvey.objects.filter(
             Q(customer_name__icontains=query) |
-            Q(phone_number__icontains=query) |
+            Q(aadhar_linked_phone__icontains=query) |
             Q(sc_no__icontains=query)
         ).select_related('installation').order_by('-created_at')
     else:
@@ -634,25 +632,25 @@ def admin_dashboard(request):
         # 2. FE Data (All Surveys)
         fe_data = CustomerSurvey.objects.filter(
             Q(customer_name__icontains=query) |
-            Q(phone_number__icontains=query)
+            Q(aadhar_linked_phone__icontains=query)
         ).select_related('created_by').order_by('-created_at')
         
         # 3. Installer Data (All Installations)
         installer_data = Installation.objects.filter(
             Q(survey__customer_name__icontains=query) |
-            Q(survey__phone_number__icontains=query)
+            Q(survey__aadhar_linked_phone__icontains=query)
         ).select_related('survey', 'updated_by').order_by('-timestamp')
         
         # 4. Office Data (Surveys with Status Tracking)
         office_data = CustomerSurvey.objects.filter(
             Q(customer_name__icontains=query) |
-            Q(phone_number__icontains=query)
+            Q(aadhar_linked_phone__icontains=query)
         ).exclude(workflow_status='Pending').order_by('-created_at')[:5]
         
         # 5. Loan Data (Bank Details)
         loan_data = BankDetails.objects.filter(
             Q(survey__customer_name__icontains=query) |
-            Q(survey__phone_number__icontains=query)
+            Q(survey__aadhar_linked_phone__icontains=query)
         ).select_related('survey').order_by('-id')[:5]
     else:
         
@@ -762,7 +760,7 @@ def office_dashboard(request):
     query = request.GET.get('q', '')
     if query:
         surveys = CustomerSurvey.objects.filter(
-            Q(phone_number__icontains=query) | 
+            Q(aadhar_linked_phone__icontains=query) | 
             Q(customer_name__icontains=query) |
             Q(sc_no__icontains=query)
         ).select_related('installation').order_by('-created_at')
@@ -832,7 +830,7 @@ def get_survey_by_phone_all(request):
         return JsonResponse({'found': False, 'message': 'Phone number is required.'})
 
     surveys = CustomerSurvey.objects.filter(
-        Q(phone_number=phone) | Q(aadhar_linked_phone=phone)
+        Q(aadhar_linked_phone=phone)
     ).order_by('-created_at')
 
     if not surveys.exists():
@@ -850,7 +848,7 @@ def get_survey_by_phone_all(request):
             'area': survey.area or '',
             'agreed_amount': str(survey.agreed_amount),
             'workflow_status': survey.workflow_status,
-            'phone_number': survey.phone_number or survey.aadhar_linked_phone or '',
+            'phone_number': survey.aadhar_linked_phone or '',
         })
 
     # Multiple surveys found — return list
@@ -891,7 +889,6 @@ def loan_dashboard(request):
         else:
             # Search by Phone Number (including Aadhar linked as backup)
             customer = CustomerSurvey.objects.filter(
-                Q(phone_number__icontains=query) | 
                 Q(aadhar_linked_phone__icontains=query)
             ).first()
         
@@ -1049,7 +1046,7 @@ def get_survey_by_phone(request):
         return JsonResponse({'found': False, 'message': 'Phone number is required.'})
     
     # Query ALL surveys with this phone number (excluding those with installations)
-    surveys = CustomerSurvey.objects.filter(phone_number=phone).order_by('-created_at')
+    surveys = CustomerSurvey.objects.filter(aadhar_linked_phone=phone).order_by('-created_at')
     
     if not surveys.exists():
         return JsonResponse({
@@ -1081,7 +1078,7 @@ def get_survey_by_phone(request):
             'aadhar_no': survey.aadhar_no,
             'pan_card': survey.pan_card,
             'email': survey.email,
-            'phone_number': survey.phone_number or '',
+            'phone_number': survey.aadhar_linked_phone or '',
             'area': survey.area,
             'gps_coordinates': survey.gps_coordinates,
             'roof_type': survey.roof_type,
@@ -1153,7 +1150,7 @@ def get_survey_by_id(request):
             'aadhar_no': survey.aadhar_no,
             'pan_card': survey.pan_card,
             'email': survey.email,
-            'phone_number': survey.phone_number or '',
+            'phone_number': survey.aadhar_linked_phone or '',
             'area': survey.area,
             'gps_coordinates': survey.gps_coordinates,
             'roof_type': survey.roof_type,
@@ -1281,16 +1278,27 @@ def toggle_registration(request, pk):
     return redirect('dashboard')
 
 @login_required
-@staff_member_required
 def export_solar_data(request):
     """
     Export all details to Excel based on report type.
-    Types: master (default), field_engineer, installer, enquiries, users.
+    Types: master (default), field_engineer, installer, material_dispatch, enquiries, users.
+    Office users may download: installer, material_dispatch.
+    Staff/Admin may download all types.
     """
     try:
         report_type = request.GET.get('type', 'master')
+
+        # Determine access
+        is_staff = request.user.is_staff
+        is_office = hasattr(request.user, 'userprofile') and request.user.userprofile.role == 'Office'
+        office_allowed_types = {'installer', 'material_dispatch'}
+
+        if not is_staff and not (is_office and report_type in office_allowed_types):
+            from django.http import HttpResponseForbidden
+            return HttpResponseForbidden("You do not have permission to download this report.")
+
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
-        
+
         # Create Excel Workbook
         wb = openpyxl.Workbook()
         ws = wb.active
@@ -1314,7 +1322,7 @@ def export_solar_data(request):
             surveys = CustomerSurvey.objects.all().select_related('created_by').order_by('id').distinct()
             for s in surveys:
                 ws.append([
-                    s.customer_name, s.sc_no, s.phone_number, s.connection_type, s.phase, s.contracted_load, s.feasibility_kw,
+                    s.customer_name, s.sc_no, s.aadhar_linked_phone, s.connection_type, s.phase, s.contracted_load, s.feasibility_kw,
                     s.aadhar_no, s.pan_card, s.email, s.aadhar_linked_phone, s.bank_account_no,
                     s.roof_type, s.structure_type, s.structure_height, s.floors if s.floors is not None else '', s.area, s.gps_coordinates,
                     s.agreed_amount, s.advance_paid, 'Yes' if s.mefma_status else 'No', s.rp_name, s.rp_phone_number,
@@ -1346,7 +1354,7 @@ def export_solar_data(request):
             for i in installations:
                 sur = i.survey
                 ws.append([
-                    sur.customer_name, sur.sc_no, sur.phone_number, sur.connection_type, sur.phase, sur.roof_type, sur.agreed_amount,
+                    sur.customer_name, sur.sc_no, sur.aadhar_linked_phone, sur.connection_type, sur.phase, sur.roof_type, sur.agreed_amount,
                     i.updated_by.get_full_name() if i.updated_by else 'Unknown',
                     i.timestamp.strftime("%Y-%m-%d %H:%M"),
                     i.inverter_make, i.inverter_phase, i.ac_cable_used, i.dc_cable_used,
@@ -1386,6 +1394,71 @@ def export_solar_data(request):
                     p.user.date_joined.strftime("%Y-%m-%d")
                 ])
 
+        # 5. MATERIAL DISPATCH REPORT
+        elif report_type == 'material_dispatch':
+            headers = [
+                'Customer Name', 'Mobile Number', 'SC Number',
+                # Dispatched Materials
+                'Panels (Count)',
+                'Structure Kit Type',
+                'Inverter (kW)',
+                'Inverter Phase Type',
+                'AC Cable Red (m)',
+                'AC Cable Black (m)',
+                'DC Cable Red & Black (m)',
+                'LA Cable (m)',
+                'Pipes (Count)',
+                'Earthing Kit (Count)',
+                'ACDB (Count)',
+                'DCDB (Count)',
+                'MC4 Connectors (Count)',
+                'Long L Bands (Count)',
+                'Short L Bands (Count)',
+                'T Bands (Count)',
+                'Tapes Red (Count)',
+                'Tapes Black (Count)',
+                'Tags (Count)',
+                'Nail Clamps 2 Side (Count)',
+                'Nail Clamps 1 Side (Count)',
+                'Anchor Hardener (Count)',
+                'Installation Date',
+                'Installer Name',
+            ]
+            ws.append(headers)
+            installations = Installation.objects.all().select_related('survey', 'updated_by').order_by('survey__customer_name')
+            for i in installations:
+                sur = i.survey
+                ws.append([
+                    sur.customer_name,
+                    sur.aadhar_linked_phone,
+                    sur.sc_no,
+                    # Materials
+                    i.panels_count,
+                    i.structure_kit_type,
+                    i.inverter_kw,
+                    i.inverter_phase_type,
+                    i.ac_cable_red,
+                    i.ac_cable_black,
+                    i.dc_cable_red_black,
+                    i.la_cable_mtrs,
+                    i.pipes_count,
+                    i.earthing_kit_count,
+                    i.acdb_count,
+                    i.dcdb_count,
+                    i.mc4_connectors_count,
+                    i.long_l_bands_count,
+                    i.short_l_bands_count,
+                    i.t_bands_count,
+                    i.tapes_red_count,
+                    i.tapes_black_count,
+                    i.tags_count,
+                    i.nail_clamps_2side_count,
+                    i.nail_clamps_1side_count,
+                    i.anchor_hardener_count,
+                    i.timestamp.strftime("%Y-%m-%d %H:%M"),
+                    i.updated_by.get_full_name() if i.updated_by else 'Unknown',
+                ])
+
         # 5. MASTER REPORT (Default) - ALL DATA FROM ALL TABLES
         else:
             headers = [
@@ -1410,7 +1483,7 @@ def export_solar_data(request):
                 
                 row = [
                     # FE / Survey Details
-                    p.customer_name, p.sc_no, p.phone_number, p.connection_type, p.phase, p.contracted_load, p.feasibility_kw,
+                    p.customer_name, p.sc_no, p.aadhar_linked_phone, p.connection_type, p.phase, p.contracted_load, p.feasibility_kw,
                     p.aadhar_no, p.pan_card, p.email, p.aadhar_linked_phone, p.bank_account_no,
                     p.roof_type, p.structure_type, p.structure_height, p.floors if p.floors is not None else '', p.area, p.gps_coordinates,
                     p.agreed_amount, p.advance_paid, 'Yes' if p.mefma_status else 'No', p.rp_name, p.rp_phone_number,
@@ -1595,6 +1668,23 @@ def delete_worker(request, user_id):
         return redirect('office_workers_profiles')
     
     # If not POST, redirect back
+    return redirect('office_workers_profiles')
+
+@user_passes_test(lambda u: hasattr(u, 'userprofile') and u.userprofile.role == 'Admin')
+def set_worker_password(request, user_id):
+    """Set/update a worker's password. Admin only. Updates both Django auth and plain_password."""
+    if request.method == 'POST':
+        user = get_object_or_404(User, id=user_id)
+        new_password = request.POST.get('new_password', '').strip()
+        if new_password:
+            user.set_password(new_password)
+            user.save()
+            if hasattr(user, 'userprofile'):
+                user.userprofile.plain_password = new_password
+                user.userprofile.save(update_fields=['plain_password'])
+            messages.success(request, f"Password updated for {user.get_full_name() or user.username}.")
+        else:
+            messages.error(request, "Password cannot be empty.")
     return redirect('office_workers_profiles')
 
 @user_passes_test(lambda u: hasattr(u, 'userprofile') and u.userprofile.role == 'Admin')

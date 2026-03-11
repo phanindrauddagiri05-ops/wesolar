@@ -70,6 +70,7 @@ urlpatterns = [
     path('office-portal/installer-data/', views.office_installer_data, name='office_installer_data'),
     path('office-portal/workers-profiles/', views.office_workers_profiles, name='office_workers_profiles'),
     path('admin-portal/delete-worker/<int:user_id>/', views.delete_worker, name='delete_worker'),
+    path('admin-portal/set-worker-password/<int:user_id>/', views.set_worker_password, name='set_worker_password'),
     path('admin-portal/delete-application/<int:survey_id>/', views.delete_application, name='delete_application'),
     path('portal/download-images/<int:survey_id>/', views.download_images, name='download_images'),
     path('admin/toggle-maintenance/', views.toggle_maintenance_mode, name='toggle_maintenance_mode'),

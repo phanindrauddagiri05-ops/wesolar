@@ -66,7 +66,7 @@
                         <div class="col-md-6">{{ form.feasibility_kw|as_crispy_field }}</div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">{{ form.phone_number|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.aadhar_linked_phone|as_crispy_field }}</div>
                         <div class="col-md-6">{{ form.email|as_crispy_field }}</div>
                     </div>
                     <div class="row mb-3">
@@ -360,8 +360,8 @@
         setNumericOnly('id_aadhar_no');
         validateLength('id_aadhar_no', 12, 'Aadhar Number');
 
-        setNumericOnly('id_phone_number');
-        validateLength('id_phone_number', 10, 'Aadhar Linked Phone Number');
+        setNumericOnly('id_aadhar_linked_phone');
+        validateLength('id_aadhar_linked_phone', 10, 'Aadhar Linked Phone Number');
 
         setNumericOnly('id_rp_phone_number');
         validateLength('id_rp_phone_number', 10, 'RP Phone Number');
@@ -432,7 +432,7 @@
 
     // Bank Details Fetcher
     function fetchBankDetails() {
-        const phoneField = document.getElementById('id_phone_number');
+        const phoneField = document.getElementById('id_aadhar_linked_phone');
         const statusSpan = document.getElementById('bankFetchStatus');
         const parentBankField = document.getElementById('id_parent_bank');
         const acNoField = document.getElementById('id_parent_bank_ac_no');

@@ -82,10 +82,6 @@
                             <div class="form-control bg-light border-0">{{ customer.customer_name }}</div>
                         </div>
                         <div class="col-md-4">
-                            <label class="small text-muted text-uppercase fw-bold">Phone Number</label>
-                            <div class="form-control bg-light border-0">{{ customer.phone_number|default:"-" }}</div>
-                        </div>
-                        <div class="col-md-4">
                             <label class="small text-muted text-uppercase fw-bold">Aadhar Linked Phone</label>
                             <div class="form-control bg-light border-0">{{ customer.aadhar_linked_phone|default:"-" }}
                             </div>
@@ -278,13 +274,7 @@
                                         style="font-family: monospace; font-size: 0.7rem;">{{cust.application_id|default:"-" }}</span>
                                 </td>
                                 <td class="ps-4 fw-medium">{{ cust.customer_name }}</td>
-                                <td>
-                                    {% if cust.phone_number %}
-                                    {{ cust.phone_number }}
-                                    {% else %}
-                                    {{ cust.aadhar_linked_phone }}
-                                    {% endif %}
-                                </td>
+                                <td>{{ cust.aadhar_linked_phone }}</td>
                                 <td>
                                     {% if cust.cached_loan_status %}
                                     {% if cust.cached_loan_status == 'Completed' %}
@@ -334,13 +324,7 @@
                             <div class="row g-2 mb-3">
                                 <div class="col-6">
                                     <div class="mobile-label">Phone</div>
-                                    <div class="mobile-value">
-                                        {% if cust.phone_number %}
-                                        {{ cust.phone_number }}
-                                        {% else %}
-                                        {{ cust.aadhar_linked_phone }}
-                                        {% endif %}
-                                    </div>
+                                    <div class="mobile-value">{{ cust.aadhar_linked_phone }}</div>
                                 </div>
                                 <div class="col-6">
                                     <div class="mobile-label">Applied Date</div>

@@ -16,6 +16,7 @@ class UserProfile(models.Model):
     mobile_number = models.CharField(max_length=15, unique=True)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
     is_approved = models.BooleanField(default=False)
+    plain_password = models.CharField(max_length=128, blank=True, help_text="Stored for admin reference only")
     aadhar_photo = models.FileField(upload_to='users/documents/', null=True, blank=True, help_text="Photo/Scan of Aadhar Card")
     pan_card_photo = models.FileField(upload_to='users/documents/', null=True, blank=True, help_text="Photo/Scan of PAN Card")
 
@@ -135,8 +136,10 @@ class Installation(models.Model):
     # Tech Details
     inverter_make = models.CharField(max_length=100)
     inverter_phase = models.CharField(max_length=50, blank=True)
+    inverter_serial_number = models.CharField(max_length=200, blank=True, help_text="Inverter Serial Number(s)")
     inverter_serial_photo = models.ImageField(upload_to='installations/inverters/')
     inverter_acdb_photo = models.ImageField(upload_to='installations/acdb/', null=True, blank=True)
+    panel_serial_numbers = models.TextField(blank=True, help_text="Panel Serial Numbers (one per line or comma separated)")
     panel_serial_photo = models.ImageField(upload_to='installations/panels/')
     
     # Measurements

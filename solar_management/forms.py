@@ -5,13 +5,12 @@ from .models import CustomerSurvey, Installation, BankDetails, UserProfile, Enqu
 import re
 class SurveyForm(forms.ModelForm):
     is_critical_site = forms.BooleanField(required=False, label="Is Critical Site?")
-    phone_number = forms.CharField(required=True, label="Aadhar Linked Phone Number (10 Digits)", widget=forms.TextInput(attrs={'pattern': '\d{10}', 'maxlength': '10', 'minlength': '10', 'oninput': "this.value = this.value.replace(/[^0-9]/g, '')", 'title': 'Phone number must be exactly 10 digits.'}))
 
     class Meta:
         model = CustomerSurvey
         fields = [
             'customer_name', 'connection_type', 'sc_no', 'phase', 'contracted_load', 'feasibility_kw',
-            'aadhar_no', 'pan_card', 'email', 'phone_number', 
+            'aadhar_no', 'pan_card', 'email', 'aadhar_linked_phone', 
             'area', 'gps_coordinates', 'roof_type', 'roof_photo', 'structure_type',
             'structure_height', 'floors', 'measurements', 'agreed_amount', 'advance_paid', 
             'mefma_status', 'rp_name', 'rp_phone_number', 'co_name', 'co_phone_number',
@@ -29,7 +28,7 @@ class SurveyForm(forms.ModelForm):
             'aadhar_no': 'Aadhar Card (12 Digits)',
             'pan_card': 'Pan Card (10 Digits)',
             'email': 'Email-id',
-            'phone_number': 'Aadhar Linked Phone Number (10 Digits)',
+            'aadhar_linked_phone': 'Aadhar Linked Phone Number (10 Digits)',
             'gps_coordinates': 'GPS Coordinates',
             'roof_photo': 'Roof Photo (Optional/Mandatory if Critical)',
             'mefma_status': 'Mefma (Yes/No)',
@@ -55,7 +54,7 @@ class SurveyForm(forms.ModelForm):
              'registration_status': forms.Select(choices=[(True, 'Yes'), (False, 'No')]),
              'registration_date': forms.DateInput(attrs={'type': 'date'}),
              'customer_name': forms.TextInput(attrs={'pattern': '[a-zA-Z\s]+', 'oninput': "this.value = this.value.replace(/[^a-zA-Z\s]/g, '')", 'title': 'Name must contain only letters.'}),
-             'phone_number': forms.TextInput(attrs={'pattern': '\d{10}', 'maxlength': '10', 'minlength': '10', 'oninput': "this.value = this.value.replace(/[^0-9]/g, '')", 'title': 'Phone number must be exactly 10 digits.'}),
+             'aadhar_linked_phone': forms.TextInput(attrs={'pattern': '\d{10}', 'maxlength': '10', 'minlength': '10', 'oninput': "this.value = this.value.replace(/[^0-9]/g, '')", 'title': 'Phone number must be exactly 10 digits.'}),
              'email': forms.EmailInput(attrs={'pattern': '[^, ]+', 'title': 'Enter a single valid email address.'}),
              'rp_name': forms.TextInput(attrs={'pattern': '[a-zA-Z\s]+', 'oninput': "this.value = this.value.replace(/[^a-zA-Z\s]/g, '')", 'title': 'RP Name must contain only letters.'}),
              'co_name': forms.TextInput(attrs={'pattern': '[a-zA-Z\s]+', 'oninput': "this.value = this.value.replace(/[^a-zA-Z\s]/g, '')", 'title': 'CO Name must contain only letters.'}),
@@ -118,12 +117,12 @@ class SurveyForm(forms.ModelForm):
              raise ValidationError("RP Name must contain only text (no numbers).")
         return name
 
-    def clean_phone_number(self):
-        phone = self.cleaned_data.get('phone_number')
+    def clean_aadhar_linked_phone(self):
+        phone = self.cleaned_data.get('aadhar_linked_phone')
         if phone:
             # Check length is exactly 10 digits
             if not re.match(r'^\d{10}$', phone):
-                 raise ValidationError("Aadhar Linked Phone Number must be exactly 10 digits.")
+                raise ValidationError("Aadhar Linked Phone Number must be exactly 10 digits.")
         return phone
 
     def clean_customer_name(self):
@@ -219,9 +218,11 @@ class InstallationForm(forms.ModelForm):
         model = Installation
         fields = [
             'inverter_make',
-            'inverter_serial_photo',
             'inverter_phase',
+            'inverter_serial_number',
+            'inverter_serial_photo',
             'inverter_acdb_photo',
+            'panel_serial_numbers',
             'panel_serial_photo',
             'warranty_claimed',
             'app_installation_status',
@@ -263,10 +264,12 @@ class InstallationForm(forms.ModelForm):
         ]
         labels = {
             'inverter_make': 'Inverter Make',
-            'inverter_serial_photo': 'Inverter Serial Number (Photo)',
             'inverter_phase': 'Inverter Phase (Single/Three)',
+            'inverter_serial_number': 'Inverter Serial Number',
+            'inverter_serial_photo': 'Inverter Serial Number (Photo)',
             'inverter_acdb_photo': 'Inverter Photo (with ACDB & DCDB)',
-            'panel_serial_photo': 'Panel Serial Numbers Photo',
+            'panel_serial_numbers': 'Panel Serial Numbers',
+            'panel_serial_photo': 'Panel Serial Numbers (Photo)',
             'warranty_claimed': 'Warranty Claimed Status',
             'app_installation_status': 'App Installation Status',
             'site_photos_with_customer': 'Site Photos with Customer',
@@ -306,8 +309,10 @@ class InstallationForm(forms.ModelForm):
             'anchor_hardener_count': 'Anchor Hardener (Count)',
         }
         widgets = {
+            'inverter_serial_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. SN123456789'}),
             'inverter_serial_photo': forms.ClearableFileInput(),
             'inverter_acdb_photo': forms.ClearableFileInput(),
+            'panel_serial_numbers': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. PSN001, PSN002, PSN003'}),
             'panel_serial_photo': forms.ClearableFileInput(),
             'site_photos_with_customer': forms.ClearableFileInput(),
             'installer_remarks': forms.Textarea(attrs={'rows': 3}),
@@ -420,15 +425,6 @@ class OfficeStatusForm(forms.ModelForm):
         for field in mandatory_fields:
             self.fields[field].required = True
 
-    def clean_phone_number(self):
-        phone = self.cleaned_data.get('phone_number')
-        if phone:
-            # Clean string and validate length
-            clean_phone = re.sub(r'\D', '', str(phone))
-            if len(clean_phone) != 10:
-                raise ValidationError("Phone Number must be exactly 10 digits.")
-            return clean_phone
-        return phone
 
     def clean_installation_date(self):
         date = self.cleaned_data.get('installation_date')

@@ -65,9 +65,9 @@
                                 value="{{ survey.connection_type|default:'' }}">
                         </div>
                         <div class="col-md-3">
-                            <label class="small text-muted text-uppercase fw-bold">Phone Number</label>
+                            <label class="small text-muted text-uppercase fw-bold">Aadhar Linked Phone</label>
                             <input type="text" id="preview_phone" class="form-control bg-light" readonly
-                                value="{{ survey.phone_number|default:'' }}">
+                                value="{{ survey.aadhar_linked_phone|default:'' }}">
                         </div>
                         {% if request.user.userprofile.role != 'Installer' %}
                         <div class="col-md-3">
@@ -249,9 +249,12 @@
                     <div class="row g-3">
                         <div class="col-md-4">{{ form.inverter_make|as_crispy_field }}</div>
                         <div class="col-md-4">{{ form.inverter_phase|as_crispy_field }}</div>
+                        <div class="col-md-4">{{ form.inverter_serial_number|as_crispy_field }}</div>
+                        <div class="col-md-4">{{ form.panel_serial_numbers|as_crispy_field }}</div>
+                        <!-- Photo uploads for serial numbers -->
                         <div class="col-md-4">{{ form.inverter_serial_photo|as_crispy_field }}</div>
+                        <div class="col-md-4">{{ form.panel_serial_photo|as_crispy_field }}</div>
                         <div class="col-md-6">{{ form.inverter_acdb_photo|as_crispy_field }}</div>
-                        <div class="col-md-6">{{ form.panel_serial_photo|as_crispy_field }}</div>
                     </div>
 
                     <!-- Cables & Materials -->

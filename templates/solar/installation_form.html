@@ -20,8 +20,8 @@
                                 readonly>
                         </div>
                         <div class="col-md-3">
-                            <label class="small text-muted text-uppercase fw-bold">Phone Number</label>
-                            <input type="text" class="form-control bg-light" value="{{ survey.phone_number }}" readonly>
+                            <label class="small text-muted text-uppercase fw-bold">Aadhar Linked Phone</label>
+                            <input type="text" class="form-control bg-light" value="{{ survey.aadhar_linked_phone }}" readonly>
                         </div>
                         <div class="col-md-3">
                             <label class="small text-muted text-uppercase fw-bold">SC No</label>
@@ -82,11 +82,12 @@
                     <div class="row g-3">
                         <div class="col-md-4">{{ form.inverter_make|as_crispy_field }}</div>
                         <div class="col-md-4">{{ form.inverter_phase|as_crispy_field }}</div>
-                        <!-- Inverter Serial is a Photo Upload as per requirement -->
+                        <div class="col-md-4">{{ form.inverter_serial_number|as_crispy_field }}</div>
+                        <div class="col-md-4">{{ form.panel_serial_numbers|as_crispy_field }}</div>
+                        <!-- Photo uploads for serial numbers -->
                         <div class="col-md-4">{{ form.inverter_serial_photo|as_crispy_field }}</div>
-
+                        <div class="col-md-4">{{ form.panel_serial_photo|as_crispy_field }}</div>
                         <div class="col-md-6">{{ form.inverter_acdb_photo|as_crispy_field }}</div>
-                        <div class="col-md-6">{{ form.panel_serial_photo|as_crispy_field }}</div>
                     </div>
 
                     <!-- Cables & Materials -->
@@ -104,18 +105,7 @@
                     <h5 class="text-warning border-bottom pb-2 mt-4 mb-3 fw-bold"><i
                             class="bi bi-box-seam me-2"></i>Materials Dispatched</h5>
                     <div class="mb-3" style="border: 1px solid #dee2e6; border-radius: 8px; overflow: hidden;">
-                        {% with rows="Panels,Count,panels_count|Structure Kit,Normal /
-                        Fabrication,structure_kit_type|Inverter (kW),kW,inverter_kw|Inverter Phase,Single / Three
-                        Phase,inverter_phase_type|AC Cable Red,Mtrs,ac_cable_red|AC Cable Black,Mtrs,ac_cable_black|DC
-                        Cable Red & Black,Mtrs,dc_cable_red_black|LA
-                        Cable,Mtrs,la_cable_mtrs|Pipes,Count,pipes_count|Earthing
-                        Kit,Count,earthing_kit_count|ACDB,Count,acdb_count|DCDB,Count,dcdb_count|MC4
-                        Connectors,Count,mc4_connectors_count|Long L Bands,Count,long_l_bands_count|Short L
-                        Bands,Count,short_l_bands_count|T Bands,Count,t_bands_count|Tapes
-                        Red,Count,tapes_red_count|Tapes Black,Count,tapes_black_count|Tags,Count,tags_count|Nail Clamps
-                        2 Side,Count,nail_clamps_2side_count|Nail Clamps 1 Side,Count,nail_clamps_1side_count|Anchor
-                        Hardener,Count,anchor_hardener_count" %}
-                        {% endwith %}
+
                         <div class="d-flex align-items-center px-3 py-2"
                             style="background:#212529; color:#fff; font-size:0.78rem; font-weight:600; letter-spacing:0.04em;">
                             <div style="flex:1;">ITEM &nbsp;<span style="font-weight:400; color:#adb5bd;">/ UNIT</span>
