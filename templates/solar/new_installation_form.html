@@ -69,23 +69,7 @@
                             <input type="text" id="preview_phone" class="form-control bg-light" readonly
                                 value="{{ survey.aadhar_linked_phone|default:'' }}">
                         </div>
-                        {% if request.user.userprofile.role != 'Installer' %}
-                        <div class="col-md-3">
-                            <label class="small text-muted text-uppercase fw-bold">Email</label>
-                            <input type="text" id="preview_email" class="form-control bg-light" readonly
-                                value="{{ survey.email|default:'' }}">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="small text-muted text-uppercase fw-bold">Aadhar Number</label>
-                            <input type="text" id="preview_aadhar_no" class="form-control bg-light" readonly
-                                value="{{ survey.aadhar_no|default:'' }}">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="small text-muted text-uppercase fw-bold">PAN Card</label>
-                            <input type="text" id="preview_pan_card" class="form-control bg-light" readonly
-                                value="{{ survey.pan_card|default:'' }}">
-                        </div>
-                        {% endif %}
+
                         <div class="col-md-3">
                             <label class="small text-muted text-uppercase fw-bold">SC Number</label>
                             <input type="text" id="preview_sc_no" class="form-control bg-light" readonly
@@ -143,65 +127,7 @@
                         </div>
                     </div>
 
-                    {% if request.user.userprofile.role != 'Installer' %}
-                    <!-- Pricing & Payment -->
-                    <h6 class="text-primary fw-bold mb-3 mt-3"><i class="bi bi-currency-rupee me-2"></i>Pricing &
-                        Payment</h6>
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-6">
-                            <label class="small text-muted text-uppercase fw-bold">Agreed Amount</label>
-                            <input type="text" id="preview_agreed_amount" class="form-control bg-light" readonly
-                                value="{% if survey %}₹ {{ survey.agreed_amount }}{% endif %}">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="small text-muted text-uppercase fw-bold">Advance Paid</label>
-                            <input type="text" id="preview_advance_paid" class="form-control bg-light" readonly
-                                value="{% if survey %}₹ {{ survey.advance_paid }}{% endif %}">
-                        </div>
-                    </div>
 
-                    <!-- MEFMA & Registration -->
-                    <h6 class="text-primary fw-bold mb-3 mt-3"><i class="bi bi-file-earmark-check-fill me-2"></i>MEFMA &
-                        Registration Details</h6>
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-3">
-                            <label class="small text-muted text-uppercase fw-bold">MEFMA Status</label>
-                            <input type="text" id="preview_mefma_status" class="form-control bg-light" readonly
-                                value="{% if survey %}{% if survey.mefma_status %}Yes{% else %}No{% endif %}{% endif %}">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="small text-muted text-uppercase fw-bold">RP Name</label>
-                            <input type="text" id="preview_rp_name" class="form-control bg-light" readonly
-                                value="{{ survey.rp_name|default:'N/A' }}">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="small text-muted text-uppercase fw-bold">RP Phone Number</label>
-                            <input type="text" id="preview_rp_phone_number" class="form-control bg-light" readonly
-                                value="{{ survey.rp_phone_number|default:'N/A' }}">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="small text-muted text-uppercase fw-bold">Reference Name</label>
-                            <input type="text" id="preview_reference_name" class="form-control bg-light" readonly
-                                value="{{ survey.reference_name|default:'N/A' }}">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="small text-muted text-uppercase fw-bold">PM Surya Ghar Registration
-                                Number</label>
-                            <input type="text" id="preview_pms_registration_number" class="form-control bg-light"
-                                readonly value="{{ survey.pms_registration_number|default:'N/A' }}">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="small text-muted text-uppercase fw-bold">Division</label>
-                            <input type="text" id="preview_division" class="form-control bg-light" readonly
-                                value="{{ survey.division|default:'N/A' }}">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="small text-muted text-uppercase fw-bold">Registration Status</label>
-                            <input type="text" id="preview_registration_status" class="form-control bg-light" readonly
-                                value="{% if survey %}{% if survey.registration_status %}Yes{% else %}No{% endif %}{% endif %}">
-                        </div>
-                    </div>
-                    {% endif %}
 
                     <!-- Remarks -->
                     <h6 class="text-primary fw-bold mb-3 mt-3"><i class="bi bi-chat-left-text-fill me-2"></i>Field
@@ -631,7 +557,7 @@
     }
 
     function displayFEData(data, phone) {
-        const isInstaller = {% if request.user.userprofile.role == 'Installer' %} true{% else %} false{% endif %};
+
 
     // Customer Information
     document.getElementById('preview_customer_name').value = data.customer_name;
@@ -640,14 +566,7 @@
     document.getElementById('preview_sc_no').value = data.sc_no;
     document.getElementById('preview_phase').value = data.phase;
 
-    if (!isInstaller) {
-        const emailEl = document.getElementById('preview_email');
-        const aadharEl = document.getElementById('preview_aadhar_no');
-        const panEl = document.getElementById('preview_pan_card');
-        if (emailEl) emailEl.value = data.email || '';
-        if (aadharEl) aadharEl.value = data.aadhar_no || '';
-        if (panEl) panEl.value = data.pan_card || '';
-    }
+
 
     // Site Details
     document.getElementById('preview_area').value = data.area || '';
@@ -659,29 +578,7 @@
     document.getElementById('preview_floors').value = data.floors || '0';
     document.getElementById('preview_measurements').value = (data.measurements || '0') + ' SqFt';
 
-    if (!isInstaller) {
-        // Pricing & Payment
-        const agreedEl = document.getElementById('preview_agreed_amount');
-        const advanceEl = document.getElementById('preview_advance_paid');
-        if (agreedEl) agreedEl.value = '₹ ' + data.agreed_amount;
-        if (advanceEl) advanceEl.value = '₹ ' + data.advance_paid;
 
-        // MEFMA & Registration
-        const mefmaEl = document.getElementById('preview_mefma_status');
-        const rpNameEl = document.getElementById('preview_rp_name');
-        const rpPhoneEl = document.getElementById('preview_rp_phone_number');
-        const refEl = document.getElementById('preview_reference_name');
-        const pmsEl = document.getElementById('preview_pms_registration_number');
-        const divEl = document.getElementById('preview_division');
-        const regEl = document.getElementById('preview_registration_status');
-        if (mefmaEl) mefmaEl.value = data.mefma_status;
-        if (rpNameEl) rpNameEl.value = data.rp_name || 'N/A';
-        if (rpPhoneEl) rpPhoneEl.value = data.rp_phone_number || 'N/A';
-        if (refEl) refEl.value = data.reference_name || 'N/A';
-        if (pmsEl) pmsEl.value = data.pms_registration_number || 'N/A';
-        if (divEl) divEl.value = data.division || 'N/A';
-        if (regEl) regEl.value = data.registration_status;
-    }
 
     // Remarks
     document.getElementById('preview_fe_remarks').value = data.fe_remarks || 'No remarks provided';
