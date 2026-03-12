@@ -1624,13 +1624,15 @@ def office_installer_data(request):
 
 @staff_member_required
 def office_workers_profiles(request):
-    """View to list all worker types: Field Engineers, Installers, Office, and Loan."""
+    """View to list all worker types: Admin, Field Engineers, Installers, Office, and Loan."""
+    admins = User.objects.filter(userprofile__role='Admin', userprofile__is_approved=True)
     field_engineers = User.objects.filter(userprofile__role='Field Engineer', userprofile__is_approved=True)
     installers = User.objects.filter(userprofile__role='Installer', userprofile__is_approved=True)
     office_users = User.objects.filter(userprofile__role='Office', userprofile__is_approved=True)
     loan_users = User.objects.filter(userprofile__role='Loan', userprofile__is_approved=True)
     
     return render(request, 'solar/office_workers_profiles.html', {
+        'admins': admins,
         'field_engineers': field_engineers,
         'installers': installers,
         'office_users': office_users,
@@ -1653,7 +1655,7 @@ def site_detail_installer_view(request, pk):
         installation = None
     return render(request, 'solar/site_detail.html', {'customer': customer, 'installation': installation, 'view_mode': 'installer_only'})
 
-@user_passes_test(lambda u: hasattr(u, 'userprofile') and u.userprofile.role == 'Admin')
+@user_passes_test(lambda u: u.is_superuser or (hasattr(u, 'userprofile') and u.userprofile.role == 'Admin'))
 def delete_worker(request, user_id):
     """Delete a worker user. Admin only."""
     if request.method == 'POST':
@@ -1670,7 +1672,7 @@ def delete_worker(request, user_id):
     # If not POST, redirect back
     return redirect('office_workers_profiles')
 
-@user_passes_test(lambda u: hasattr(u, 'userprofile') and u.userprofile.role == 'Admin')
+@user_passes_test(lambda u: u.is_superuser or (hasattr(u, 'userprofile') and u.userprofile.role == 'Admin'))
 def set_worker_password(request, user_id):
     """Set/update a worker's password. Admin only. Updates both Django auth and plain_password."""
     if request.method == 'POST':
@@ -1687,7 +1689,7 @@ def set_worker_password(request, user_id):
             messages.error(request, "Password cannot be empty.")
     return redirect('office_workers_profiles')
 
-@user_passes_test(lambda u: hasattr(u, 'userprofile') and u.userprofile.role == 'Admin')
+@user_passes_test(lambda u: u.is_superuser or (hasattr(u, 'userprofile') and u.userprofile.role == 'Admin'))
 def delete_application(request, survey_id):
     """Delete a customer application. Admin only. Cascades to Installation and BankDetails."""
     if request.method == 'POST':
