@@ -336,6 +336,7 @@
             </div>
         </div>
 
+        {% if request.user.userprofile.role != 'Installer' %}
         <div class="col-md-6 mb-4">
             <div class="card glass-card h-100">
                 <div class="card-header bg-transparent border-bottom">
@@ -471,8 +472,9 @@
                 </div>
             </div>
         </div>
+        {% endif %}
 
-        {% if customer.mefma_status %}
+        {% if request.user.userprofile.role != 'Installer' and customer.mefma_status %}
         <div class="col-md-12 mb-4">
             <div class="card border-warning bg-soft-warning">
                 <div class="card-body">
