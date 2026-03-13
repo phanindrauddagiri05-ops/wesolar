@@ -329,7 +329,16 @@
                             if (submitBtn && !submitBtn.disabled) {
                                 setTimeout(() => {
                                     submitBtn.disabled = true;
-                                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Uploading Data & Images...';
+                                    
+                                    // Determine appropriate loading text based on whether the form uploads files
+                                    const hasFileInputs = form.querySelector('input[type="file"]') !== null;
+                                    const isMultipart = form.getAttribute('enctype') === 'multipart/form-data';
+                                    
+                                    if (hasFileInputs || isMultipart) {
+                                        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Uploading Data & Images...';
+                                    } else {
+                                        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Processing...';
+                                    }
                                 }, 10);
                             }
                         });
