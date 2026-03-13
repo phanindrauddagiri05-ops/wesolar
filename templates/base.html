@@ -133,7 +133,6 @@
                     {# OFFICE STAFF NAVIGATION #}
                     <li class="nav-item"><a class="nav-link" href="{% url 'office_dashboard' %}">Office Dashboard</a>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'enquiry_list' %}">Enquiries</a></li>
 
                     {% else %}
                     {# FE & INSTALLER NAVIGATION #}
@@ -146,7 +145,6 @@
                     <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Installation</a></li>
                     {% endif %}
 
-                    <li class="nav-item"><a class="nav-link" href="{% url 'enquiry_list' %}">Enquiries</a></li>
                     {% endif %}
                     {% endif %}
                 </ul>
@@ -279,6 +277,66 @@
                     }
                 });
             }
+
+            // Global Image Previews for File Inputs with loading animation
+            document.querySelectorAll('input[type="file"]').forEach(function (input) {
+                input.addEventListener('change', function (e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        let previewContainer = input.parentNode.querySelector('.global-img-preview');
+                        if (!previewContainer) {
+                            previewContainer = document.createElement('div');
+                            previewContainer.className = 'global-img-preview mt-2';
+                            input.parentNode.appendChild(previewContainer);
+                        }
+
+                        if (file.type.startsWith('image/')) {
+                            // Show loading animation
+                            previewContainer.innerHTML = `
+                                <div class="d-flex align-items-center mt-2 text-primary">
+                                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                    <span class="small fw-bold">Uploading preview...</span>
+                                </div>`;
+
+                            const reader = new FileReader();
+                            reader.onload = function (e) {
+                                // Slight delay for animation effect
+                                setTimeout(() => {
+                                    previewContainer.innerHTML = `<img src="${e.target.result}" class="img-fluid img-thumbnail shadow-sm mt-2" style="max-height: 150px; border-radius: 8px; animation: fadeInUp 0.3s ease-out;">`;
+                                }, 400); // 400ms delay
+                            }
+                            reader.readAsDataURL(file);
+                        } else {
+                            previewContainer.innerHTML = `<span class="badge bg-secondary mt-2"><i class="bi bi-file-earmark me-1"></i>${file.name}</span>`;
+                        }
+                    } else {
+                        const previewContainer = input.parentNode.querySelector('.global-img-preview');
+                        if (previewContainer) {
+                            previewContainer.innerHTML = '';
+                        }
+                    }
+                });
+            });
+
+            // Global Form Submission Loading State
+            const forms = document.querySelectorAll('form');
+            if (forms.length > 0) {
+                forms.forEach(function (form) {
+                    // Exclude search forms
+                    if (!form.getAttribute('action') || form.getAttribute('action').indexOf('search') === -1) {
+                        form.addEventListener('submit', function (e) {
+                            const submitBtn = form.querySelector('button[type="submit"]');
+                            if (submitBtn && !submitBtn.disabled) {
+                                setTimeout(() => {
+                                    submitBtn.disabled = true;
+                                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Uploading Data & Images...';
+                                }, 10);
+                            }
+                        });
+                    }
+                });
+            }
+
         });
     </script>
 </body>

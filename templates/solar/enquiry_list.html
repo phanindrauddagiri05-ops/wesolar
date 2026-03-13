@@ -34,7 +34,7 @@
                             <td class="text-muted text-truncate" style="max-width: 250px;" data-label="Address">{{item.address }}</td>
                             <td class="text-muted small" data-label="Submitted On">
                                 <div>{{ item.created_at|date:"M d, Y" }}</div>
-                                <div class="text-secondary" style="font-size: 0.85em;">{{ item.created_at|date:"h:i A:s"}}</div>
+                                <div class="text-secondary" style="font-size: 0.85em;">{{ item.created_at|date:"h:i A"}}</div>
                             </td>
                         </tr>
                         {% empty %}

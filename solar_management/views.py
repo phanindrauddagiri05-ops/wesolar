@@ -1600,9 +1600,9 @@ def create_enquiry(request):
         form = EnquiryForm()
     return render(request, 'solar/enquiry_form.html', {'form': form})
 
-@login_required
+@staff_member_required
 def enquiry_list(request):
-    """View to list all enquiries. Read-only for most, manageable by Admin."""
+    """View to list all enquiries. Accessible by Admin only."""
     enquiries = Enquiry.objects.all().order_by('-created_at')
     return render(request, 'solar/enquiry_list.html', {'enquiries': enquiries})
 
