@@ -75,6 +75,11 @@ urlpatterns = [
     path('portal/download-images/<int:survey_id>/', views.download_images, name='download_images'),
     path('admin/toggle-maintenance/', views.toggle_maintenance_mode, name='toggle_maintenance_mode'),
 
+    # Installation Management (Admin Only)
+    path('admin-portal/reset-installation/<int:installation_id>/', views.reset_installation, name='reset_installation'),
+    path('admin-portal/delete-photo/<int:photo_id>/', views.delete_additional_photo, name='delete_additional_photo'),
+    path('admin-portal/clear-field/<int:installation_id>/<str:field_name>/', views.clear_installation_field, name='clear_installation_field'),
+
     # Static Pages
     path('terms-and-conditions/', views.terms_and_conditions, name='terms_and_conditions'),
     path('privacy-policy/', views.privacy_policy, name='privacy_policy'),

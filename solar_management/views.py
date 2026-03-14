@@ -17,7 +17,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group, User
 
-from .models import CustomerSurvey, Installation, BankDetails, UserProfile, Enquiry, SiteSettings
+from .models import CustomerSurvey, Installation, BankDetails, UserProfile, Enquiry, SiteSettings, InstallationPhoto, SurveyMedia, ProfileMedia
 from .forms import SurveyForm, InstallationForm, BankDetailsForm, SignUpForm, LoginForm, EnquiryForm, OfficeStatusForm, FEUpdateForm, OfficeBankDetailsForm
 import json
 
@@ -208,15 +208,23 @@ def signup_view(request):
             )
             
             # Create Profile
-            UserProfile.objects.create(
+            profile = UserProfile.objects.create(
                 user=user,
                 mobile_number=form.cleaned_data['mobile_number'],
                 role=form.cleaned_data['role'],
                 is_approved=False,
                 plain_password=form.cleaned_data['password'],
-                aadhar_photo=form.cleaned_data.get('aadhar_photo'),
-                pan_card_photo=form.cleaned_data.get('pan_card_photo')
             )
+
+            # Handle multi-uploads for profile
+            media_map = {
+                'aadhar_photo': 'aadhar',
+                'pan_card_photo': 'pan_card',
+            }
+            for field, m_type in media_map.items():
+                files = form.cleaned_data.get(field) or []
+                for f in files:
+                    ProfileMedia.objects.create(profile=profile, file=f, media_type=m_type)
 
             # Send Email Notification
             subject = 'Welcome to WeSolar - Account Created'
@@ -943,10 +951,25 @@ def survey_form_view(request):
             survey.save()
             
             # Save Bank Details
-            bank_details = bank_form.save(commit=False)
-            bank_details.survey = survey
-            bank_details.loan_pending_status = 'Pending' # Default
-            bank_details.save()
+            bank_params = bank_form.save(commit=False)
+            bank_params.survey = survey
+            bank_params.loan_pending_status = 'Pending' # Default
+            bank_params.save()
+
+            # Handle categorized multi-uploads for survey
+            media_map = {
+                'roof_photo': 'roof',
+                'pan_card_photo': 'pan_card',
+                'aadhar_photo': 'aadhar',
+                'current_bill_photo': 'current_bill',
+                'bank_account_photo': 'bank_account',
+                'parent_bank_photo': 'parent_bank',
+            }
+            
+            for field, m_type in media_map.items():
+                files = form.cleaned_data.get(field) or []
+                for f in files:
+                    SurveyMedia.objects.create(survey=survey, file=f, media_type=m_type)
 
             messages.success(request, 'Survey and Bank Details submitted successfully!')
             return redirect('dashboard')
@@ -1013,11 +1036,28 @@ def new_installation(request):
                     installation.survey = survey
                     installation.updated_by = request.user
                     installation.save()
+                    form.save_m2m() # Standard practice even if no M2M fields
+
+                    # Handle categorized multi-photo uploads
+                    media_map = {
+                        'inverter_serial_photo': 'inverter_serial',
+                        'inverter_acdb_photo': 'inverter_acdb',
+                        'panel_serial_photo': 'panel_serial',
+                        'site_photos_with_customer': 'site_with_customer',
+                        'site_photos_multiple': 'additional',
+                    }
+                    
+                    for field, p_type in media_map.items():
+                        files = form.cleaned_data.get(field) or []
+                        for f in files:
+                            InstallationPhoto.objects.create(installation=installation, photo=f, photo_type=p_type)
+
                     messages.success(request, f"Installation submitted successfully for {survey.customer_name}!")
                     return redirect('dashboard')
                 else:
-                    # Form has validation errors - add message
-                    messages.error(request, "Please correct the errors below and try again.")
+                    # Form has validation errors
+                    for field, errors in form.errors.items():
+                        messages.error(request, f"{field.replace('_', ' ').title()}: {', '.join(errors)}")
             except CustomerSurvey.DoesNotExist:
                 messages.error(request, "Survey not found.")
                 form = InstallationForm()
@@ -1185,11 +1225,35 @@ def update_installation(request, pk):
         form = InstallationForm(request.POST, request.FILES, instance=instance)
         if form.is_valid():
             inst = form.save(commit=False)
-            inst.survey = survey
+            if not inst.survey_id:
+                inst.survey = survey
             inst.updated_by = request.user
             inst.save()
+            form.save_m2m()
+
+            # Handle categorized multi-photo uploads
+            media_map = {
+                'inverter_serial_photo': 'inverter_serial',
+                'inverter_acdb_photo': 'inverter_acdb',
+                'panel_serial_photo': 'panel_serial',
+                'site_photos_with_customer': 'site_with_customer',
+                'site_photos_multiple': 'additional',
+            }
+            
+            for field, p_type in media_map.items():
+                files = form.cleaned_data.get(field) or []
+                if files:
+                    # Replace old images of this type
+                    InstallationPhoto.objects.filter(installation=inst, photo_type=p_type).delete()
+                    for f in files:
+                        InstallationPhoto.objects.create(installation=inst, photo=f, photo_type=p_type)
+
             messages.success(request, f"Installation data updated for {survey.customer_name}.")
             return redirect('dashboard')
+        else:
+            # Form has validation errors
+            for field, errors in form.errors.items():
+                messages.error(request, f"{field.replace('_', ' ').title()}: {', '.join(errors)}")
     else:
         form = InstallationForm(instance=instance, initial={'survey': survey})
         
@@ -1219,11 +1283,33 @@ def bank_entry(request):
 # ==========================================
 # 5. SITE DETAIL / GALLERY
 # ==========================================
+def _get_site_media_context(customer):
+    """Helper to group media files for gallery rendering."""
+    survey_media = {}
+    for sm in customer.media_files.all():
+        if sm.media_type not in survey_media:
+            survey_media[sm.media_type] = []
+        survey_media[sm.media_type].append(sm)
+    
+    installation_photos = {}
+    if hasattr(customer, 'installation'):
+        for ip in customer.installation.additional_photos.all():
+            if ip.photo_type not in installation_photos:
+                installation_photos[ip.photo_type] = []
+            installation_photos[ip.photo_type].append(ip)
+    
+    return {
+        'survey_media': survey_media,
+        'installation_photos': installation_photos,
+    }
+
 @login_required
 def site_detail(request, pk):
     """Technical deep-dive and photo gallery for specific sites."""
     customer = get_object_or_404(CustomerSurvey, pk=pk)
-    return render(request, 'solar/site_detail.html', {'customer': customer})
+    context = {'customer': customer}
+    context.update(_get_site_media_context(customer))
+    return render(request, 'solar/site_detail.html', context)
 
 @login_required
 def update_survey(request, pk):
@@ -1252,6 +1338,24 @@ def update_survey(request, pk):
             bank_obj = bank_form.save(commit=False)
             bank_obj.survey = survey
             bank_obj.save()
+
+            # Handle categorized multi-uploads for survey
+            media_map = {
+                'roof_photo': 'roof',
+                'pan_card_photo': 'pan_card',
+                'aadhar_photo': 'aadhar',
+                'current_bill_photo': 'current_bill',
+                'bank_account_photo': 'bank_account',
+                'parent_bank_photo': 'parent_bank',
+            }
+            
+            for field, m_type in media_map.items():
+                files = form.cleaned_data.get(field) or []
+                if files:
+                    # Replace old images of this type
+                    SurveyMedia.objects.filter(survey=survey, media_type=m_type).delete()
+                    for f in files:
+                        SurveyMedia.objects.create(survey=survey, file=f, media_type=m_type)
             
             messages.success(request, "Survey and Bank details updated.")
             return redirect('site_detail', pk=pk)
@@ -1563,6 +1667,17 @@ def update_profile(request):
         form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user, user_profile=profile)
         if form.is_valid():
             form.save()
+            
+            # Handle multi-uploads for profile
+            media_map = {
+                'aadhar_photo': 'aadhar',
+                'pan_card_photo': 'pan_card',
+            }
+            for field, m_type in media_map.items():
+                files = form.cleaned_data.get(field) or []
+                for f in files:
+                    ProfileMedia.objects.create(profile=profile, file=f, media_type=m_type)
+
             messages.success(request, 'Your profile has been updated successfully.')
             # Redirect back to the correct dashboard based on role
             if profile:
@@ -1643,7 +1758,9 @@ def office_workers_profiles(request):
 def site_detail_fe_view(request, pk):
     """Restricted view: Shows only Field Engineer data (Survey) for Office Admin."""
     customer = get_object_or_404(CustomerSurvey, pk=pk)
-    return render(request, 'solar/site_detail.html', {'customer': customer, 'view_mode': 'fe_only'})
+    context = {'customer': customer, 'view_mode': 'fe_only'}
+    context.update(_get_site_media_context(customer))
+    return render(request, 'solar/site_detail.html', context)
 
 @staff_member_required
 def site_detail_installer_view(request, pk):
@@ -1653,7 +1770,14 @@ def site_detail_installer_view(request, pk):
         installation = Installation.objects.get(survey=customer)
     except Installation.DoesNotExist:
         installation = None
-    return render(request, 'solar/site_detail.html', {'customer': customer, 'installation': installation, 'view_mode': 'installer_only'})
+        
+    context = {
+        'customer': customer, 
+        'installation': installation, 
+        'view_mode': 'installer_only'
+    }
+    context.update(_get_site_media_context(customer))
+    return render(request, 'solar/site_detail.html', context)
 
 @user_passes_test(lambda u: u.is_superuser or (hasattr(u, 'userprofile') and u.userprofile.role == 'Admin'))
 def delete_worker(request, user_id):
@@ -1924,6 +2048,85 @@ def toggle_maintenance_mode(request):
         messages.success(request, f"Maintenance mode {status}.")
     return redirect('admin_dashboard')
 
+
+# ==========================================
+# INSTALLATION MANAGEMENT (ADMIN ONLY)
+# ==========================================
+
+@staff_member_required
+def reset_installation(request, installation_id):
+    """
+    Deletes an installation record so the survey becomes 'Pending' again for installers.
+    """
+    installation = Installation.objects.filter(id=installation_id).first()
+    
+    if not installation:
+        messages.warning(request, "This installation report has already been reset or does not exist.")
+        # If we don't have the installation, we can't easily find the survey ID from it.
+        # But this view is usually called from site_detail or installation_form which has the survey ID.
+        return redirect('admin_dashboard')
+
+    survey_id = installation.survey.id
+    if request.method == 'POST':
+        # Safely delete files before deleting the record
+        def safe_delete_file(file_field):
+            if file_field and hasattr(file_field, 'path') and os.path.exists(file_field.path):
+                try:
+                    os.remove(file_field.path)
+                except:
+                    pass
+
+        safe_delete_file(installation.inverter_serial_photo)
+        safe_delete_file(installation.inverter_acdb_photo)
+        safe_delete_file(installation.panel_serial_photo)
+        safe_delete_file(installation.site_photos_with_customer)
+        
+        # Delete related additional photos
+        for photo in installation.additional_photos.all():
+            safe_delete_file(photo.photo)
+            photo.delete()
+
+        installation.delete()
+        messages.success(request, "Installation report reset successfully. It is now pending for the installer again.")
+        return redirect('site_detail', pk=survey_id)
+    
+    return redirect('site_detail', pk=survey_id)
+
+@staff_member_required
+def delete_additional_photo(request, photo_id):
+    """
+    Deletes a specific InstallationPhoto instance.
+    """
+    photo = get_object_or_404(InstallationPhoto, id=photo_id)
+    survey_id = photo.installation.survey.id
+    if request.method == 'POST':
+        if photo.photo and os.path.exists(photo.photo.path):
+            try:
+                os.remove(photo.photo.path)
+            except:
+                pass
+        photo.delete()
+        messages.success(request, "Additional photo deleted.")
+    return redirect('site_detail', pk=survey_id)
+
+@staff_member_required
+def clear_installation_field(request, installation_id, field_name):
+    """
+    Clears a specific ImageField in the Installation model.
+    """
+    installation = get_object_or_404(Installation, id=installation_id)
+    if request.method == 'POST':
+        if hasattr(installation, field_name):
+            file_field = getattr(installation, field_name)
+            if file_field and hasattr(file_field, 'path') and os.path.exists(file_field.path):
+                try:
+                    os.remove(file_field.path)
+                except:
+                    pass
+            setattr(installation, field_name, None)
+            installation.save()
+            messages.success(request, f"Image field '{field_name}' cleared.")
+    return redirect('site_detail', pk=installation.survey.id)
 
 # ==========================================
 # STATIC PAGES

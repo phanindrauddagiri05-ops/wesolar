@@ -1,31 +1,31 @@
 {% extends 'base.html' %}
-
+{% load custom_filters %}
 {% block content %}
 <div class="container py-5">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
-        <div>
+        <div class="w-100 w-md-auto">
             <h2 class="fw-bold text-dark mb-0">Project Details: {{ customer.customer_name }}</h2>
             {% if customer.application_id %}
             <span class="badge bg-dark text-white rounded-pill mt-1"
                 style="font-family: monospace; font-size: 0.8rem;">{{ customer.application_id }}</span>
             {% endif %}
         </div>
-        <div class="d-flex flex-wrap gap-2">
+        <div class="d-flex flex-column flex-sm-row flex-wrap gap-2 w-100 w-md-auto">
             {# Permission-based Download Link #}
             {% if request.user.is_superuser or request.user.is_staff or request.user.userprofile.role == 'Admin' or request.user.userprofile.role == 'Office' %}
-            <a href="{% url 'download_images' customer.id %}" class="btn btn-info shadow-sm text-white">
-                <i class="bi bi-download me-1"></i> Download All Images
+            <a href="{% url 'download_images' customer.id %}" class="btn btn-info shadow-sm text-white flex-fill">
+                <i class="bi bi-download me-1"></i> Download All
             </a>
             {% endif %}
 
             {# Staff Update Link #}
             {% if request.user.is_staff %}
-            <a href="{% url 'update_survey' customer.id %}" class="btn btn-warning shadow-sm">
+            <a href="{% url 'update_survey' customer.id %}" class="btn btn-warning shadow-sm flex-fill text-nowrap">
                 <i class="bi bi-pencil-square me-1"></i> Update Details
             </a>
             {% endif %}
 
-            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">Back to Dashboard</a>
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary flex-fill text-nowrap">Back to Dashboard</a>
         </div>
     </div>
 
@@ -35,12 +35,22 @@
             {% if customer.has_installation %}
             <div class="col-md-12 mb-4">
                 <div class="card glass-card">
-                    <div class="card-header bg-transparent border-bottom d-flex justify-content-between align-items-center">
+                    <div class="card-header bg-transparent border-bottom d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-3">
                         <h5 class="mb-0 text-dark"><i class="bi bi-tools me-2"></i>Installation Report</h5>
-                        <span class="badge bg-soft-primary text-primary px-3 py-2 rounded-pill">
-                            <i class="bi bi-person-fill me-1"></i> Installer:
-                            {{ customer.installation.updated_by.get_full_name|default:customer.installation.updated_by.username }}
-                        </span>
+                        <div class="d-flex flex-wrap align-items-center gap-2 w-100 w-lg-auto">
+                            <span class="badge bg-soft-primary text-primary px-3 py-2 rounded-pill flex-fill text-start">
+                                <i class="bi bi-person-fill me-1"></i> Installer:
+                                {{ customer.installation.updated_by.get_full_name|default:customer.installation.updated_by.username }}
+                            </span>
+                            {% if request.user.is_staff %}
+                            <form action="{% url 'reset_installation' customer.installation.id %}" method="post" onsubmit="return confirm('Are you sure you want to RESET this installation report? This will delete all installation data and make it pending for the installer again.');" class="d-inline flex-fill">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-danger shadow-sm w-100">
+                                    <i class="bi bi-arrow-counterclockwise"></i> Reset Report
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
                     </div>
 
                     <div class="card-body">
@@ -72,226 +82,233 @@
                                 <small class="text-muted d-block">Installed On</small>
                                 <span class="font-monospace text-dark">{{ customer.installation.timestamp|date:"M d, Y" }}</span>
                             </div>
+                        <hr class="text-muted opacity-25">
+
+                        <h6 class="text-uppercase text-secondary small fw-bold mb-3 mt-1">Electrical Readings</h6>
+                        <div class="row mb-4">
+                            <div class="col-6 col-md-4 mb-3">
+                                <small class="text-muted d-block">DC Voltage</small>
+                                <span class="fw-bold fs-5 text-dark">{{ customer.installation.dc_voltage }}<span class="fs-6 text-muted"> V</span></span>
+                            </div>
+                            <div class="col-6 col-md-4 mb-3">
+                                <small class="text-muted d-block">AC Voltage</small>
+                                <span class="fw-bold fs-5 text-dark">{{ customer.installation.ac_voltage }}<span class="fs-6 text-muted"> V</span></span>
+                            </div>
+                            <div class="col-6 col-md-4 mb-3">
+                                <small class="text-muted d-block">Earthing Resistance</small>
+                                <span class="fw-bold fs-5 text-dark">{{ customer.installation.earthing_resistance }}<span class="fs-6 text-muted"> Ω</span></span>
+                            </div>
                         </div>
 
                         <hr class="text-muted opacity-25">
 
-                        <h6 class="text-uppercase text-secondary small fw-bold mb-3 mt-4">Material Consumption</h6>
-                        <div class="row mb-4">
-                            <div class="col-6 col-md-3 mb-3">
-                                <div class="p-3 bg-light rounded text-center border">
-                                    <small class="text-muted d-block">AC Cable</small>
-                                    <span class="fw-bold fs-5 text-dark">{{ customer.installation.ac_cable_used }}<span class="fs-6 text-muted">m</span></span>
+                        <div class="row mt-4">
+                            <!-- Materials Dispatched -->
+                            <div class="col-md-6">
+                                <h6 class="text-uppercase text-secondary small fw-bold mb-3 mt-1">Materials Dispatched</h6>
+                                <div class="table-responsive mb-4">
+                                    <table class="table table-bordered table-sm align-middle">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>Item</th>
+                                                <th>Unit / Spec</th>
+                                                <th class="text-end">Quantity</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td data-label="Item" class="fw-semibold">Panels</td>
+                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
+                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.panels_count|default:"0" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Item" class="fw-semibold">Structure Kit</td>
+                                                <td data-label="Unit / Spec" class="text-muted small">Type</td>
+                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.structure_kit_type|default:"-" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Item" class="fw-semibold">Inverter</td>
+                                                <td data-label="Unit / Spec" class="text-muted small">kW</td>
+                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.inverter_kw|default:"0" }} kW</td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Item" class="fw-semibold">Inverter Phase</td>
+                                                <td data-label="Unit / Spec" class="text-muted small">Phase</td>
+                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.inverter_phase_type|default:"-" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Item" class="fw-semibold">AC Cable Red</td>
+                                                <td data-label="Unit / Spec" class="text-muted small">Mtrs</td>
+                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.ac_cable_red|default:"0" }} m</td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Item" class="fw-semibold">AC Cable Black</td>
+                                                <td data-label="Unit / Spec" class="text-muted small">Mtrs</td>
+                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.ac_cable_black|default:"0" }} m</td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Item" class="fw-semibold">DC Cable Red & Black</td>
+                                                <td data-label="Unit / Spec" class="text-muted small">Mtrs</td>
+                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.dc_cable_red_black|default:"0" }} m</td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Item" class="fw-semibold">LA Cable</td>
+                                                <td data-label="Unit / Spec" class="text-muted small">Mtrs</td>
+                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.la_cable_mtrs|default:"0" }} m</td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Item" class="fw-semibold">Pipes</td>
+                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
+                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.pipes_count|default:"0" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Item" class="fw-semibold">Earthing Kit</td>
+                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
+                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.earthing_kit_count|default:"0" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Item" class="fw-semibold">ACDB</td>
+                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
+                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.acdb_count|default:"0" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Item" class="fw-semibold">DCDB</td>
+                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
+                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.dcdb_count|default:"0" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Item" class="fw-semibold">MC4 Connectors</td>
+                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
+                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.mc4_connectors_count|default:"0" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Item" class="fw-semibold">Long L Bands</td>
+                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
+                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.long_l_bands_count|default:"0" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Item" class="fw-semibold">Short L Bands</td>
+                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
+                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.short_l_bands_count|default:"0" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Item" class="fw-semibold">T Bands</td>
+                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
+                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.t_bands_count|default:"0" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Item" class="fw-semibold">Tapes Red</td>
+                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
+                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.tapes_red_count|default:"0" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Item" class="fw-semibold">Tapes Black</td>
+                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
+                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.tapes_black_count|default:"0" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Item" class="fw-semibold">Tags</td>
+                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
+                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.tags_count|default:"0" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Item" class="fw-semibold">Nail Clamps 2 Side</td>
+                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
+                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.nail_clamps_2side_count|default:"0" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Item" class="fw-semibold">Nail Clamps 1 Side</td>
+                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
+                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.nail_clamps_1side_count|default:"0" }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Item" class="fw-semibold">Anchor Hardener</td>
+                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
+                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.anchor_hardener_count|default:"0" }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
-                            <div class="col-6 col-md-3 mb-3">
-                                <div class="p-3 bg-light rounded text-center border">
-                                    <small class="text-muted d-block">DC Cable</small>
-                                    <span class="fw-bold fs-5 text-dark">{{ customer.installation.dc_cable_used }}<span class="fs-6 text-muted">m</span></span>
+
+                            <!-- Used Materials -->
+                            <div class="col-md-6">
+                                <h6 class="text-uppercase text-secondary small fw-bold mb-3 mt-1">Material Consumption</h6>
+                                <div class="table-responsive mb-4">
+                                    <table class="table table-bordered table-sm align-middle">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>Item</th>
+                                                <th>Unit / Spec</th>
+                                                <th class="text-end">Used Qty</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td data-label="Item" class="fw-semibold">AC Cable</td>
+                                                <td data-label="Unit / Spec" class="text-muted small">Mtrs</td>
+                                                <td data-label="Used Qty" class="text-end fw-bold text-danger">{{ customer.installation.ac_cable_used|default:"0" }} m</td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Item" class="fw-semibold">DC Cable</td>
+                                                <td data-label="Unit / Spec" class="text-muted small">Mtrs</td>
+                                                <td data-label="Used Qty" class="text-end fw-bold text-danger">{{ customer.installation.dc_cable_used|default:"0" }} m</td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Item" class="fw-semibold">LA Cable</td>
+                                                <td data-label="Unit / Spec" class="text-muted small">Mtrs</td>
+                                                <td data-label="Used Qty" class="text-end fw-bold text-danger">{{ customer.installation.la_cable_used|default:"0" }} m</td>
+                                            </tr>
+                                            <tr>
+                                                <td data-label="Item" class="fw-semibold">Pipes</td>
+                                                <td data-label="Unit / Spec" class="text-muted small">Mtrs</td>
+                                                <td data-label="Used Qty" class="text-end fw-bold text-danger">{{ customer.installation.pipes_used|default:"0" }} m</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
-                            </div>
-                            <div class="col-6 col-md-3 mb-3">
-                                <div class="p-3 bg-light rounded text-center border">
-                                    <small class="text-muted d-block">LA Cable</small>
-                                    <span class="fw-bold fs-5 text-dark">{{ customer.installation.la_cable_used }}<span class="fs-6 text-muted">m</span></span>
-                                </div>
-                            </div>
-                            <div class="col-6 col-md-3 mb-3">
-                                <div class="p-3 bg-light rounded text-center border">
-                                    <small class="text-muted d-block">Pipes</small>
-                                    <span class="fw-bold fs-5 text-dark">{{ customer.installation.pipes_used }}<span class="fs-6 text-muted">m</span></span>
+
+                                <div class="card bg-light border-0 mt-3">
+                                    <div class="card-body p-3">
+                                        <small class="text-muted d-block text-uppercase fw-bold small mb-2">Leftover Materials</small>
+                                        <p class="mb-0 text-dark">{{ customer.installation.leftover_materials|default:"None reported" }}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <h6 class="text-uppercase text-secondary small fw-bold mb-3 mt-3">Materials Dispatched</h6>
-                        <div class="table-responsive mb-4">
-                            <table class="table table-bordered table-sm align-middle">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>Item</th>
-                                        <th>Unit / Spec</th>
-                                        <th class="text-end">Quantity</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="fw-semibold">Panels</td>
-                                        <td class="text-muted small">Count</td>
-                                        <td class="text-end fw-bold">{{ customer.installation.panels_count }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="fw-semibold">Structure Kit</td>
-                                        <td class="text-muted small">Type</td>
-                                        <td class="text-end fw-bold">{{ customer.installation.structure_kit_type }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="fw-semibold">Inverter</td>
-                                        <td class="text-muted small">kW</td>
-                                        <td class="text-end fw-bold">{{ customer.installation.inverter_kw }} kW</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="fw-semibold">Inverter Phase</td>
-                                        <td class="text-muted small">Phase</td>
-                                        <td class="text-end fw-bold">{{ customer.installation.inverter_phase_type }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="fw-semibold">AC Cable Red</td>
-                                        <td class="text-muted small">Mtrs</td>
-                                        <td class="text-end fw-bold">{{ customer.installation.ac_cable_red }} m</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="fw-semibold">AC Cable Black</td>
-                                        <td class="text-muted small">Mtrs</td>
-                                        <td class="text-end fw-bold">{{ customer.installation.ac_cable_black }} m</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="fw-semibold">DC Cable Red & Black</td>
-                                        <td class="text-muted small">Mtrs</td>
-                                        <td class="text-end fw-bold">{{ customer.installation.dc_cable_red_black }} m</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="fw-semibold">LA Cable</td>
-                                        <td class="text-muted small">Mtrs</td>
-                                        <td class="text-end fw-bold">{{ customer.installation.la_cable_mtrs }} m</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="fw-semibold">Pipes</td>
-                                        <td class="text-muted small">Count</td>
-                                        <td class="text-end fw-bold">{{ customer.installation.pipes_count }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="fw-semibold">Earthing Kit</td>
-                                        <td class="text-muted small">Count</td>
-                                        <td class="text-end fw-bold">{{ customer.installation.earthing_kit_count }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="fw-semibold">ACDB</td>
-                                        <td class="text-muted small">Count</td>
-                                        <td class="text-end fw-bold">{{ customer.installation.acdb_count }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="fw-semibold">DCDB</td>
-                                        <td class="text-muted small">Count</td>
-                                        <td class="text-end fw-bold">{{ customer.installation.dcdb_count }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="fw-semibold">MC4 Connectors</td>
-                                        <td class="text-muted small">Count</td>
-                                        <td class="text-end fw-bold">{{ customer.installation.mc4_connectors_count }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="fw-semibold">Long L Bands</td>
-                                        <td class="text-muted small">Count</td>
-                                        <td class="text-end fw-bold">{{ customer.installation.long_l_bands_count }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="fw-semibold">Short L Bands</td>
-                                        <td class="text-muted small">Count</td>
-                                        <td class="text-end fw-bold">{{ customer.installation.short_l_bands_count }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="fw-semibold">T Bands</td>
-                                        <td class="text-muted small">Count</td>
-                                        <td class="text-end fw-bold">{{ customer.installation.t_bands_count }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="fw-semibold">Tapes Red</td>
-                                        <td class="text-muted small">Count</td>
-                                        <td class="text-end fw-bold">{{ customer.installation.tapes_red_count }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="fw-semibold">Tapes Black</td>
-                                        <td class="text-muted small">Count</td>
-                                        <td class="text-end fw-bold">{{ customer.installation.tapes_black_count }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="fw-semibold">Tags</td>
-                                        <td class="text-muted small">Count</td>
-                                        <td class="text-end fw-bold">{{ customer.installation.tags_count }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="fw-semibold">Nail Clamps 2 Side</td>
-                                        <td class="text-muted small">Count</td>
-                                        <td class="text-end fw-bold">{{ customer.installation.nail_clamps_2side_count }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="fw-semibold">Nail Clamps 1 Side</td>
-                                        <td class="text-muted small">Count</td>
-                                        <td class="text-end fw-bold">{{ customer.installation.nail_clamps_1side_count }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="fw-semibold">Anchor Hardener</td>
-                                        <td class="text-muted small">Count</td>
-                                        <td class="text-end fw-bold">{{ customer.installation.anchor_hardener_count }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        {% if customer.installation.leftover_materials %}
-                        <div class="alert alert-secondary border-0 bg-gray-100 mb-4">
-                            <small class="fw-bold text-dark"><i class="bi bi-box-seam me-2"></i>Leftover Materials:</small>
-                            <p class="mb-0 mt-1 small">{{ customer.installation.leftover_materials }}</p>
-                        </div>
-                        {% endif %}
-
+                        <div class="row g-3 px-3 pb-3">
                         <hr class="text-muted opacity-25">
 
                         <h6 class="text-uppercase text-secondary small fw-bold mb-3 mt-4">Site Gallery</h6>
                         <div class="row g-3">
-                            {% if customer.installation.inverter_serial_photo %}
-                            <div class="col-6 col-md-3">
-                                <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                                    <div class="ratio ratio-4x3">
-                                        <img src="{{ customer.installation.inverter_serial_photo.url }}"
-                                            class="card-img-top object-fit-cover viewable-image" alt="Inverter Serial">
-                                    </div>
-                                    <div class="card-body p-2 text-center bg-white">
-                                        <small class="text-muted">Inverter Serial</small>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endif %}
-                            {% if customer.installation.inverter_acdb_photo %}
-                            <div class="col-6 col-md-3">
-                                <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                                    <div class="ratio ratio-4x3">
-                                        <img src="{{ customer.installation.inverter_acdb_photo.url }}"
-                                            class="card-img-top object-fit-cover viewable-image" alt="ACDB/DCDB">
-                                    </div>
-                                    <div class="card-body p-2 text-center bg-white">
-                                        <small class="text-muted">ACDB/DCDB</small>
+                            {% for photo_type, photos in installation_photos.items %}
+                                {% for photo_obj in photos %}
+                                <div class="col-6 col-md-3">
+                                    <div class="card border-0 shadow-sm h-100 overflow-hidden position-relative image-card-admin">
+                                        <div class="ratio ratio-4x3">
+                                            <img src="{{ photo_obj.photo.url }}"
+                                                class="card-img-top object-fit-cover viewable-image" alt="{{ photo_type|title }}">
+                                        </div>
+                                        {% if request.user.is_staff %}
+                                        <form action="{% url 'delete_additional_photo' photo_obj.id %}" method="post" class="position-absolute top-0 end-0 m-1">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger btn-sm rounded-circle p-1" style="width: 24px; height: 24px; line-height: 1;" title="Delete Photo">
+                                                <i class="bi bi-x-lg" style="font-size: 0.7rem;"></i>
+                                            </button>
+                                        </form>
+                                        {% endif %}
+                                        <div class="card-body p-2 text-center bg-white">
+                                            <small class="text-muted">{{ photo_type|replace:"_, "|title }}{% if photos|length > 1 %} {{ forloop.counter }}{% endif %}</small>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            {% endif %}
-                            {% if customer.installation.panel_serial_photo %}
-                            <div class="col-6 col-md-3">
-                                <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                                    <div class="ratio ratio-4x3">
-                                        <img src="{{ customer.installation.panel_serial_photo.url }}"
-                                            class="card-img-top object-fit-cover viewable-image" alt="Panel Serial">
-                                    </div>
-                                    <div class="card-body p-2 text-center bg-white">
-                                        <small class="text-muted">Panel Serial</small>
-                                    </div>
+                                {% endfor %}
+                            {% empty %}
+                                <div class="col-12 text-center py-4">
+                                    <p class="text-muted small">No installation photos uploaded yet.</p>
                                 </div>
-                            </div>
-                            {% endif %}
-                            {% if customer.installation.site_photos_with_customer %}
-                            <div class="col-6 col-md-3">
-                                <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                                    <div class="ratio ratio-4x3">
-                                        <img src="{{ customer.installation.site_photos_with_customer.url }}"
-                                            class="card-img-top object-fit-cover viewable-image" alt="Site w/ Customer">
-                                    </div>
-                                    <div class="card-body p-2 text-center bg-white">
-                                        <small class="text-muted">Completed Site</small>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endif %}
+                            {% endfor %}
                         </div>
 
                         {% if customer.installation.installer_remarks %}
@@ -349,8 +366,11 @@
                             <div class="text-end d-flex align-items-center justify-content-end flex-wrap gap-2">
                                 {% if request.user.is_superuser or request.user.is_staff or request.user.userprofile.role == 'Admin' or request.user.userprofile.role == 'Office' %}
                                     <span class="font-monospace text-wrap" style="word-break: break-all;">{{ customer.aadhar_no }}</span>
-                                    {% if customer.aadhar_photo %}
-                                    <img src="{{ customer.aadhar_photo.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="Aadhaar">
+                                    {% for media in survey_media.aadhar %}
+                                    <img src="{{ media.file.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="Aadhaar {{ forloop.counter }}">
+                                    {% endfor %}
+                                    {% if not survey_media.aadhar and customer.aadhar_photo %}
+                                    <img src="{{ customer.aadhar_photo.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="Aadhaar (Legacy)">
                                     {% endif %}
                                 {% else %}
                                     <span class="font-monospace">{{ customer.masked_aadhar }}</span>
@@ -359,16 +379,19 @@
                                     {% endif %}
                                 {% endif %}
                             </div>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center gap-2">
+                        </li>                        <li class="list-group-item d-flex justify-content-between align-items-center gap-2">
                             <span class="text-muted mb-0">PAN Card:</span>
                             <div class="text-end d-flex align-items-center justify-content-end flex-wrap gap-2">
                                 {% if request.user.is_superuser or request.user.is_staff or request.user.userprofile.role == 'Admin' or request.user.userprofile.role == 'Office' %}
-                                    <span class="font-monospace text-wrap" style="word-break: break-all;">{{ customer.pan_card }}</span>
-                                    {% if customer.pan_card_photo %}
-                                    <img src="{{ customer.pan_card_photo.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="PAN Card">
+                                    <span class="text-uppercase">{{ customer.pan_card }}</span>
+                                    {% for media in survey_media.pan_card %}
+                                    <img src="{{ media.file.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="PAN {{ forloop.counter }}">
+                                    {% endfor %}
+                                    {% if not survey_media.pan_card and customer.pan_card_photo %}
+                                    <img src="{{ customer.pan_card_photo.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="PAN (Legacy)">
                                     {% endif %}
                                 {% else %}
+
                                     <span class="font-monospace">{{ customer.masked_pan }}</span>
                                     {% if customer.pan_card_photo %}
                                     <i class="bi bi-image text-success ms-2" title="Image Uploaded"></i>
@@ -381,11 +404,14 @@
                             <div class="text-end d-flex align-items-center justify-content-end flex-wrap gap-2">
                                 <span>{{ customer.bank_account_no|default:"-" }}</span>
                                 {% if request.user.is_superuser or request.user.is_staff or request.user.userprofile.role == 'Admin' or request.user.userprofile.role == 'Office' %}
-                                    {% if customer.bank_account_photo %}
-                                    <img src="{{ customer.bank_account_photo.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="Bank Account">
+                                    {% for media in survey_media.bank_account %}
+                                    <img src="{{ media.file.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="Bank Account {{ forloop.counter }}">
+                                    {% endfor %}
+                                    {% if not survey_media.bank_account and customer.bank_account_photo %}
+                                    <img src="{{ customer.bank_account_photo.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="Bank Account (Legacy)">
                                     {% endif %}
                                 {% else %}
-                                    {% if customer.bank_account_photo %}
+                                    {% if survey_media.bank_account or customer.bank_account_photo %}
                                     <i class="bi bi-image text-success ms-2" title="Image Uploaded"></i>
                                     {% endif %}
                                 {% endif %}
@@ -394,9 +420,13 @@
                         <li class="list-group-item d-flex justify-content-between align-items-center gap-2">
                             <span class="text-muted mb-0">Current Bill:</span>
                             <div class="text-end d-flex align-items-center justify-content-end flex-wrap gap-2">
-                                {% if customer.current_bill_photo %}
-                                <img src="{{ customer.current_bill_photo.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="Current Bill">
-                                {% else %}
+                                {% for media in survey_media.current_bill %}
+                                <img src="{{ media.file.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="Current Bill {{ forloop.counter }}">
+                                {% endfor %}
+                                {% if not survey_media.current_bill and customer.current_bill_photo %}
+                                <img src="{{ customer.current_bill_photo.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="Current Bill (Legacy)">
+                                {% endif %}
+                                {% if not survey_media.current_bill and not customer.current_bill_photo %}
                                 <span class="text-muted small">Not Uploaded</span>
                                 {% endif %}
                             </div>
@@ -462,11 +492,19 @@
                         </div>
                     </div>
 
-                    {% if customer.roof_photo %}
+                    {% if survey_media.roof or customer.roof_photo %}
                     <div class="mt-3">
-                        <p class="mb-1 text-muted small">Roof Photo (Critical Site):</p>
-                        <img src="{{ customer.roof_photo.url }}" class="img-fluid rounded shadow-sm viewable-image"
-                            style="max-height: 200px;">
+                        <p class="mb-1 text-muted small">Roof Photo(s) (Critical Site):</p>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for media in survey_media.roof %}
+                            <img src="{{ media.file.url }}" class="img-fluid rounded shadow-sm viewable-image"
+                                style="max-height: 200px; width: auto;" alt="Roof Photo {{ forloop.counter }}">
+                            {% endfor %}
+                            {% if not survey_media.roof and customer.roof_photo %}
+                            <img src="{{ customer.roof_photo.url }}" class="img-fluid rounded shadow-sm viewable-image"
+                                style="max-height: 200px; width: auto;" alt="Roof Photo (Legacy)">
+                            {% endif %}
+                        </div>
                     </div>
                     {% endif %}
                 </div>

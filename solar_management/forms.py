@@ -3,21 +3,50 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from .models import CustomerSurvey, Installation, BankDetails, UserProfile, Enquiry
 import re
+
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+    def value_from_datadict(self, data, files, name):
+        if hasattr(files, 'getlist'):
+            return files.getlist(name)
+        return files.get(name)
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput(attrs={'multiple': True, 'class': 'form-control'}))
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = [single_file_clean(data, initial)]
+        return result
+
 class SurveyForm(forms.ModelForm):
     is_critical_site = forms.BooleanField(required=False, label="Is Critical Site?")
     custom_area = forms.CharField(required=False, label="Specify Custom Area", widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter custom area name...'}))
+    
+    # Global Multi-Upload Fields
+    roof_photo = MultipleFileField(required=False, label="Roof Photo (Optional/Mandatory if Critical)")
+    pan_card_photo = MultipleFileField(required=False, label="PAN Card Photo")
+    aadhar_photo = MultipleFileField(required=False, label="Aadhar Card Photo")
+    current_bill_photo = MultipleFileField(required=False, label="Current Electricity Bill Photo")
+    bank_account_photo = MultipleFileField(required=False, label="Bank Account Photo")
+    parent_bank_photo = MultipleFileField(required=False, label="Parent Bank Front Page Photo")
 
     class Meta:
         model = CustomerSurvey
         fields = [
             'customer_name', 'connection_type', 'sc_no', 'phase', 'contracted_load', 'feasibility_kw',
             'aadhar_no', 'pan_card', 'email', 'aadhar_linked_phone', 
-            'area', 'gps_coordinates', 'roof_type', 'roof_photo', 'structure_type',
+            'area', 'gps_coordinates', 'roof_type', 'structure_type',
             'structure_height', 'floors', 'measurements', 'agreed_amount', 'advance_paid', 
             'mefma_status', 'rp_name', 'rp_phone_number', 'co_name', 'co_phone_number',
             'fe_remarks', 'reference_name', 
             'pms_registration_number', 'division', 'registration_status', 'registration_date',
-            'pan_card_photo', 'aadhar_photo', 'current_bill_photo', 'bank_account_photo', 'parent_bank_photo'
         ]
         labels = {
             'sc_no': 'Service Connection Number (16 Digits)',
@@ -61,11 +90,7 @@ class SurveyForm(forms.ModelForm):
              'co_name': forms.TextInput(attrs={'pattern': '[a-zA-Z\s]+', 'oninput': "this.value = this.value.replace(/[^a-zA-Z\s]/g, '')", 'title': 'CO Name must contain only letters.'}),
              'co_phone_number': forms.TextInput(attrs={'pattern': '\d{10}', 'maxlength': '10', 'minlength': '10', 'oninput': "this.value = this.value.replace(/[^0-9]/g, '')", 'title': 'Phone number must be exactly 10 digits.'}),
              'measurements': forms.TextInput(attrs={'title': 'Alphanumeric values allowed.'}),
-             'roof_photo': forms.ClearableFileInput(),
-             'pan_card_photo': forms.ClearableFileInput(),
-             'aadhar_photo': forms.ClearableFileInput(),
-             'current_bill_photo': forms.ClearableFileInput(),
-             'bank_account_photo': forms.ClearableFileInput(),
+             'measurements': forms.TextInput(attrs={'title': 'Alphanumeric values allowed.'}),
              'area': forms.Select(choices=[
                 ('', '--- Select Area ---'),
                 ('Rajahmundry', 'Rajahmundry'),
@@ -233,20 +258,27 @@ class SurveyForm(forms.ModelForm):
         return cleaned_data
 
 
+
 class InstallationForm(forms.ModelForm):
+    site_photos_multiple = MultipleFileField(
+        required=False,
+        label="Additional Site Photos",
+        widget=MultipleFileInput(attrs={'class': 'form-control'})
+    )
+    inverter_serial_photo = MultipleFileField(required=False, label="Inverter Serial Photo")
+    inverter_acdb_photo = MultipleFileField(required=False, label="Inverter ACDB Photo")
+    panel_serial_photo = MultipleFileField(required=False, label="Panel Serial Photo")
+    site_photos_with_customer = MultipleFileField(required=False, label="Site Photo with Customer")
+
     class Meta:
         model = Installation
         fields = [
             'inverter_make',
             'inverter_phase',
             'inverter_serial_number',
-            'inverter_serial_photo',
-            'inverter_acdb_photo',
             'panel_serial_numbers',
-            'panel_serial_photo',
             'warranty_claimed',
             'app_installation_status',
-            'site_photos_with_customer',
             'ac_cable_used',
             'dc_cable_used',
             'la_cable_used',
@@ -362,15 +394,31 @@ class InstallationForm(forms.ModelForm):
             'nail_clamps_2side_count': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
             'nail_clamps_1side_count': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
             'anchor_hardener_count': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
+            # Used material fields - styled for consistency
+            'ac_cable_used': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0', 'step': '0.01'}),
+            'dc_cable_used': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0', 'step': '0.01'}),
+            'la_cable_used': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0', 'step': '0.01'}),
+            'pipes_used': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0', 'step': '0.01'}),
+            # Electrical readings with decimal support
+            'dc_voltage': forms.NumberInput(attrs={'class': 'form-control', 'step': 'any'}),
+            'ac_voltage': forms.NumberInput(attrs={'class': 'form-control', 'step': 'any'}),
+            'earthing_resistance': forms.NumberInput(attrs={'class': 'form-control', 'step': 'any'}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Make photo fields mandatory if not already handled by model (model has blank=False by default for ImageField unless specified)
-        # Model definitions:
-        # inverter_serial_photo: Mandatory
-        # inverter_acdb_photo: Optional (null=True, blank=True in model) -> User said "Mandatory". We override here.
-        self.fields['inverter_acdb_photo'].required = True 
+        # Make photo fields mandatory if not already handled by model
+        # Make used material fields optional since they were removed from UI but are required in model
+        optional_fields = ['ac_cable_used', 'dc_cable_used', 'la_cable_used', 'pipes_used']
+        for field in optional_fields:
+            if field in self.fields:
+                self.fields[field].required = False
+                
+        # Make photo fields optional to allow clearing
+        self.fields['inverter_serial_photo'].required = False
+        self.fields['inverter_acdb_photo'].required = False
+        self.fields['panel_serial_photo'].required = False
+        self.fields['site_photos_with_customer'].required = False
         
         # Customer rating has a default value in the model, so make it optional in the form
         self.fields['customer_rating'].required = False
@@ -567,15 +615,15 @@ class SignUpForm(forms.ModelForm):
         })
     )
     role = forms.ChoiceField(choices=UserProfile.ROLE_CHOICES, required=True)
-    aadhar_photo = forms.FileField(
+    aadhar_photo = MultipleFileField(
         required=True, 
         help_text="Upload a clear photo or scan of your Aadhar Card.",
-        widget=forms.ClearableFileInput(attrs={'class': 'form-control'})
+        widget=MultipleFileInput(attrs={'class': 'form-control'})
     )
-    pan_card_photo = forms.FileField(
+    pan_card_photo = MultipleFileField(
         required=True, 
         help_text="Upload a clear photo or scan of your PAN Card.",
-        widget=forms.ClearableFileInput(attrs={'class': 'form-control'})
+        widget=MultipleFileInput(attrs={'class': 'form-control'})
     )
     email = forms.EmailField(
         required=True,
@@ -765,8 +813,8 @@ class ProfileUpdateForm(forms.ModelForm):
     email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'class': 'form-control'}))
     
     # User profile fields
-    aadhar_photo = forms.FileField(required=False, widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
-    pan_card_photo = forms.FileField(required=False, widget=forms.ClearableFileInput(attrs={'class': 'form-control'}))
+    aadhar_photo = MultipleFileField(required=False, widget=MultipleFileInput(attrs={'class': 'form-control'}))
+    pan_card_photo = MultipleFileField(required=False, widget=MultipleFileInput(attrs={'class': 'form-control'}))
     
     class Meta:
         model = User
@@ -783,11 +831,8 @@ class ProfileUpdateForm(forms.ModelForm):
     def save(self, commit=True):
         user = super().save(commit=commit)
         if self.user_profile:
-            # Only update if a new file is uploaded or it's being cleared
-            if 'aadhar_photo' in self.changed_data:
-                self.user_profile.aadhar_photo = self.cleaned_data.get('aadhar_photo')
-            if 'pan_card_photo' in self.changed_data:
-                self.user_profile.pan_card_photo = self.cleaned_data.get('pan_card_photo')
+            # Legacy single-file fields are now handled via ProfileMedia in views.
+            # We don't save the list of files to the single FileField.
             if commit:
                 self.user_profile.save()
         return user

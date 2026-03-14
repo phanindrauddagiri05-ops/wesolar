@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CustomerSurvey, Installation, SiteSettings
+from .models import CustomerSurvey, Installation, SiteSettings, InstallationPhoto
 
 @admin.register(CustomerSurvey)
 class CustomerSurveyAdmin(admin.ModelAdmin):
@@ -8,7 +8,14 @@ class CustomerSurveyAdmin(admin.ModelAdmin):
     list_filter = ('registration_status', 'phase')
     search_fields = ('customer_name', 'aadhar_linked_phone', 'sc_no')
 
-admin.site.register(Installation)
+class InstallationPhotoInline(admin.TabularInline):
+    model = InstallationPhoto
+    extra = 1
+
+@admin.register(Installation)
+class InstallationAdmin(admin.ModelAdmin):
+    list_display = ('survey', 'timestamp', 'updated_by')
+    inlines = [InstallationPhotoInline]
 
 @admin.register(SiteSettings)
 class SiteSettingsAdmin(admin.ModelAdmin):

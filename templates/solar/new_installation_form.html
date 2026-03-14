@@ -173,147 +173,144 @@
                     <h5 class="text-primary border-bottom pb-2 mt-3 mb-3 fw-bold"><i class="bi bi-cpu me-2"></i>Hardware
                         Details</h5>
                     <div class="row g-3">
+                        <!-- Inverter Specs -->
                         <div class="col-md-4">{{ form.inverter_make|as_crispy_field }}</div>
                         <div class="col-md-4">{{ form.inverter_phase|as_crispy_field }}</div>
                         <div class="col-md-4">{{ form.inverter_serial_number|as_crispy_field }}</div>
-                        <div class="col-md-4">{{ form.panel_serial_numbers|as_crispy_field }}</div>
-                        <!-- Photo uploads for serial numbers -->
-                        <div class="col-md-4">{{ form.inverter_serial_photo|as_crispy_field }}</div>
-                        <div class="col-md-4">{{ form.panel_serial_photo|as_crispy_field }}</div>
+                        
+                        <div class="col-md-6">{{ form.inverter_serial_photo|as_crispy_field }}</div>
                         <div class="col-md-6">{{ form.inverter_acdb_photo|as_crispy_field }}</div>
+
+                        <!-- Panel Specs -->
+                        <div class="col-md-6">{{ form.panel_serial_numbers|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.panel_serial_photo|as_crispy_field }}</div>
                     </div>
 
-                    <!-- Cables & Materials -->
-                    <h5 class="text-primary border-bottom pb-2 mt-4 mb-3 fw-bold"><i
-                            class="bi bi-gear-wide-connected me-2"></i>Cables & Materials Used</h5>
-                    <div class="row g-3">
-                        <div class="col-md-3">{{ form.ac_cable_used|as_crispy_field }}</div>
-                        <div class="col-md-3">{{ form.dc_cable_used|as_crispy_field }}</div>
-                        <div class="col-md-3">{{ form.la_cable_used|as_crispy_field }}</div>
-                        <div class="col-md-3">{{ form.pipes_used|as_crispy_field }}</div>
-                        <div class="col-12">{{ form.leftover_materials|as_crispy_field }}</div>
-                    </div>
-
-                    <!-- Materials Dispatched -->
-                    <h5 class="text-warning border-bottom pb-2 mt-4 mb-3 fw-bold"><i
-                            class="bi bi-box-seam me-2"></i>Materials Dispatched</h5>
-                    <div class="mb-3" style="border: 1px solid #dee2e6; border-radius: 8px; overflow: hidden;">
-                        <div class="d-flex align-items-center px-3 py-2"
-                            style="background:#212529; color:#fff; font-size:0.78rem; font-weight:600; letter-spacing:0.04em;">
-                            <div style="flex:1;">ITEM &nbsp;<span style="font-weight:400; color:#adb5bd;">/ UNIT</span>
+                    <div class="row mt-4">
+                        <!-- Materials Dispatched -->
+                        <div class="col-md-12">
+                            <h5 class="text-warning border-bottom pb-2 mb-3 fw-bold"><i
+                                    class="bi bi-box-seam me-2"></i>Materials Dispatched</h5>
+                            <div class="mb-3" style="border: 1px solid #dee2e6; border-radius: 8px; overflow: hidden;">
+                                <div class="d-flex align-items-center px-3 py-2"
+                                    style="background:#212529; color:#fff; font-size:0.78rem; font-weight:600; letter-spacing:0.04em;">
+                                    <div style="flex:1;">ITEM &nbsp;<span style="font-weight:400; color:#adb5bd;">/ UNIT</span>
+                                    </div>
+                                    <div style="width:110px; text-align:right;">QTY</div>
+                                </div>
+                                <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
+                                    <div style="flex:1;"><span class="fw-semibold">Panels</span><br><small
+                                            class="text-muted">Count</small></div>
+                                    <div style="width:110px;">{{ form.panels_count }}</div>
+                                </div>
+                                <div class="d-flex align-items-center px-3 py-2 border-bottom">
+                                    <div style="flex:1;"><span class="fw-semibold">Structure Kit</span><br><small
+                                            class="text-muted">Normal / Fabrication</small></div>
+                                    <div style="width:110px;">{{ form.structure_kit_type }}</div>
+                                </div>
+                                <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
+                                    <div style="flex:1;"><span class="fw-semibold">Inverter (kW)</span><br><small
+                                            class="text-muted">kW</small></div>
+                                    <div style="width:110px;">{{ form.inverter_kw }}</div>
+                                </div>
+                                <div class="d-flex align-items-center px-3 py-2 border-bottom">
+                                    <div style="flex:1;"><span class="fw-semibold">Inverter Phase</span><br><small
+                                            class="text-muted">Single / Three Phase</small></div>
+                                    <div style="width:110px;">{{ form.inverter_phase_type }}</div>
+                                </div>
+                                <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
+                                    <div style="flex:1;"><span class="fw-semibold">AC Cable Red</span><br><small
+                                            class="text-muted">Mtrs</small></div>
+                                    <div style="width:110px;">{{ form.ac_cable_red }}</div>
+                                </div>
+                                <div class="d-flex align-items-center px-3 py-2 border-bottom">
+                                    <div style="flex:1;"><span class="fw-semibold">AC Cable Black</span><br><small
+                                            class="text-muted">Mtrs</small></div>
+                                    <div style="width:110px;">{{ form.ac_cable_black }}</div>
+                                </div>
+                                <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
+                                    <div style="flex:1;"><span class="fw-semibold">DC Cable Red &amp; Black</span><br><small
+                                            class="text-muted">Mtrs</small></div>
+                                    <div style="width:110px;">{{ form.dc_cable_red_black }}</div>
+                                </div>
+                                <div class="d-flex align-items-center px-3 py-2 border-bottom">
+                                    <div style="flex:1;"><span class="fw-semibold">LA Cable</span><br><small
+                                            class="text-muted">Mtrs</small></div>
+                                    <div style="width:110px;">{{ form.la_cable_mtrs }}</div>
+                                </div>
+                                <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
+                                    <div style="flex:1;"><span class="fw-semibold">Pipes</span><br><small
+                                            class="text-muted">Count</small></div>
+                                    <div style="width:110px;">{{ form.pipes_count }}</div>
+                                </div>
+                                <div class="d-flex align-items-center px-3 py-2 border-bottom">
+                                    <div style="flex:1;"><span class="fw-semibold">Earthing Kit</span><br><small
+                                            class="text-muted">Count</small></div>
+                                    <div style="width:110px;">{{ form.earthing_kit_count }}</div>
+                                </div>
+                                <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
+                                    <div style="flex:1;"><span class="fw-semibold">ACDB</span><br><small
+                                            class="text-muted">Count</small></div>
+                                    <div style="width:110px;">{{ form.acdb_count }}</div>
+                                </div>
+                                <div class="d-flex align-items-center px-3 py-2 border-bottom">
+                                    <div style="flex:1;"><span class="fw-semibold">DCDB</span><br><small
+                                            class="text-muted">Count</small></div>
+                                    <div style="width:110px;">{{ form.dcdb_count }}</div>
+                                </div>
+                                <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
+                                    <div style="flex:1;"><span class="fw-semibold">MC4 Connectors</span><br><small
+                                            class="text-muted">Count</small></div>
+                                    <div style="width:110px;">{{ form.mc4_connectors_count }}</div>
+                                </div>
+                                <div class="d-flex align-items-center px-3 py-2 border-bottom">
+                                    <div style="flex:1;"><span class="fw-semibold">Long L Bands</span><br><small
+                                            class="text-muted">Count</small></div>
+                                    <div style="width:110px;">{{ form.long_l_bands_count }}</div>
+                                </div>
+                                <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
+                                    <div style="flex:1;"><span class="fw-semibold">Short L Bands</span><br><small
+                                            class="text-muted">Count</small></div>
+                                    <div style="width:110px;">{{ form.short_l_bands_count }}</div>
+                                </div>
+                                <div class="d-flex align-items-center px-3 py-2 border-bottom">
+                                    <div style="flex:1;"><span class="fw-semibold">T Bands</span><br><small
+                                            class="text-muted">Count</small></div>
+                                    <div style="width:110px;">{{ form.t_bands_count }}</div>
+                                </div>
+                                <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
+                                    <div style="flex:1;"><span class="fw-semibold">Tapes Red</span><br><small
+                                            class="text-muted">Count</small></div>
+                                    <div style="width:110px;">{{ form.tapes_red_count }}</div>
+                                </div>
+                                <div class="d-flex align-items-center px-3 py-2 border-bottom">
+                                    <div style="flex:1;"><span class="fw-semibold">Tapes Black</span><br><small
+                                            class="text-muted">Count</small></div>
+                                    <div style="width:110px;">{{ form.tapes_black_count }}</div>
+                                </div>
+                                <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
+                                    <div style="flex:1;"><span class="fw-semibold">Tags</span><br><small
+                                            class="text-muted">Count</small></div>
+                                    <div style="width:110px;">{{ form.tags_count }}</div>
+                                </div>
+                                <div class="d-flex align-items-center px-3 py-2 border-bottom">
+                                    <div style="flex:1;"><span class="fw-semibold">Nail Clamps 2 Side</span><br><small
+                                            class="text-muted">Count</small></div>
+                                    <div style="width:110px;">{{ form.nail_clamps_2side_count }}</div>
+                                </div>
+                                <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
+                                    <div style="flex:1;"><span class="fw-semibold">Nail Clamps 1 Side</span><br><small
+                                            class="text-muted">Count</small></div>
+                                    <div style="width:110px;">{{ form.nail_clamps_1side_count }}</div>
+                                </div>
+                                <div class="d-flex align-items-center px-3 py-2">
+                                    <div style="flex:1;"><span class="fw-semibold">Anchor Hardener</span><br><small
+                                            class="text-muted">Count</small></div>
+                                    <div style="width:110px;">{{ form.anchor_hardener_count }}</div>
+                                </div>
                             </div>
-                            <div style="width:110px; text-align:right;">QTY</div>
                         </div>
-                        <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
-                            <div style="flex:1;"><span class="fw-semibold">Panels</span><br><small
-                                    class="text-muted">Count</small></div>
-                            <div style="width:110px;">{{ form.panels_count }}</div>
-                        </div>
-                        <div class="d-flex align-items-center px-3 py-2 border-bottom">
-                            <div style="flex:1;"><span class="fw-semibold">Structure Kit</span><br><small
-                                    class="text-muted">Normal / Fabrication</small></div>
-                            <div style="width:110px;">{{ form.structure_kit_type }}</div>
-                        </div>
-                        <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
-                            <div style="flex:1;"><span class="fw-semibold">Inverter (kW)</span><br><small
-                                    class="text-muted">kW</small></div>
-                            <div style="width:110px;">{{ form.inverter_kw }}</div>
-                        </div>
-                        <div class="d-flex align-items-center px-3 py-2 border-bottom">
-                            <div style="flex:1;"><span class="fw-semibold">Inverter Phase</span><br><small
-                                    class="text-muted">Single / Three Phase</small></div>
-                            <div style="width:110px;">{{ form.inverter_phase_type }}</div>
-                        </div>
-                        <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
-                            <div style="flex:1;"><span class="fw-semibold">AC Cable Red</span><br><small
-                                    class="text-muted">Mtrs</small></div>
-                            <div style="width:110px;">{{ form.ac_cable_red }}</div>
-                        </div>
-                        <div class="d-flex align-items-center px-3 py-2 border-bottom">
-                            <div style="flex:1;"><span class="fw-semibold">AC Cable Black</span><br><small
-                                    class="text-muted">Mtrs</small></div>
-                            <div style="width:110px;">{{ form.ac_cable_black }}</div>
-                        </div>
-                        <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
-                            <div style="flex:1;"><span class="fw-semibold">DC Cable Red &amp; Black</span><br><small
-                                    class="text-muted">Mtrs</small></div>
-                            <div style="width:110px;">{{ form.dc_cable_red_black }}</div>
-                        </div>
-                        <div class="d-flex align-items-center px-3 py-2 border-bottom">
-                            <div style="flex:1;"><span class="fw-semibold">LA Cable</span><br><small
-                                    class="text-muted">Mtrs</small></div>
-                            <div style="width:110px;">{{ form.la_cable_mtrs }}</div>
-                        </div>
-                        <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
-                            <div style="flex:1;"><span class="fw-semibold">Pipes</span><br><small
-                                    class="text-muted">Count</small></div>
-                            <div style="width:110px;">{{ form.pipes_count }}</div>
-                        </div>
-                        <div class="d-flex align-items-center px-3 py-2 border-bottom">
-                            <div style="flex:1;"><span class="fw-semibold">Earthing Kit</span><br><small
-                                    class="text-muted">Count</small></div>
-                            <div style="width:110px;">{{ form.earthing_kit_count }}</div>
-                        </div>
-                        <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
-                            <div style="flex:1;"><span class="fw-semibold">ACDB</span><br><small
-                                    class="text-muted">Count</small></div>
-                            <div style="width:110px;">{{ form.acdb_count }}</div>
-                        </div>
-                        <div class="d-flex align-items-center px-3 py-2 border-bottom">
-                            <div style="flex:1;"><span class="fw-semibold">DCDB</span><br><small
-                                    class="text-muted">Count</small></div>
-                            <div style="width:110px;">{{ form.dcdb_count }}</div>
-                        </div>
-                        <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
-                            <div style="flex:1;"><span class="fw-semibold">MC4 Connectors</span><br><small
-                                    class="text-muted">Count</small></div>
-                            <div style="width:110px;">{{ form.mc4_connectors_count }}</div>
-                        </div>
-                        <div class="d-flex align-items-center px-3 py-2 border-bottom">
-                            <div style="flex:1;"><span class="fw-semibold">Long L Bands</span><br><small
-                                    class="text-muted">Count</small></div>
-                            <div style="width:110px;">{{ form.long_l_bands_count }}</div>
-                        </div>
-                        <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
-                            <div style="flex:1;"><span class="fw-semibold">Short L Bands</span><br><small
-                                    class="text-muted">Count</small></div>
-                            <div style="width:110px;">{{ form.short_l_bands_count }}</div>
-                        </div>
-                        <div class="d-flex align-items-center px-3 py-2 border-bottom">
-                            <div style="flex:1;"><span class="fw-semibold">T Bands</span><br><small
-                                    class="text-muted">Count</small></div>
-                            <div style="width:110px;">{{ form.t_bands_count }}</div>
-                        </div>
-                        <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
-                            <div style="flex:1;"><span class="fw-semibold">Tapes Red</span><br><small
-                                    class="text-muted">Count</small></div>
-                            <div style="width:110px;">{{ form.tapes_red_count }}</div>
-                        </div>
-                        <div class="d-flex align-items-center px-3 py-2 border-bottom">
-                            <div style="flex:1;"><span class="fw-semibold">Tapes Black</span><br><small
-                                    class="text-muted">Count</small></div>
-                            <div style="width:110px;">{{ form.tapes_black_count }}</div>
-                        </div>
-                        <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
-                            <div style="flex:1;"><span class="fw-semibold">Tags</span><br><small
-                                    class="text-muted">Count</small></div>
-                            <div style="width:110px;">{{ form.tags_count }}</div>
-                        </div>
-                        <div class="d-flex align-items-center px-3 py-2 border-bottom">
-                            <div style="flex:1;"><span class="fw-semibold">Nail Clamps 2 Side</span><br><small
-                                    class="text-muted">Count</small></div>
-                            <div style="width:110px;">{{ form.nail_clamps_2side_count }}</div>
-                        </div>
-                        <div class="d-flex align-items-center px-3 py-2 border-bottom" style="background:#f8f9fa;">
-                            <div style="flex:1;"><span class="fw-semibold">Nail Clamps 1 Side</span><br><small
-                                    class="text-muted">Count</small></div>
-                            <div style="width:110px;">{{ form.nail_clamps_1side_count }}</div>
-                        </div>
-                        <div class="d-flex align-items-center px-3 py-2">
-                            <div style="flex:1;"><span class="fw-semibold">Anchor Hardener</span><br><small
-                                    class="text-muted">Count</small></div>
-                            <div style="width:110px;">{{ form.anchor_hardener_count }}</div>
-                        </div>
+
                     </div>
 
                     <!-- Readings -->
@@ -344,6 +341,7 @@
                             </div>
                         </div>
                         <div class="col-md-6">{{ form.site_photos_with_customer|as_crispy_field }}</div>
+                        <div class="col-md-6">{{ form.site_photos_multiple|as_crispy_field }}</div>
                         <div class="col-md-6">{{ form.customer_remarks|as_crispy_field }}</div>
                         <div class="col-md-6">{{ form.installer_remarks|as_crispy_field }}</div>
                     </div>

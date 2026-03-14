@@ -121,6 +121,13 @@ body {
     position: relative;
     overflow-x: hidden;
     background-attachment: fixed;
+    /* Hide scrollbars globally */
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+body::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
 }
 
 body::before,
@@ -200,6 +207,25 @@ a {
     box-shadow: var(--box-shadow-hover);
     transform: translateY(-5px);
     border-color: rgba(16, 185, 129, 0.3);
+}
+
+.image-card-admin {
+    transition: var(--transition);
+    border: 1px solid rgba(0,0,0,0.05) !important;
+}
+
+.image-card-admin:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+    z-index: 10;
+}
+
+.image-card-admin img {
+    transition: transform 0.5s ease;
+}
+
+.image-card-admin:hover img {
+    transform: scale(1.1);
 }
 
 .card {
@@ -493,10 +519,10 @@ a {
    ========================================= */
 @media (max-width: 768px) {
 
-    /* Reduce container padding */
-    .container-fluid {
-        padding-left: 1rem;
-        padding-right: 1rem;
+    /* Reduce container padding to increase width */
+    .container-fluid, .container {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
     }
 
     /* Card Adjustments */
@@ -567,10 +593,10 @@ a {
     }
 
     .table tr {
-        margin-bottom: 1rem;
+        margin-bottom: 0.75rem;
         border: 1px solid #e2e8f0;
         border-radius: 12px;
-        padding: 1rem;
+        padding: 0.25rem 0.5rem;
         background: #fff;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
@@ -578,13 +604,15 @@ a {
     .table td {
         display: block;
         text-align: right;
-        padding: 0.75rem 0 0.75rem 45%;
+        padding: 0.5rem 0.5rem 0.5rem 45%;
         position: relative;
         border: none;
         border-bottom: 1px solid #f1f5f9;
         font-size: 0.9rem;
-        min-height: 3.5rem;
-        /* Ensure enough height even if content is small */
+        min-height: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
     }
 
     .table td:last-child {
@@ -596,13 +624,16 @@ a {
     .table td:before {
         content: attr(data-label);
         position: absolute;
-        left: 0;
-        top: 0.75rem;
+        left: 0.5rem;
+        top: 0;
+        bottom: 0;
         width: 40%;
+        display: flex;
+        align-items: center;
         text-align: left;
         font-weight: 600;
         color: var(--text-secondary);
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         text-transform: uppercase;
         white-space: normal;
         overflow-wrap: break-word;

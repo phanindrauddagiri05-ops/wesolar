@@ -144,22 +144,22 @@ class Installation(models.Model):
     inverter_make = models.CharField(max_length=100)
     inverter_phase = models.CharField(max_length=50, blank=True)
     inverter_serial_number = models.CharField(max_length=200, blank=True, help_text="Inverter Serial Number(s)")
-    inverter_serial_photo = models.ImageField(upload_to='installations/inverters/')
+    inverter_serial_photo = models.ImageField(upload_to='installations/inverters/', null=True, blank=True)
     inverter_acdb_photo = models.ImageField(upload_to='installations/acdb/', null=True, blank=True)
     panel_serial_numbers = models.TextField(blank=True, help_text="Panel Serial Numbers (one per line or comma separated)")
-    panel_serial_photo = models.ImageField(upload_to='installations/panels/')
+    panel_serial_photo = models.ImageField(upload_to='installations/panels/', null=True, blank=True)
     
     # Measurements
-    ac_cable_used = models.FloatField(help_text="in Meters")
-    dc_cable_used = models.FloatField(help_text="in Meters")
-    la_cable_used = models.FloatField(help_text="in Meters", default=0.0)
-    pipes_used = models.FloatField(help_text="in Meters", default=0.0)
+    ac_cable_used = models.FloatField(help_text="in Meters", null=True, blank=True)
+    dc_cable_used = models.FloatField(help_text="in Meters", null=True, blank=True)
+    la_cable_used = models.FloatField(help_text="in Meters", default=0.0, null=True, blank=True)
+    pipes_used = models.FloatField(help_text="in Meters", default=0.0, null=True, blank=True)
     leftover_materials = models.TextField(blank=True)
     
     # Status & Remarks
     warranty_claimed = models.BooleanField(default=False)
     app_installation_status = models.BooleanField(default=False)
-    site_photos_with_customer = models.ImageField(upload_to='installations/site/')
+    site_photos_with_customer = models.ImageField(upload_to='installations/site/', null=True, blank=True)
     
     installer_remarks = models.TextField(blank=True)
     customer_remarks = models.TextField(blank=True)
@@ -199,10 +199,51 @@ class Installation(models.Model):
 
     def __str__(self):
         return f"Installation for {self.survey.customer_name}"
-    
+class InstallationPhoto(models.Model):
+    PHOTO_TYPE_CHOICES = [
+        ('inverter_serial', 'Inverter Serial'),
+        ('inverter_acdb', 'Inverter ACDB'),
+        ('panel_serial', 'Panel Serial'),
+        ('site_with_customer', 'Site with Customer'),
+        ('additional', 'Additional Site Photos'),
+    ]
+    installation = models.ForeignKey(Installation, on_delete=models.CASCADE, related_name='additional_photos')
+    photo = models.ImageField(upload_to='installations/site_additional/')
+    photo_type = models.CharField(max_length=50, choices=PHOTO_TYPE_CHOICES, default='additional')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"{self.get_photo_type_display()} for {self.installation.survey.customer_name}"
 
-# ... Ensure your CustomerSurvey and Installation models are above this ...
+class SurveyMedia(models.Model):
+    MEDIA_TYPE_CHOICES = [
+        ('roof', 'Roof Photos'),
+        ('pan_card', 'PAN Card'),
+        ('aadhar', 'Aadhar Card'),
+        ('current_bill', 'Current Bill'),
+        ('bank_account', 'Bank Account'),
+        ('parent_bank', 'Parent Bank'),
+    ]
+    survey = models.ForeignKey(CustomerSurvey, on_delete=models.CASCADE, related_name='media_files')
+    file = models.FileField(upload_to='surveys/media/')
+    media_type = models.CharField(max_length=50, choices=MEDIA_TYPE_CHOICES)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.get_media_type_display()} for {self.survey.customer_name}"
+
+class ProfileMedia(models.Model):
+    MEDIA_TYPE_CHOICES = [
+        ('aadhar', 'Aadhar Card'),
+        ('pan_card', 'PAN Card'),
+    ]
+    profile = models.ForeignKey('UserProfile', on_delete=models.CASCADE, related_name='media_files')
+    file = models.FileField(upload_to='profiles/media/')
+    media_type = models.CharField(max_length=50, choices=MEDIA_TYPE_CHOICES)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.get_media_type_display()} for {self.profile.user.username}"
 
 class BankDetails(models.Model):
     survey = models.OneToOneField('CustomerSurvey', on_delete=models.CASCADE, related_name='bank_details')
