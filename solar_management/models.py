@@ -64,6 +64,13 @@ class CustomerSurvey(models.Model):
     structure_height = models.FloatField(help_text="in Feet")
     floors = models.PositiveIntegerField(null=True, blank=True, help_text="Number of Floors")
     gps_coordinates = models.CharField(max_length=100)
+    AREA_CHOICES = [
+        ('Rajahmundry', 'Rajahmundry'),
+        ('Kovvur', 'Kovvur'),
+        ('Mandapeta', 'Mandapeta'),
+        ('Nidadavole', 'Nidadavole'),
+        ('Others', 'Others'),
+    ]
     area = models.CharField(max_length=255)
     measurements = models.CharField(max_length=255, help_text="Measurements (Square Feet)", null=True, blank=True)
     

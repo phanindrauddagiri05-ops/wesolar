@@ -1761,6 +1761,7 @@ def manage_storage(request):
             (~Q(aadhar_photo='') & ~Q(aadhar_photo__isnull=True)) |
             (~Q(current_bill_photo='') & ~Q(current_bill_photo__isnull=True)) |
             (~Q(bank_account_photo='') & ~Q(bank_account_photo__isnull=True)) |
+            (~Q(parent_bank_photo='') & ~Q(parent_bank_photo__isnull=True)) | # Keep this line for filtering
             (~Q(installation__inverter_serial_photo='') & ~Q(installation__inverter_serial_photo__isnull=True)) |
             (~Q(installation__inverter_acdb_photo='') & ~Q(installation__inverter_acdb_photo__isnull=True)) |
             (~Q(installation__panel_serial_photo='') & ~Q(installation__panel_serial_photo__isnull=True)) |
@@ -1862,6 +1863,7 @@ def delete_all_media(request):
             (~Q(aadhar_photo='') & ~Q(aadhar_photo__isnull=True)) |
             (~Q(current_bill_photo='') & ~Q(current_bill_photo__isnull=True)) |
             (~Q(bank_account_photo='') & ~Q(bank_account_photo__isnull=True)) |
+            (~Q(parent_bank_photo='') & ~Q(parent_bank_photo__isnull=True)) | # Keep this line for filtering
             (~Q(installation__inverter_serial_photo='') & ~Q(installation__inverter_serial_photo__isnull=True)) |
             (~Q(installation__inverter_acdb_photo='') & ~Q(installation__inverter_acdb_photo__isnull=True)) |
             (~Q(installation__panel_serial_photo='') & ~Q(installation__panel_serial_photo__isnull=True)) |

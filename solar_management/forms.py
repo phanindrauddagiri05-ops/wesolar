@@ -5,6 +5,7 @@ from .models import CustomerSurvey, Installation, BankDetails, UserProfile, Enqu
 import re
 class SurveyForm(forms.ModelForm):
     is_critical_site = forms.BooleanField(required=False, label="Is Critical Site?")
+    custom_area = forms.CharField(required=False, label="Specify Custom Area", widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter custom area name...'}))
 
     class Meta:
         model = CustomerSurvey
@@ -65,7 +66,14 @@ class SurveyForm(forms.ModelForm):
              'aadhar_photo': forms.ClearableFileInput(),
              'current_bill_photo': forms.ClearableFileInput(),
              'bank_account_photo': forms.ClearableFileInput(),
-             'parent_bank_photo': forms.ClearableFileInput(),
+             'area': forms.Select(choices=[
+                ('', '--- Select Area ---'),
+                ('Rajahmundry', 'Rajahmundry'),
+                ('Kovvur', 'Kovvur'),
+                ('Mandapeta', 'Mandapeta'),
+                ('Nidadavole', 'Nidadavole'),
+                ('Others', 'Others'),
+             ], attrs={'class': 'form-select'}),
         }
         help_texts = {
             'structure_height': '',
@@ -77,7 +85,7 @@ class SurveyForm(forms.ModelForm):
 
 
     # Image fields that should be optional when editing
-    IMAGE_FIELDS = ['roof_photo', 'pan_card_photo', 'aadhar_photo', 'current_bill_photo', 'bank_account_photo', 'parent_bank_photo']
+    IMAGE_FIELDS = ['roof_photo', 'pan_card_photo', 'aadhar_photo', 'current_bill_photo', 'bank_account_photo']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -86,6 +94,13 @@ class SurveyForm(forms.ModelForm):
             for field_name in self.IMAGE_FIELDS:
                 if field_name in self.fields:
                     self.fields[field_name].required = False
+                    
+            # Handle custom area logic
+            if hasattr(self.instance, 'area') and self.instance.area:
+                valid_areas = ['Rajahmundry', 'Kovvur', 'Mandapeta', 'Nidadavole', 'Others']
+                if self.instance.area not in valid_areas:
+                    self.initial['area'] = 'Others'
+                    self.initial['custom_area'] = self.instance.area
 
     def clean_sc_no(self):
         sc_no = self.cleaned_data.get('sc_no')
@@ -153,6 +168,15 @@ class SurveyForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+        area = cleaned_data.get('area')
+        custom_area = cleaned_data.get('custom_area')
+
+        if area == 'Others':
+            if not custom_area:
+                self.add_error('custom_area', "Please specify the custom area.")
+            else:
+                cleaned_data['area'] = custom_area
+
         mefma_status = cleaned_data.get('mefma_status')
         rp_name = cleaned_data.get('rp_name')
         rp_phone = cleaned_data.get('rp_phone_number')
@@ -163,7 +187,7 @@ class SurveyForm(forms.ModelForm):
         pan_card_photo = cleaned_data.get('pan_card_photo')
         aadhar_photo = cleaned_data.get('aadhar_photo')
         current_bill_photo = cleaned_data.get('current_bill_photo')
-        parent_bank_photo = cleaned_data.get('parent_bank_photo')
+
         registration_status = cleaned_data.get('registration_status')
         registration_date = cleaned_data.get('registration_date')
 
@@ -193,10 +217,6 @@ class SurveyForm(forms.ModelForm):
             if not (self.instance.pk and self.instance.current_bill_photo):
                 self.add_error('current_bill_photo', "Current Electricity Bill photo is mandatory.")
                 
-        if not parent_bank_photo:
-            if not (self.instance.pk and self.instance.parent_bank_photo):
-                self.add_error('parent_bank_photo', "Parent Bank Front Page photo is mandatory.")
-
         if mefma_status:
             if not rp_name:
                 self.add_error('rp_name', "RP Name is mandatory if MEFMA is Yes.")
@@ -310,6 +330,7 @@ class InstallationForm(forms.ModelForm):
         }
         widgets = {
             'inverter_serial_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. SN123456789'}),
+            'inverter_phase': forms.Select(choices=[('', '--- Select Phase ---'), ('Single Phase', 'Single Phase'), ('Three Phase', 'Three Phase')], attrs={'class': 'form-select'}),
             'inverter_serial_photo': forms.ClearableFileInput(),
             'inverter_acdb_photo': forms.ClearableFileInput(),
             'panel_serial_numbers': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. PSN001, PSN002, PSN003'}),

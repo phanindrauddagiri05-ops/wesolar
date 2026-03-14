@@ -140,14 +140,6 @@
                                 {% else %}
                                 <span>-</span>
                                 {% endif %}
-                                {% if customer.parent_bank_photo %}
-                                <a href="{{ customer.parent_bank_photo.url }}" target="_blank">
-                                    <img src="{{ customer.parent_bank_photo.url }}" class="rounded shadow-sm border"
-                                        style="height: 40px; width: 60px; object-fit: cover;" alt="Parent Bank Photo">
-                                </a>
-                                {% else %}
-                                <span class="text-muted small">Not Uploaded</span>
-                                {% endif %}
                             </div>
                         </div>
 

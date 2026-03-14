@@ -120,17 +120,7 @@
                     </div>
                     <div class="row mt-2">
                         <div class="col-md-6">{{ bank_form.parent_bank_ac_no|as_crispy_field }}</div>
-                        <div class="col-md-6">
-                            {{ form.parent_bank_photo|as_crispy_field }}
-                            {% if is_update and form.instance.parent_bank_photo %}
-                            <div class="mb-2"><small class="text-muted">Current:</small><br>
-                                <a href="{{ form.instance.parent_bank_photo.url }}" target="_blank">
-                                    <img src="{{ form.instance.parent_bank_photo.url }}"
-                                        style="max-height:60px; max-width:120px;" class="rounded border shadow-sm">
-                                </a>
-                            </div>
-                            {% endif %}
-                        </div>
+                        <div class="col-md-6"></div>
                     </div>
                     <div class="row mt-2">
                         <div class="col-md-6">{{ bank_form.loan_applied_bank|as_crispy_field }}</div>
@@ -146,7 +136,12 @@
                     Details</h5>
                 <div class="bg-light p-3 rounded mb-4 border">
                     <div class="row">
-                        <div class="col-md-6">{{ form.area|as_crispy_field }}</div>
+                        <div class="col-md-6">
+                            {{ form.area|as_crispy_field }}
+                            <div id="customAreaDiv" style="display: none;" class="mt-2">
+                                {{ form.custom_area|as_crispy_field }}
+                            </div>
+                        </div>
                         <div class="col-md-6">
                             {{ form.gps_coordinates|as_crispy_field }}
                             <!-- Location Logic is unchanged -->
@@ -466,6 +461,33 @@
                 statusSpan.className = "ms-2 small text-danger";
             });
     }
+
+    // Area Custom Input logic
+    document.addEventListener('DOMContentLoaded', function () {
+        const areaSelect = document.getElementById('id_area');
+        const customAreaDiv = document.getElementById('customAreaDiv');
+        const customAreaInput = document.getElementById('id_custom_area');
+
+        function toggleCustomArea() {
+            if (areaSelect && customAreaDiv) {
+                if (areaSelect.value === 'Others') {
+                    customAreaDiv.style.display = 'block';
+                    if (customAreaInput) customAreaInput.required = true;
+                } else {
+                    customAreaDiv.style.display = 'none';
+                    if (customAreaInput) {
+                        customAreaInput.required = false;
+                        customAreaInput.value = '';
+                    }
+                }
+            }
+        }
+
+        if (areaSelect) {
+            areaSelect.addEventListener('change', toggleCustomArea);
+            toggleCustomArea(); // Initial check
+        }
+    });
 
 </script>
 {% endblock %}
