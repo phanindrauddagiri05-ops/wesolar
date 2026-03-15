@@ -462,6 +462,24 @@ class InstallationForm(forms.ModelForm):
             if field in self.fields:
                 self.fields[field].required = False
                 
+        # Make all new dispatched and used fields mandatory
+        mandatory_fields = [
+            'panels_count', 'structure_kit_type', 'inverter_kw', 'inverter_phase_type',
+            'ac_cable_red', 'ac_cable_black', 'dc_cable_red_black', 'la_cable_mtrs',
+            'pipes_count', 'earthing_kit_count', 'acdb_count', 'dcdb_count', 'mc4_connectors_count',
+            'long_l_bands_count', 'short_l_bands_count', 't_bands_count', 'tapes_red_count',
+            'tapes_black_count', 'tags_count', 'nail_clamps_2side_count', 'nail_clamps_1side_count',
+            'anchor_hardener_count',
+            'panels_used', 'structure_kit_used', 'inverter_kw_used', 'inverter_phase_type_used',
+            'ac_cable_red_used', 'ac_cable_black_used', 'dc_cable_red_black_used', 'la_cable_mtrs_used',
+            'pipes_count_used', 'earthing_kit_count_used', 'acdb_count_used', 'dcdb_count_used',
+            'mc4_connectors_count_used', 'long_l_bands_count_used', 'short_l_bands_count_used',
+            't_bands_count_used', 'tapes_red_count_used', 'tapes_black_count_used', 'tags_count_used',
+            'nail_clamps_2side_count_used', 'nail_clamps_1side_count_used', 'anchor_hardener_count_used'
+        ]
+        for field in mandatory_fields:
+            if field in self.fields:
+                self.fields[field].required = True
         # Make photo fields optional to allow clearing
         self.fields['inverter_serial_photo'].required = False
         self.fields['inverter_acdb_photo'].required = False
@@ -517,6 +535,43 @@ class InstallationForm(forms.ModelForm):
         for field in materials_fields:
             self.fields[field].required = False
 
+    def clean(self):
+        cleaned_data = super().clean()
+        
+        # Check that used quantity is not greater than dispatched
+        material_pairs = [
+            ('panels_count', 'panels_used', 'Panels'),
+            ('inverter_kw', 'inverter_kw_used', 'Inverter (kW)'),
+            ('ac_cable_red', 'ac_cable_red_used', 'AC Cable Red'),
+            ('ac_cable_black', 'ac_cable_black_used', 'AC Cable Black'),
+            ('dc_cable_red_black', 'dc_cable_red_black_used', 'DC Cable Red/Black'),
+            ('la_cable_mtrs', 'la_cable_mtrs_used', 'LA Cable'),
+            ('pipes_count', 'pipes_count_used', 'Pipes'),
+            ('earthing_kit_count', 'earthing_kit_count_used', 'Earthing Kit'),
+            ('acdb_count', 'acdb_count_used', 'ACDB'),
+            ('dcdb_count', 'dcdb_count_used', 'DCDB'),
+            ('mc4_connectors_count', 'mc4_connectors_count_used', 'MC4 Connectors'),
+            ('long_l_bands_count', 'long_l_bands_count_used', 'Long L Bands'),
+            ('short_l_bands_count', 'short_l_bands_count_used', 'Short L Bands'),
+            ('t_bands_count', 't_bands_count_used', 'T Bands'),
+            ('tapes_red_count', 'tapes_red_count_used', 'Tapes Red'),
+            ('tapes_black_count', 'tapes_black_count_used', 'Tapes Black'),
+            ('tags_count', 'tags_count_used', 'Tags'),
+            ('nail_clamps_2side_count', 'nail_clamps_2side_count_used', 'Nail Clamps 2-Side'),
+            ('nail_clamps_1side_count', 'nail_clamps_1side_count_used', 'Nail Clamps 1-Side'),
+            ('anchor_hardener_count', 'anchor_hardener_count_used', 'Anchor/Hardener'),
+        ]
+        
+        for disp_field, used_field, name in material_pairs:
+            disp_val = cleaned_data.get(disp_field)
+            used_val = cleaned_data.get(used_field)
+            
+            if disp_val is not None and used_val is not None:
+                if used_val > disp_val:
+                    # add user facing error 
+                    self.add_error(used_field, f"Used {name} cannot exceed Dispatched ({disp_val}).")
+                    
+        return cleaned_data
 class OfficeStatusForm(forms.ModelForm):
     class Meta:
         model = CustomerSurvey

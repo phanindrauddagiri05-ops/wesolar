@@ -103,171 +103,159 @@
                         <hr class="text-muted opacity-25">
 
                         <div class="row mt-4">
-                            <!-- Materials Dispatched -->
-                            <div class="col-md-6">
-                                <h6 class="text-uppercase text-secondary small fw-bold mb-3 mt-1">Materials Dispatched</h6>
+                            <!-- Materials Summary -->
+                            <div class="col-12 mb-4">
+                                <h6 class="text-uppercase text-secondary small fw-bold mb-3 mt-1"><i class="bi bi-ui-checks-grid me-2"></i>Materials Consumption Summary</h6>
                                 <div class="table-responsive mb-4">
-                                    <table class="table table-bordered table-sm align-middle">
+                                    <table class="table table-bordered table-sm align-middle text-center">
                                         <thead class="table-dark">
                                             <tr>
-                                                <th>Item</th>
-                                                <th>Unit / Spec</th>
-                                                <th class="text-end">Quantity</th>
+                                                <th class="text-start">Item</th>
+                                                <th>Dispatched</th>
+                                                <th>Used</th>
+                                                <th>Difference</th>
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            <!-- Numeric Rows -->
                                             <tr>
-                                                <td data-label="Item" class="fw-semibold">Panels</td>
-                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
-                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.panels_count|default:"0" }}</td>
+                                                <td data-label="Item/Unit" class="text-start fw-semibold">Panels <small class="text-muted d-block fw-normal">Count</small></td>
+                                                <td data-label="Dispatched" class="fw-bold">{{ customer.installation.panels_count|default:"0" }}</td>
+                                                <td data-label="Used" class="fw-bold text-success">{{ customer.installation.panels_used|default:"0" }}</td>
+                                                <td data-label="Balance" class="fw-bold {% if customer.installation.panels_count|sub:customer.installation.panels_used > 0 %}text-success{% elif customer.installation.panels_count|sub:customer.installation.panels_used < 0 %}text-danger{% else %}text-muted{% endif %}">{{ customer.installation.panels_count|sub:customer.installation.panels_used }}</td>
+                                            </tr>
+                                            <tr class="table-light">
+                                                <td data-label="Item/Unit" class="text-start fw-semibold">Inverter (kW) <small class="text-muted d-block fw-normal">kW</small></td>
+                                                <td data-label="Dispatched" class="fw-bold">{{ customer.installation.inverter_kw|default:"0" }}</td>
+                                                <td data-label="Used" class="fw-bold text-success">{{ customer.installation.inverter_kw_used|default:"0" }}</td>
+                                                <td data-label="Balance" class="fw-bold {% if customer.installation.inverter_kw|sub:customer.installation.inverter_kw_used > 0 %}text-success{% elif customer.installation.inverter_kw|sub:customer.installation.inverter_kw_used < 0 %}text-danger{% else %}text-muted{% endif %}">{{ customer.installation.inverter_kw|sub:customer.installation.inverter_kw_used }}</td>
                                             </tr>
                                             <tr>
-                                                <td data-label="Item" class="fw-semibold">Structure Kit</td>
-                                                <td data-label="Unit / Spec" class="text-muted small">Type</td>
-                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.structure_kit_type|default:"-" }}</td>
+                                                <td data-label="Item/Unit" class="text-start fw-semibold">AC Cable Red <small class="text-muted d-block fw-normal">Mtrs</small></td>
+                                                <td data-label="Dispatched" class="fw-bold">{{ customer.installation.ac_cable_red|default:"0" }}</td>
+                                                <td data-label="Used" class="fw-bold text-success">{{ customer.installation.ac_cable_red_used|default:"0" }}</td>
+                                                <td data-label="Balance" class="fw-bold {% if customer.installation.ac_cable_red|sub:customer.installation.ac_cable_red_used > 0 %}text-success{% elif customer.installation.ac_cable_red|sub:customer.installation.ac_cable_red_used < 0 %}text-danger{% else %}text-muted{% endif %}">{{ customer.installation.ac_cable_red|sub:customer.installation.ac_cable_red_used }}</td>
+                                            </tr>
+                                            <tr class="table-light">
+                                                <td data-label="Item/Unit" class="text-start fw-semibold">AC Cable Black <small class="text-muted d-block fw-normal">Mtrs</small></td>
+                                                <td data-label="Dispatched" class="fw-bold">{{ customer.installation.ac_cable_black|default:"0" }}</td>
+                                                <td data-label="Used" class="fw-bold text-success">{{ customer.installation.ac_cable_black_used|default:"0" }}</td>
+                                                <td data-label="Balance" class="fw-bold {% if customer.installation.ac_cable_black|sub:customer.installation.ac_cable_black_used > 0 %}text-success{% elif customer.installation.ac_cable_black|sub:customer.installation.ac_cable_black_used < 0 %}text-danger{% else %}text-muted{% endif %}">{{ customer.installation.ac_cable_black|sub:customer.installation.ac_cable_black_used }}</td>
                                             </tr>
                                             <tr>
-                                                <td data-label="Item" class="fw-semibold">Inverter</td>
-                                                <td data-label="Unit / Spec" class="text-muted small">kW</td>
-                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.inverter_kw|default:"0" }} kW</td>
+                                                <td data-label="Item/Unit" class="text-start fw-semibold">DC Cable Red & Black <small class="text-muted d-block fw-normal">Mtrs</small></td>
+                                                <td data-label="Dispatched" class="fw-bold">{{ customer.installation.dc_cable_red_black|default:"0" }}</td>
+                                                <td data-label="Used" class="fw-bold text-success">{{ customer.installation.dc_cable_red_black_used|default:"0" }}</td>
+                                                <td data-label="Balance" class="fw-bold {% if customer.installation.dc_cable_red_black|sub:customer.installation.dc_cable_red_black_used > 0 %}text-success{% elif customer.installation.dc_cable_red_black|sub:customer.installation.dc_cable_red_black_used < 0 %}text-danger{% else %}text-muted{% endif %}">{{ customer.installation.dc_cable_red_black|sub:customer.installation.dc_cable_red_black_used }}</td>
+                                            </tr>
+                                            <tr class="table-light">
+                                                <td data-label="Item/Unit" class="text-start fw-semibold">LA Cable <small class="text-muted d-block fw-normal">Mtrs</small></td>
+                                                <td data-label="Dispatched" class="fw-bold">{{ customer.installation.la_cable_mtrs|default:"0" }}</td>
+                                                <td data-label="Used" class="fw-bold text-success">{{ customer.installation.la_cable_mtrs_used|default:"0" }}</td>
+                                                <td data-label="Balance" class="fw-bold {% if customer.installation.la_cable_mtrs|sub:customer.installation.la_cable_mtrs_used > 0 %}text-success{% elif customer.installation.la_cable_mtrs|sub:customer.installation.la_cable_mtrs_used < 0 %}text-danger{% else %}text-muted{% endif %}">{{ customer.installation.la_cable_mtrs|sub:customer.installation.la_cable_mtrs_used }}</td>
                                             </tr>
                                             <tr>
-                                                <td data-label="Item" class="fw-semibold">Inverter Phase</td>
-                                                <td data-label="Unit / Spec" class="text-muted small">Phase</td>
-                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.inverter_phase_type|default:"-" }}</td>
+                                                <td data-label="Item/Unit" class="text-start fw-semibold">Pipes <small class="text-muted d-block fw-normal">Count / Mtrs</small></td>
+                                                <td data-label="Dispatched" class="fw-bold">{{ customer.installation.pipes_count|default:"0" }}</td>
+                                                <td data-label="Used" class="fw-bold text-success">{{ customer.installation.pipes_count_used|default:"0" }}</td>
+                                                <td data-label="Balance" class="fw-bold {% if customer.installation.pipes_count|sub:customer.installation.pipes_count_used > 0 %}text-success{% elif customer.installation.pipes_count|sub:customer.installation.pipes_count_used < 0 %}text-danger{% else %}text-muted{% endif %}">{{ customer.installation.pipes_count|sub:customer.installation.pipes_count_used }}</td>
+                                            </tr>
+                                            <tr class="table-light">
+                                                <td data-label="Item/Unit" class="text-start fw-semibold">Earthing Kit <small class="text-muted d-block fw-normal">Count</small></td>
+                                                <td data-label="Dispatched" class="fw-bold">{{ customer.installation.earthing_kit_count|default:"0" }}</td>
+                                                <td data-label="Used" class="fw-bold text-success">{{ customer.installation.earthing_kit_count_used|default:"0" }}</td>
+                                                <td data-label="Balance" class="fw-bold {% if customer.installation.earthing_kit_count|sub:customer.installation.earthing_kit_count_used > 0 %}text-success{% elif customer.installation.earthing_kit_count|sub:customer.installation.earthing_kit_count_used < 0 %}text-danger{% else %}text-muted{% endif %}">{{ customer.installation.earthing_kit_count|sub:customer.installation.earthing_kit_count_used }}</td>
                                             </tr>
                                             <tr>
-                                                <td data-label="Item" class="fw-semibold">AC Cable Red</td>
-                                                <td data-label="Unit / Spec" class="text-muted small">Mtrs</td>
-                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.ac_cable_red|default:"0" }} m</td>
+                                                <td data-label="Item/Unit" class="text-start fw-semibold">ACDB <small class="text-muted d-block fw-normal">Count</small></td>
+                                                <td data-label="Dispatched" class="fw-bold">{{ customer.installation.acdb_count|default:"0" }}</td>
+                                                <td data-label="Used" class="fw-bold text-success">{{ customer.installation.acdb_count_used|default:"0" }}</td>
+                                                <td data-label="Balance" class="fw-bold {% if customer.installation.acdb_count|sub:customer.installation.acdb_count_used > 0 %}text-success{% elif customer.installation.acdb_count|sub:customer.installation.acdb_count_used < 0 %}text-danger{% else %}text-muted{% endif %}">{{ customer.installation.acdb_count|sub:customer.installation.acdb_count_used }}</td>
+                                            </tr>
+                                            <tr class="table-light">
+                                                <td data-label="Item/Unit" class="text-start fw-semibold">DCDB <small class="text-muted d-block fw-normal">Count</small></td>
+                                                <td data-label="Dispatched" class="fw-bold">{{ customer.installation.dcdb_count|default:"0" }}</td>
+                                                <td data-label="Used" class="fw-bold text-success">{{ customer.installation.dcdb_count_used|default:"0" }}</td>
+                                                <td data-label="Balance" class="fw-bold {% if customer.installation.dcdb_count|sub:customer.installation.dcdb_count_used > 0 %}text-success{% elif customer.installation.dcdb_count|sub:customer.installation.dcdb_count_used < 0 %}text-danger{% else %}text-muted{% endif %}">{{ customer.installation.dcdb_count|sub:customer.installation.dcdb_count_used }}</td>
                                             </tr>
                                             <tr>
-                                                <td data-label="Item" class="fw-semibold">AC Cable Black</td>
-                                                <td data-label="Unit / Spec" class="text-muted small">Mtrs</td>
-                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.ac_cable_black|default:"0" }} m</td>
+                                                <td data-label="Item/Unit" class="text-start fw-semibold">MC4 Connectors <small class="text-muted d-block fw-normal">Count</small></td>
+                                                <td data-label="Dispatched" class="fw-bold">{{ customer.installation.mc4_connectors_count|default:"0" }}</td>
+                                                <td data-label="Used" class="fw-bold text-success">{{ customer.installation.mc4_connectors_count_used|default:"0" }}</td>
+                                                <td data-label="Balance" class="fw-bold {% if customer.installation.mc4_connectors_count|sub:customer.installation.mc4_connectors_count_used > 0 %}text-success{% elif customer.installation.mc4_connectors_count|sub:customer.installation.mc4_connectors_count_used < 0 %}text-danger{% else %}text-muted{% endif %}">{{ customer.installation.mc4_connectors_count|sub:customer.installation.mc4_connectors_count_used }}</td>
+                                            </tr>
+                                            <tr class="table-light">
+                                                <td data-label="Item/Unit" class="text-start fw-semibold">Long L Bands <small class="text-muted d-block fw-normal">Count</small></td>
+                                                <td data-label="Dispatched" class="fw-bold">{{ customer.installation.long_l_bands_count|default:"0" }}</td>
+                                                <td data-label="Used" class="fw-bold text-success">{{ customer.installation.long_l_bands_count_used|default:"0" }}</td>
+                                                <td data-label="Balance" class="fw-bold {% if customer.installation.long_l_bands_count|sub:customer.installation.long_l_bands_count_used > 0 %}text-success{% elif customer.installation.long_l_bands_count|sub:customer.installation.long_l_bands_count_used < 0 %}text-danger{% else %}text-muted{% endif %}">{{ customer.installation.long_l_bands_count|sub:customer.installation.long_l_bands_count_used }}</td>
                                             </tr>
                                             <tr>
-                                                <td data-label="Item" class="fw-semibold">DC Cable Red & Black</td>
-                                                <td data-label="Unit / Spec" class="text-muted small">Mtrs</td>
-                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.dc_cable_red_black|default:"0" }} m</td>
+                                                <td data-label="Item/Unit" class="text-start fw-semibold">Short L Bands <small class="text-muted d-block fw-normal">Count</small></td>
+                                                <td data-label="Dispatched" class="fw-bold">{{ customer.installation.short_l_bands_count|default:"0" }}</td>
+                                                <td data-label="Used" class="fw-bold text-success">{{ customer.installation.short_l_bands_count_used|default:"0" }}</td>
+                                                <td data-label="Balance" class="fw-bold {% if customer.installation.short_l_bands_count|sub:customer.installation.short_l_bands_count_used > 0 %}text-success{% elif customer.installation.short_l_bands_count|sub:customer.installation.short_l_bands_count_used < 0 %}text-danger{% else %}text-muted{% endif %}">{{ customer.installation.short_l_bands_count|sub:customer.installation.short_l_bands_count_used }}</td>
+                                            </tr>
+                                            <tr class="table-light">
+                                                <td data-label="Item/Unit" class="text-start fw-semibold">T Bands <small class="text-muted d-block fw-normal">Count</small></td>
+                                                <td data-label="Dispatched" class="fw-bold">{{ customer.installation.t_bands_count|default:"0" }}</td>
+                                                <td data-label="Used" class="fw-bold text-success">{{ customer.installation.t_bands_count_used|default:"0" }}</td>
+                                                <td data-label="Balance" class="fw-bold {% if customer.installation.t_bands_count|sub:customer.installation.t_bands_count_used > 0 %}text-success{% elif customer.installation.t_bands_count|sub:customer.installation.t_bands_count_used < 0 %}text-danger{% else %}text-muted{% endif %}">{{ customer.installation.t_bands_count|sub:customer.installation.t_bands_count_used }}</td>
                                             </tr>
                                             <tr>
-                                                <td data-label="Item" class="fw-semibold">LA Cable</td>
-                                                <td data-label="Unit / Spec" class="text-muted small">Mtrs</td>
-                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.la_cable_mtrs|default:"0" }} m</td>
+                                                <td data-label="Item/Unit" class="text-start fw-semibold">Tapes Red <small class="text-muted d-block fw-normal">Count</small></td>
+                                                <td data-label="Dispatched" class="fw-bold">{{ customer.installation.tapes_red_count|default:"0" }}</td>
+                                                <td data-label="Used" class="fw-bold text-success">{{ customer.installation.tapes_red_count_used|default:"0" }}</td>
+                                                <td data-label="Balance" class="fw-bold {% if customer.installation.tapes_red_count|sub:customer.installation.tapes_red_count_used > 0 %}text-success{% elif customer.installation.tapes_red_count|sub:customer.installation.tapes_red_count_used < 0 %}text-danger{% else %}text-muted{% endif %}">{{ customer.installation.tapes_red_count|sub:customer.installation.tapes_red_count_used }}</td>
+                                            </tr>
+                                            <tr class="table-light">
+                                                <td data-label="Item/Unit" class="text-start fw-semibold">Tapes Black <small class="text-muted d-block fw-normal">Count</small></td>
+                                                <td data-label="Dispatched" class="fw-bold">{{ customer.installation.tapes_black_count|default:"0" }}</td>
+                                                <td data-label="Used" class="fw-bold text-success">{{ customer.installation.tapes_black_count_used|default:"0" }}</td>
+                                                <td data-label="Balance" class="fw-bold {% if customer.installation.tapes_black_count|sub:customer.installation.tapes_black_count_used > 0 %}text-success{% elif customer.installation.tapes_black_count|sub:customer.installation.tapes_black_count_used < 0 %}text-danger{% else %}text-muted{% endif %}">{{ customer.installation.tapes_black_count|sub:customer.installation.tapes_black_count_used }}</td>
                                             </tr>
                                             <tr>
-                                                <td data-label="Item" class="fw-semibold">Pipes</td>
-                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
-                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.pipes_count|default:"0" }}</td>
+                                                <td data-label="Item/Unit" class="text-start fw-semibold">Tags <small class="text-muted d-block fw-normal">Count</small></td>
+                                                <td data-label="Dispatched" class="fw-bold">{{ customer.installation.tags_count|default:"0" }}</td>
+                                                <td data-label="Used" class="fw-bold text-success">{{ customer.installation.tags_count_used|default:"0" }}</td>
+                                                <td data-label="Balance" class="fw-bold {% if customer.installation.tags_count|sub:customer.installation.tags_count_used > 0 %}text-success{% elif customer.installation.tags_count|sub:customer.installation.tags_count_used < 0 %}text-danger{% else %}text-muted{% endif %}">{{ customer.installation.tags_count|sub:customer.installation.tags_count_used }}</td>
+                                            </tr>
+                                            <tr class="table-light">
+                                                <td data-label="Item/Unit" class="text-start fw-semibold">Nail Clamps 2 Side <small class="text-muted d-block fw-normal">Count</small></td>
+                                                <td data-label="Dispatched" class="fw-bold">{{ customer.installation.nail_clamps_2side_count|default:"0" }}</td>
+                                                <td data-label="Used" class="fw-bold text-success">{{ customer.installation.nail_clamps_2side_count_used|default:"0" }}</td>
+                                                <td data-label="Balance" class="fw-bold {% if customer.installation.nail_clamps_2side_count|sub:customer.installation.nail_clamps_2side_count_used > 0 %}text-success{% elif customer.installation.nail_clamps_2side_count|sub:customer.installation.nail_clamps_2side_count_used < 0 %}text-danger{% else %}text-muted{% endif %}">{{ customer.installation.nail_clamps_2side_count|sub:customer.installation.nail_clamps_2side_count_used }}</td>
                                             </tr>
                                             <tr>
-                                                <td data-label="Item" class="fw-semibold">Earthing Kit</td>
-                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
-                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.earthing_kit_count|default:"0" }}</td>
+                                                <td data-label="Item/Unit" class="text-start fw-semibold">Nail Clamps 1 Side <small class="text-muted d-block fw-normal">Count</small></td>
+                                                <td data-label="Dispatched" class="fw-bold">{{ customer.installation.nail_clamps_1side_count|default:"0" }}</td>
+                                                <td data-label="Used" class="fw-bold text-success">{{ customer.installation.nail_clamps_1side_count_used|default:"0" }}</td>
+                                                <td data-label="Balance" class="fw-bold {% if customer.installation.nail_clamps_1side_count|sub:customer.installation.nail_clamps_1side_count_used > 0 %}text-success{% elif customer.installation.nail_clamps_1side_count|sub:customer.installation.nail_clamps_1side_count_used < 0 %}text-danger{% else %}text-muted{% endif %}">{{ customer.installation.nail_clamps_1side_count|sub:customer.installation.nail_clamps_1side_count_used }}</td>
                                             </tr>
-                                            <tr>
-                                                <td data-label="Item" class="fw-semibold">ACDB</td>
-                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
-                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.acdb_count|default:"0" }}</td>
+                                            <tr class="table-light">
+                                                <td data-label="Item/Unit" class="text-start fw-semibold">Anchor Hardener <small class="text-muted d-block fw-normal">Count</small></td>
+                                                <td data-label="Dispatched" class="fw-bold">{{ customer.installation.anchor_hardener_count|default:"0" }}</td>
+                                                <td data-label="Used" class="fw-bold text-success">{{ customer.installation.anchor_hardener_count_used|default:"0" }}</td>
+                                                <td data-label="Balance" class="fw-bold {% if customer.installation.anchor_hardener_count|sub:customer.installation.anchor_hardener_count_used > 0 %}text-success{% elif customer.installation.anchor_hardener_count|sub:customer.installation.anchor_hardener_count_used < 0 %}text-danger{% else %}text-muted{% endif %}">{{ customer.installation.anchor_hardener_count|sub:customer.installation.anchor_hardener_count_used }}</td>
                                             </tr>
-                                            <tr>
-                                                <td data-label="Item" class="fw-semibold">DCDB</td>
-                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
-                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.dcdb_count|default:"0" }}</td>
+
+                                            <!-- Non-Numeric Rows (No Diff) -->
+                                            <tr class="table-secondary border-secondary">
+                                                <td data-label="Item/Unit" class="text-start fw-semibold">Structure Kit <small class="text-muted d-block fw-normal">Normal / Fabrication</small></td>
+                                                <td data-label="Dispatched" class="fw-bold">{{ customer.installation.structure_kit_type|default:"-" }}</td>
+                                                <td data-label="Used" class="fw-bold text-success">{{ customer.installation.structure_kit_used|default:"-" }}</td>
+                                                <td data-label="Balance" class="text-muted">-</td>
                                             </tr>
-                                            <tr>
-                                                <td data-label="Item" class="fw-semibold">MC4 Connectors</td>
-                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
-                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.mc4_connectors_count|default:"0" }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td data-label="Item" class="fw-semibold">Long L Bands</td>
-                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
-                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.long_l_bands_count|default:"0" }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td data-label="Item" class="fw-semibold">Short L Bands</td>
-                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
-                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.short_l_bands_count|default:"0" }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td data-label="Item" class="fw-semibold">T Bands</td>
-                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
-                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.t_bands_count|default:"0" }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td data-label="Item" class="fw-semibold">Tapes Red</td>
-                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
-                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.tapes_red_count|default:"0" }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td data-label="Item" class="fw-semibold">Tapes Black</td>
-                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
-                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.tapes_black_count|default:"0" }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td data-label="Item" class="fw-semibold">Tags</td>
-                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
-                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.tags_count|default:"0" }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td data-label="Item" class="fw-semibold">Nail Clamps 2 Side</td>
-                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
-                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.nail_clamps_2side_count|default:"0" }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td data-label="Item" class="fw-semibold">Nail Clamps 1 Side</td>
-                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
-                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.nail_clamps_1side_count|default:"0" }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td data-label="Item" class="fw-semibold">Anchor Hardener</td>
-                                                <td data-label="Unit / Spec" class="text-muted small">Count</td>
-                                                <td data-label="Quantity" class="text-end fw-bold">{{ customer.installation.anchor_hardener_count|default:"0" }}</td>
+                                            <tr class="table-secondary border-secondary">
+                                                <td data-label="Item/Unit" class="text-start fw-semibold">Inverter Phase <small class="text-muted d-block fw-normal">Single / Three Phase</small></td>
+                                                <td data-label="Dispatched" class="fw-bold">{{ customer.installation.inverter_phase_type|default:"-" }}</td>
+                                                <td data-label="Used" class="fw-bold text-success">{{ customer.installation.inverter_phase_type_used|default:"-" }}</td>
+                                                <td data-label="Balance" class="text-muted">-</td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
-                            </div>
-
-                            <!-- Used Materials -->
-                            <div class="col-md-6">
-                                <h6 class="text-uppercase text-secondary small fw-bold mb-3 mt-1">Material Consumption</h6>
-                                <div class="table-responsive mb-4">
-                                    <table class="table table-bordered table-sm align-middle">
-                                        <thead class="table-dark">
-                                            <tr>
-                                                <th>Item</th>
-                                                <th>Unit / Spec</th>
-                                                <th class="text-end">Used Qty</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td data-label="Item" class="fw-semibold">AC Cable</td>
-                                                <td data-label="Unit / Spec" class="text-muted small">Mtrs</td>
-                                                <td data-label="Used Qty" class="text-end fw-bold text-danger">{{ customer.installation.ac_cable_used|default:"0" }} m</td>
-                                            </tr>
-                                            <tr>
-                                                <td data-label="Item" class="fw-semibold">DC Cable</td>
-                                                <td data-label="Unit / Spec" class="text-muted small">Mtrs</td>
-                                                <td data-label="Used Qty" class="text-end fw-bold text-danger">{{ customer.installation.dc_cable_used|default:"0" }} m</td>
-                                            </tr>
-                                            <tr>
-                                                <td data-label="Item" class="fw-semibold">LA Cable</td>
-                                                <td data-label="Unit / Spec" class="text-muted small">Mtrs</td>
-                                                <td data-label="Used Qty" class="text-end fw-bold text-danger">{{ customer.installation.la_cable_used|default:"0" }} m</td>
-                                            </tr>
-                                            <tr>
-                                                <td data-label="Item" class="fw-semibold">Pipes</td>
-                                                <td data-label="Unit / Spec" class="text-muted small">Mtrs</td>
-                                                <td data-label="Used Qty" class="text-end fw-bold text-danger">{{ customer.installation.pipes_used|default:"0" }} m</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-
+                                
                                 <div class="card bg-light border-0 mt-3">
                                     <div class="card-body p-3">
                                         <small class="text-muted d-block text-uppercase fw-bold small mb-2">Leftover Materials</small>
@@ -275,6 +263,7 @@
                                     </div>
                                 </div>
                             </div>
+
                         </div>
 
                         <div class="row g-3 px-3 pb-3">

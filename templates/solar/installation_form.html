@@ -114,143 +114,143 @@
                                             <th>ITEM / UNIT</th>
                                             <th class="text-center" style="width: 25%;">DISPATCHED</th>
                                             <th class="text-center" style="width: 25%;">USED</th>
-                                            <th class="text-center bg-secondary" style="width: 15%;">DIFF</th>
+                                            <th class="text-center bg-secondary" style="width: 15%;">DIFFERENCE</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <!-- Numeric Rows -->
                                         <tr style="background:#f8f9fa;">
-                                            <td><span class="fw-semibold">Panels</span><br><small class="text-muted">Count</small></td>
-                                            <td class="text-center">{{ form.panels_count }}</td>
-                                            <td class="text-center">{{ form.panels_used }}</td>
-                                            <td class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
+                                            <td data-label="Item/Unit"><span class="fw-semibold">Panels</span><br><small class="text-muted">Count</small></td>
+                                            <td data-label="Dispatched" class="text-center">{{ form.panels_count }}</td>
+                                            <td data-label="Used" class="text-center">{{ form.panels_used }}</td>
+                                            <td data-label="Balance" class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
                                         </tr>
                                         <tr>
-                                            <td><span class="fw-semibold">Inverter (kW)</span><br><small class="text-muted">kW</small></td>
-                                            <td class="text-center">{{ form.inverter_kw }}</td>
-                                            <td class="text-center">{{ form.inverter_kw_used }}</td>
-                                            <td class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
+                                            <td data-label="Item/Unit"><span class="fw-semibold">Inverter (kW)</span><br><small class="text-muted">kW</small></td>
+                                            <td data-label="Dispatched" class="text-center">{{ form.inverter_kw }}</td>
+                                            <td data-label="Used" class="text-center">{{ form.inverter_kw_used }}</td>
+                                            <td data-label="Balance" class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
                                         </tr>
                                         <tr style="background:#f8f9fa;">
-                                            <td><span class="fw-semibold">AC Cable Red</span><br><small class="text-muted">Mtrs</small></td>
-                                            <td class="text-center">{{ form.ac_cable_red }}</td>
-                                            <td class="text-center">{{ form.ac_cable_red_used }}</td>
-                                            <td class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
+                                            <td data-label="Item/Unit"><span class="fw-semibold">AC Cable Red</span><br><small class="text-muted">Mtrs</small></td>
+                                            <td data-label="Dispatched" class="text-center">{{ form.ac_cable_red }}</td>
+                                            <td data-label="Used" class="text-center">{{ form.ac_cable_red_used }}</td>
+                                            <td data-label="Balance" class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
                                         </tr>
                                         <tr>
-                                            <td><span class="fw-semibold">AC Cable Black</span><br><small class="text-muted">Mtrs</small></td>
-                                            <td class="text-center">{{ form.ac_cable_black }}</td>
-                                            <td class="text-center">{{ form.ac_cable_black_used }}</td>
-                                            <td class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
+                                            <td data-label="Item/Unit"><span class="fw-semibold">AC Cable Black</span><br><small class="text-muted">Mtrs</small></td>
+                                            <td data-label="Dispatched" class="text-center">{{ form.ac_cable_black }}</td>
+                                            <td data-label="Used" class="text-center">{{ form.ac_cable_black_used }}</td>
+                                            <td data-label="Balance" class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
                                         </tr>
                                         <tr style="background:#f8f9fa;">
-                                            <td><span class="fw-semibold">DC Cable Red &amp; Black</span><br><small class="text-muted">Mtrs</small></td>
-                                            <td class="text-center">{{ form.dc_cable_red_black }}</td>
-                                            <td class="text-center">{{ form.dc_cable_red_black_used }}</td>
-                                            <td class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
+                                            <td data-label="Item/Unit"><span class="fw-semibold">DC Cable Red &amp; Black</span><br><small class="text-muted">Mtrs</small></td>
+                                            <td data-label="Dispatched" class="text-center">{{ form.dc_cable_red_black }}</td>
+                                            <td data-label="Used" class="text-center">{{ form.dc_cable_red_black_used }}</td>
+                                            <td data-label="Balance" class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
                                         </tr>
                                         <tr>
-                                            <td><span class="fw-semibold">LA Cable</span><br><small class="text-muted">Mtrs</small></td>
-                                            <td class="text-center">{{ form.la_cable_mtrs }}</td>
-                                            <td class="text-center">{{ form.la_cable_mtrs_used }}</td>
-                                            <td class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
+                                            <td data-label="Item/Unit"><span class="fw-semibold">LA Cable</span><br><small class="text-muted">Mtrs</small></td>
+                                            <td data-label="Dispatched" class="text-center">{{ form.la_cable_mtrs }}</td>
+                                            <td data-label="Used" class="text-center">{{ form.la_cable_mtrs_used }}</td>
+                                            <td data-label="Balance" class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
                                         </tr>
                                         <tr style="background:#f8f9fa;">
-                                            <td><span class="fw-semibold">Pipes</span><br><small class="text-muted">Count / Mtrs</small></td>
-                                            <td class="text-center">{{ form.pipes_count }}</td>
-                                            <td class="text-center">{{ form.pipes_count_used }}</td>
-                                            <td class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
+                                            <td data-label="Item/Unit"><span class="fw-semibold">Pipes</span><br><small class="text-muted">Count / Mtrs</small></td>
+                                            <td data-label="Dispatched" class="text-center">{{ form.pipes_count }}</td>
+                                            <td data-label="Used" class="text-center">{{ form.pipes_count_used }}</td>
+                                            <td data-label="Balance" class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
                                         </tr>
                                         <tr>
-                                            <td><span class="fw-semibold">Earthing Kit</span><br><small class="text-muted">Count</small></td>
-                                            <td class="text-center">{{ form.earthing_kit_count }}</td>
-                                            <td class="text-center">{{ form.earthing_kit_count_used }}</td>
-                                            <td class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
+                                            <td data-label="Item/Unit"><span class="fw-semibold">Earthing Kit</span><br><small class="text-muted">Count</small></td>
+                                            <td data-label="Dispatched" class="text-center">{{ form.earthing_kit_count }}</td>
+                                            <td data-label="Used" class="text-center">{{ form.earthing_kit_count_used }}</td>
+                                            <td data-label="Balance" class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
                                         </tr>
                                         <tr style="background:#f8f9fa;">
-                                            <td><span class="fw-semibold">ACDB</span><br><small class="text-muted">Count</small></td>
-                                            <td class="text-center">{{ form.acdb_count }}</td>
-                                            <td class="text-center">{{ form.acdb_count_used }}</td>
-                                            <td class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
+                                            <td data-label="Item/Unit"><span class="fw-semibold">ACDB</span><br><small class="text-muted">Count</small></td>
+                                            <td data-label="Dispatched" class="text-center">{{ form.acdb_count }}</td>
+                                            <td data-label="Used" class="text-center">{{ form.acdb_count_used }}</td>
+                                            <td data-label="Balance" class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
                                         </tr>
                                         <tr>
-                                            <td><span class="fw-semibold">DCDB</span><br><small class="text-muted">Count</small></td>
-                                            <td class="text-center">{{ form.dcdb_count }}</td>
-                                            <td class="text-center">{{ form.dcdb_count_used }}</td>
-                                            <td class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
+                                            <td data-label="Item/Unit"><span class="fw-semibold">DCDB</span><br><small class="text-muted">Count</small></td>
+                                            <td data-label="Dispatched" class="text-center">{{ form.dcdb_count }}</td>
+                                            <td data-label="Used" class="text-center">{{ form.dcdb_count_used }}</td>
+                                            <td data-label="Balance" class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
                                         </tr>
                                         <tr style="background:#f8f9fa;">
-                                            <td><span class="fw-semibold">MC4 Connectors</span><br><small class="text-muted">Count</small></td>
-                                            <td class="text-center">{{ form.mc4_connectors_count }}</td>
-                                            <td class="text-center">{{ form.mc4_connectors_count_used }}</td>
-                                            <td class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
+                                            <td data-label="Item/Unit"><span class="fw-semibold">MC4 Connectors</span><br><small class="text-muted">Count</small></td>
+                                            <td data-label="Dispatched" class="text-center">{{ form.mc4_connectors_count }}</td>
+                                            <td data-label="Used" class="text-center">{{ form.mc4_connectors_count_used }}</td>
+                                            <td data-label="Balance" class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
                                         </tr>
                                         <tr>
-                                            <td><span class="fw-semibold">Long L Bands</span><br><small class="text-muted">Count</small></td>
-                                            <td class="text-center">{{ form.long_l_bands_count }}</td>
-                                            <td class="text-center">{{ form.long_l_bands_count_used }}</td>
-                                            <td class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
+                                            <td data-label="Item/Unit"><span class="fw-semibold">Long L Bands</span><br><small class="text-muted">Count</small></td>
+                                            <td data-label="Dispatched" class="text-center">{{ form.long_l_bands_count }}</td>
+                                            <td data-label="Used" class="text-center">{{ form.long_l_bands_count_used }}</td>
+                                            <td data-label="Balance" class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
                                         </tr>
                                         <tr style="background:#f8f9fa;">
-                                            <td><span class="fw-semibold">Short L Bands</span><br><small class="text-muted">Count</small></td>
-                                            <td class="text-center">{{ form.short_l_bands_count }}</td>
-                                            <td class="text-center">{{ form.short_l_bands_count_used }}</td>
-                                            <td class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
+                                            <td data-label="Item/Unit"><span class="fw-semibold">Short L Bands</span><br><small class="text-muted">Count</small></td>
+                                            <td data-label="Dispatched" class="text-center">{{ form.short_l_bands_count }}</td>
+                                            <td data-label="Used" class="text-center">{{ form.short_l_bands_count_used }}</td>
+                                            <td data-label="Balance" class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
                                         </tr>
                                         <tr>
-                                            <td><span class="fw-semibold">T Bands</span><br><small class="text-muted">Count</small></td>
-                                            <td class="text-center">{{ form.t_bands_count }}</td>
-                                            <td class="text-center">{{ form.t_bands_count_used }}</td>
-                                            <td class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
+                                            <td data-label="Item/Unit"><span class="fw-semibold">T Bands</span><br><small class="text-muted">Count</small></td>
+                                            <td data-label="Dispatched" class="text-center">{{ form.t_bands_count }}</td>
+                                            <td data-label="Used" class="text-center">{{ form.t_bands_count_used }}</td>
+                                            <td data-label="Balance" class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
                                         </tr>
                                         <tr style="background:#f8f9fa;">
-                                            <td><span class="fw-semibold">Tapes Red</span><br><small class="text-muted">Count</small></td>
-                                            <td class="text-center">{{ form.tapes_red_count }}</td>
-                                            <td class="text-center">{{ form.tapes_red_count_used }}</td>
-                                            <td class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
+                                            <td data-label="Item/Unit"><span class="fw-semibold">Tapes Red</span><br><small class="text-muted">Count</small></td>
+                                            <td data-label="Dispatched" class="text-center">{{ form.tapes_red_count }}</td>
+                                            <td data-label="Used" class="text-center">{{ form.tapes_red_count_used }}</td>
+                                            <td data-label="Balance" class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
                                         </tr>
                                         <tr>
-                                            <td><span class="fw-semibold">Tapes Black</span><br><small class="text-muted">Count</small></td>
-                                            <td class="text-center">{{ form.tapes_black_count }}</td>
-                                            <td class="text-center">{{ form.tapes_black_count_used }}</td>
-                                            <td class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
+                                            <td data-label="Item/Unit"><span class="fw-semibold">Tapes Black</span><br><small class="text-muted">Count</small></td>
+                                            <td data-label="Dispatched" class="text-center">{{ form.tapes_black_count }}</td>
+                                            <td data-label="Used" class="text-center">{{ form.tapes_black_count_used }}</td>
+                                            <td data-label="Balance" class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
                                         </tr>
                                         <tr style="background:#f8f9fa;">
-                                            <td><span class="fw-semibold">Tags</span><br><small class="text-muted">Count</small></td>
-                                            <td class="text-center">{{ form.tags_count }}</td>
-                                            <td class="text-center">{{ form.tags_count_used }}</td>
-                                            <td class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
+                                            <td data-label="Item/Unit"><span class="fw-semibold">Tags</span><br><small class="text-muted">Count</small></td>
+                                            <td data-label="Dispatched" class="text-center">{{ form.tags_count }}</td>
+                                            <td data-label="Used" class="text-center">{{ form.tags_count_used }}</td>
+                                            <td data-label="Balance" class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
                                         </tr>
                                         <tr>
-                                            <td><span class="fw-semibold">Nail Clamps 2 Side</span><br><small class="text-muted">Count</small></td>
-                                            <td class="text-center">{{ form.nail_clamps_2side_count }}</td>
-                                            <td class="text-center">{{ form.nail_clamps_2side_count_used }}</td>
-                                            <td class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
+                                            <td data-label="Item/Unit"><span class="fw-semibold">Nail Clamps 2 Side</span><br><small class="text-muted">Count</small></td>
+                                            <td data-label="Dispatched" class="text-center">{{ form.nail_clamps_2side_count }}</td>
+                                            <td data-label="Used" class="text-center">{{ form.nail_clamps_2side_count_used }}</td>
+                                            <td data-label="Balance" class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
                                         </tr>
                                         <tr style="background:#f8f9fa;">
-                                            <td><span class="fw-semibold">Nail Clamps 1 Side</span><br><small class="text-muted">Count</small></td>
-                                            <td class="text-center">{{ form.nail_clamps_1side_count }}</td>
-                                            <td class="text-center">{{ form.nail_clamps_1side_count_used }}</td>
-                                            <td class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
+                                            <td data-label="Item/Unit"><span class="fw-semibold">Nail Clamps 1 Side</span><br><small class="text-muted">Count</small></td>
+                                            <td data-label="Dispatched" class="text-center">{{ form.nail_clamps_1side_count }}</td>
+                                            <td data-label="Used" class="text-center">{{ form.nail_clamps_1side_count_used }}</td>
+                                            <td data-label="Balance" class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
                                         </tr>
                                         <tr>
-                                            <td><span class="fw-semibold">Anchor Hardener</span><br><small class="text-muted">Count</small></td>
-                                            <td class="text-center">{{ form.anchor_hardener_count }}</td>
-                                            <td class="text-center">{{ form.anchor_hardener_count_used }}</td>
-                                            <td class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
+                                            <td data-label="Item/Unit"><span class="fw-semibold">Anchor Hardener</span><br><small class="text-muted">Count</small></td>
+                                            <td data-label="Dispatched" class="text-center">{{ form.anchor_hardener_count }}</td>
+                                            <td data-label="Used" class="text-center">{{ form.anchor_hardener_count_used }}</td>
+                                            <td data-label="Balance" class="text-center"><span class="fw-bold diff-val" style="font-size:1.1rem;">0</span></td>
                                         </tr>
 
                                         <!-- Non-Numeric Rows (No Difference Calc) -->
                                         <tr style="background:#f8f9fa;">
-                                            <td><span class="fw-semibold">Structure Kit</span><br><small class="text-muted">Normal / Fabrication</small></td>
-                                            <td class="text-center">{{ form.structure_kit_type }}</td>
-                                            <td class="text-center">{{ form.structure_kit_used }}</td>
+                                            <td data-label="Item/Unit"><span class="fw-semibold">Structure Kit</span><br><small class="text-muted">Normal / Fabrication</small></td>
+                                            <td data-label="Dispatched" class="text-center">{{ form.structure_kit_type }}</td>
+                                            <td data-label="Used" class="text-center">{{ form.structure_kit_used }}</td>
                                             <td class="text-center text-muted">-</td>
                                         </tr>
                                         <tr>
-                                            <td><span class="fw-semibold">Inverter Phase</span><br><small class="text-muted">Single / Three Phase</small></td>
-                                            <td class="text-center">{{ form.inverter_phase_type }}</td>
-                                            <td class="text-center">{{ form.inverter_phase_type_used }}</td>
+                                            <td data-label="Item/Unit"><span class="fw-semibold">Inverter Phase</span><br><small class="text-muted">Single / Three Phase</small></td>
+                                            <td data-label="Dispatched" class="text-center">{{ form.inverter_phase_type }}</td>
+                                            <td data-label="Used" class="text-center">{{ form.inverter_phase_type_used }}</td>
                                             <td class="text-center text-muted">-</td>
                                         </tr>
                                     </tbody>
@@ -388,7 +388,14 @@
                     const calculateDiff = () => {
                         const dispVal = parseFloat(dispInput.value) || 0;
                         const usedVal = parseFloat(usedInput.value) || 0;
-                        let diff = dispVal - usedVal;
+                        
+                        if (usedInput.value !== '' && usedVal > dispVal) {
+                            alert('Used quantity cannot be greater than dispatched quantity.');
+                            usedInput.value = '';
+                            return calculateDiff();
+                        }
+                        
+                        let diff = Math.abs(dispVal - usedVal);
                         
                         // Fix float precision issues
                         diff = Math.round(diff * 100) / 100;
@@ -396,9 +403,7 @@
                         diffSpan.textContent = diff;
                         
                         // Visual cues
-                        if (diff < 0) {
-                            diffSpan.className = 'fw-bold diff-val text-danger';
-                        } else if (diff > 0) {
+                        if (diff > 0) {
                             diffSpan.className = 'fw-bold diff-val text-success';
                         } else {
                             diffSpan.className = 'fw-bold diff-val text-muted';

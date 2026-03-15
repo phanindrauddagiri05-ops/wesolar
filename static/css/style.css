@@ -75,3 +75,44 @@ select:focus {
     font-weight: bold;
     margin: 0 auto;
 }
+
+/* 7. Responsive Tables for Mobile */
+@media (max-width: 768px) {
+    .table-responsive .table tbody td,
+    .table-responsive .table tbody th {
+        display: block;
+        text-align: right !important;
+        position: relative;
+        padding-left: 50%;
+    }
+    
+    .table-responsive .table tbody td::before,
+    .table-responsive .table tbody th::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        width: 45%;
+        padding-right: 10px;
+        text-align: left;
+        font-weight: 600;
+        color: #495057;
+    }
+    
+    .table-responsive .table thead {
+        display: none; /* Hide headers since data-labels are used */
+    }
+    
+    .table-responsive .table tbody td[data-label="Item/Unit"] {
+        background-color: #f8f9fa;
+        text-align: center !important;
+        padding-left: 10px;
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .table-responsive .table tbody td[data-label="Item/Unit"]::before {
+        display: none;
+    }
+}
