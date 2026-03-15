@@ -313,6 +313,29 @@ class InstallationForm(forms.ModelForm):
             'nail_clamps_2side_count',
             'nail_clamps_1side_count',
             'anchor_hardener_count',
+            # Specific Used Materials
+            'panels_used',
+            'structure_kit_used',
+            'inverter_kw_used',
+            'inverter_phase_type_used',
+            'ac_cable_red_used',
+            'ac_cable_black_used',
+            'dc_cable_red_black_used',
+            'la_cable_mtrs_used',
+            'pipes_count_used',
+            'earthing_kit_count_used',
+            'acdb_count_used',
+            'dcdb_count_used',
+            'mc4_connectors_count_used',
+            'long_l_bands_count_used',
+            'short_l_bands_count_used',
+            't_bands_count_used',
+            'tapes_red_count_used',
+            'tapes_black_count_used',
+            'tags_count_used',
+            'nail_clamps_2side_count_used',
+            'nail_clamps_1side_count_used',
+            'anchor_hardener_count_used',
         ]
         labels = {
             'inverter_make': 'Inverter Make',
@@ -394,6 +417,31 @@ class InstallationForm(forms.ModelForm):
             'nail_clamps_2side_count': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
             'nail_clamps_1side_count': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
             'anchor_hardener_count': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0'}),
+            
+            # Specific Used Material fields - styled for compact mobile layout
+            'panels_used': forms.NumberInput(attrs={'class': 'form-control form-control-sm used-field', 'min': '0'}),
+            'structure_kit_used': forms.Select(attrs={'class': 'form-select form-select-sm used-field'}),
+            'inverter_kw_used': forms.NumberInput(attrs={'class': 'form-control form-control-sm used-field', 'min': '0', 'step': '0.01'}),
+            'inverter_phase_type_used': forms.Select(attrs={'class': 'form-select form-select-sm used-field'}),
+            'ac_cable_red_used': forms.NumberInput(attrs={'class': 'form-control form-control-sm used-field', 'min': '0', 'step': '0.01'}),
+            'ac_cable_black_used': forms.NumberInput(attrs={'class': 'form-control form-control-sm used-field', 'min': '0', 'step': '0.01'}),
+            'dc_cable_red_black_used': forms.NumberInput(attrs={'class': 'form-control form-control-sm used-field', 'min': '0', 'step': '0.01'}),
+            'la_cable_mtrs_used': forms.NumberInput(attrs={'class': 'form-control form-control-sm used-field', 'min': '0', 'step': '0.01'}),
+            'pipes_count_used': forms.NumberInput(attrs={'class': 'form-control form-control-sm used-field', 'min': '0'}),
+            'earthing_kit_count_used': forms.NumberInput(attrs={'class': 'form-control form-control-sm used-field', 'min': '0'}),
+            'acdb_count_used': forms.NumberInput(attrs={'class': 'form-control form-control-sm used-field', 'min': '0'}),
+            'dcdb_count_used': forms.NumberInput(attrs={'class': 'form-control form-control-sm used-field', 'min': '0'}),
+            'mc4_connectors_count_used': forms.NumberInput(attrs={'class': 'form-control form-control-sm used-field', 'min': '0'}),
+            'long_l_bands_count_used': forms.NumberInput(attrs={'class': 'form-control form-control-sm used-field', 'min': '0'}),
+            'short_l_bands_count_used': forms.NumberInput(attrs={'class': 'form-control form-control-sm used-field', 'min': '0'}),
+            't_bands_count_used': forms.NumberInput(attrs={'class': 'form-control form-control-sm used-field', 'min': '0'}),
+            'tapes_red_count_used': forms.NumberInput(attrs={'class': 'form-control form-control-sm used-field', 'min': '0'}),
+            'tapes_black_count_used': forms.NumberInput(attrs={'class': 'form-control form-control-sm used-field', 'min': '0'}),
+            'tags_count_used': forms.NumberInput(attrs={'class': 'form-control form-control-sm used-field', 'min': '0'}),
+            'nail_clamps_2side_count_used': forms.NumberInput(attrs={'class': 'form-control form-control-sm used-field', 'min': '0'}),
+            'nail_clamps_1side_count_used': forms.NumberInput(attrs={'class': 'form-control form-control-sm used-field', 'min': '0'}),
+            'anchor_hardener_count_used': forms.NumberInput(attrs={'class': 'form-control form-control-sm used-field', 'min': '0'}),
+
             # Used material fields - styled for consistency
             'ac_cable_used': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0', 'step': '0.01'}),
             'dc_cable_used': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'min': '0', 'step': '0.01'}),
@@ -429,6 +477,7 @@ class InstallationForm(forms.ModelForm):
             'ac_cable_used', 'dc_cable_used', 'la_cable_used', 'pipes_used',
             'dc_voltage', 'ac_voltage', 'earthing_resistance',
             'inverter_kw', 'ac_cable_red', 'ac_cable_black', 'dc_cable_red_black', 'la_cable_mtrs',
+            'inverter_kw_used', 'ac_cable_red_used', 'ac_cable_black_used', 'dc_cable_red_black_used', 'la_cable_mtrs_used',
         ]
         for field in numeric_float_fields:
             self.fields[field].widget.attrs['type'] = 'number'
@@ -440,6 +489,10 @@ class InstallationForm(forms.ModelForm):
             'mc4_connectors_count', 'long_l_bands_count', 'short_l_bands_count', 't_bands_count',
             'tapes_red_count', 'tapes_black_count', 'tags_count',
             'nail_clamps_2side_count', 'nail_clamps_1side_count', 'anchor_hardener_count',
+            'panels_used', 'pipes_count_used', 'earthing_kit_count_used', 'acdb_count_used', 'dcdb_count_used',
+            'mc4_connectors_count_used', 'long_l_bands_count_used', 'short_l_bands_count_used', 't_bands_count_used',
+            'tapes_red_count_used', 'tapes_black_count_used', 'tags_count_used',
+            'nail_clamps_2side_count_used', 'nail_clamps_1side_count_used', 'anchor_hardener_count_used',
         ]
         for field in numeric_int_fields:
             self.fields[field].widget.attrs['type'] = 'number'
@@ -454,6 +507,12 @@ class InstallationForm(forms.ModelForm):
             'mc4_connectors_count', 'long_l_bands_count', 'short_l_bands_count', 't_bands_count',
             'tapes_red_count', 'tapes_black_count', 'tags_count',
             'nail_clamps_2side_count', 'nail_clamps_1side_count', 'anchor_hardener_count',
+            'panels_used', 'structure_kit_used', 'inverter_kw_used', 'inverter_phase_type_used',
+            'ac_cable_red_used', 'ac_cable_black_used', 'dc_cable_red_black_used', 'la_cable_mtrs_used',
+            'pipes_count_used', 'earthing_kit_count_used', 'acdb_count_used', 'dcdb_count_used',
+            'mc4_connectors_count_used', 'long_l_bands_count_used', 'short_l_bands_count_used', 't_bands_count_used',
+            'tapes_red_count_used', 'tapes_black_count_used', 'tags_count_used',
+            'nail_clamps_2side_count_used', 'nail_clamps_1side_count_used', 'anchor_hardener_count_used',
         ]
         for field in materials_fields:
             self.fields[field].required = False
