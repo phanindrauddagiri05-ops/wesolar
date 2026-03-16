@@ -79,7 +79,7 @@ class SurveyForm(forms.ModelForm):
             'parent_bank_photo': 'Parent Bank Front Page Photo',
         }
         widgets = {
-             'gps_coordinates': forms.TextInput(attrs={'placeholder': 'Latitude, Longitude', 'readonly': 'readonly'}),
+             'gps_coordinates': forms.TextInput(attrs={'placeholder': 'Latitude, Longitude'}),
              'mefma_status': forms.Select(choices=[(True, 'Yes'), (False, 'No')]),
              'registration_status': forms.Select(choices=[(True, 'Yes'), (False, 'No')]),
              'registration_date': forms.DateInput(attrs={'type': 'date'}),
@@ -807,9 +807,10 @@ class LoginForm(forms.Form):
 class EnquiryForm(forms.ModelForm):
     class Meta:
         model = Enquiry
-        fields = ['name', 'mobile_number', 'email', 'address']
+        fields = ['name', 'mobile_number', 'email', 'address', 'remarks']
         widgets = {
             'address': forms.Textarea(attrs={'rows': 3}),
+            'remarks': forms.Textarea(attrs={'rows': 3}),
         }
 
 class FEUpdateForm(forms.ModelForm):
