@@ -251,9 +251,7 @@ class SurveyForm(forms.ModelForm):
                 self.add_error('co_name', "CO Name is mandatory if MEFMA is Yes.")
             if not co_phone:
                 self.add_error('co_phone_number', "CO Phone Number is mandatory if MEFMA is Yes.")
-        else:
-            if not reference_name:
-                self.add_error('reference_name', "Reference Name is mandatory if MEFMA is No.")
+        # Reference Name validation removed per request
         
         return cleaned_data
 

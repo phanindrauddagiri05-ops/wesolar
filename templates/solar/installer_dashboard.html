@@ -33,7 +33,7 @@
                             <th class="py-3 border-0">Phase</th>
                             <th class="py-3 border-0">Roof Type</th>
                             <th class="py-3 border-0">Status</th>
-                            <th class="py-3 border-0 text-center">Details</th>
+                            <th class="py-3 border-0 text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -50,14 +50,14 @@
                             <td data-label="Status">
                                 <span class="badge bg-warning text-dark">Pending</span>
                             </td>
-                            <td class="text-center" data-label="Details">
+                            <td class="text-center" data-label="Actions">
                                 <a href="{% url 'update_installation' item.id %}"
-                                    class="btn btn-sm btn-premium mb-1 btn-mobile-full">
+                                    class="btn btn-sm btn-premium">
                                     <i class="bi bi-pencil-square"></i> Update
                                 </a>
                                 <a href="{% url 'site_detail' item.id %}"
-                                    class="btn btn-sm btn-outline-info btn-mobile-full">
-                                    View Full Details
+                                    class="btn btn-sm btn-outline-info">
+                                    View Details
                                 </a>
                             </td>
                         </tr>
@@ -148,7 +148,7 @@
                             </td>
                             <td class="text-center" data-label="Actions">
                                 <a href="{% url 'site_detail' item.id %}"
-                                    class="btn btn-sm btn-outline-success btn-mobile-full">
+                                    class="btn btn-sm btn-outline-success">
                                     <i class="bi bi-eye"></i> View Details
                                 </a>
 

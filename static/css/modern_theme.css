@@ -660,11 +660,13 @@ a {
     }
 
     .table td[data-label="Actions"] .btn {
-        padding: 0.4rem 0.75rem;
-        font-size: 0.85rem;
-        white-space: nowrap;
+        padding: 0.35rem 0.65rem !important;
+        font-size: 0.75rem !important;
+        white-space: nowrap !important;
         margin: 0 !important;
         /* overrides any inline margins like me-1 */
+        width: auto !important;
+        display: inline-block !important;
     }
 
     /* Adjust avatar size */
