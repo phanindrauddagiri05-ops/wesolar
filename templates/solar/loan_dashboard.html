@@ -143,6 +143,19 @@
                             </div>
                         </div>
 
+                        <!-- GPS Coordinates -->
+                        <div class="col-md-12">
+                            <label class="small text-muted text-uppercase fw-bold">Site Location (GPS Coordinates)</label>
+                            <div class="form-control bg-light border-0 d-flex justify-content-between align-items-center">
+                                <span>{{ customer.gps_coordinates|default:"Not Available" }}</span>
+                                {% if customer.gps_coordinates %}
+                                <a href="https://www.google.com/maps/search/?api=1&query={{ customer.gps_coordinates }}" target="_blank" class="btn btn-sm btn-outline-primary shadow-sm" title="View on Map">
+                                    <i class="bi bi-geo-alt me-1"></i>View on Map
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+
                         <div class="col-12 text-end mt-3">
                             <a href="{% url 'site_detail' customer.id %}" class="btn btn-sm btn-outline-info"
                                 target="_blank">

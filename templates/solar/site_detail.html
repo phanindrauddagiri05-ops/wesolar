@@ -438,6 +438,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
 
         <div class="col-md-12 mb-4">
             <div class="card glass-card">
@@ -499,7 +500,6 @@
                 </div>
             </div>
         </div>
-        {% endif %}
 
         {% if request.user.userprofile.role != 'Installer' and customer.mefma_status %}
         <div class="col-md-12 mb-4">

@@ -2137,3 +2137,16 @@ def terms_and_conditions(request):
 
 def privacy_policy(request):
     return render(request, 'solar/privacy_policy.html')
+
+from django.contrib.auth import logout as auth_logout
+
+def custom_logout(request):
+    """
+    Custom logout view that handles GET requests gracefully.
+    In Django 5+, the built-in LogoutView requires a POST request to log out,
+    and a GET request defaults to showing the admin 'logged out' confirmation page.
+    This view instead immediately logs out the user on a GET request and redirects to login,
+    fixing the glitch where users are redirected to the admin login screen.
+    """
+    auth_logout(request)
+    return redirect('login')
