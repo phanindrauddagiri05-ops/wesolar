@@ -6,7 +6,8 @@ class MaintenanceModeMiddleware:
     """
     Middleware that intercepts all requests when maintenance mode is ON
     and shows a maintenance page instead.
-    Admin users and the admin portal URLs are exempt.
+    Only /admin/ (Django built-in admin) and /maintenance/ are exempt.
+    Even staff/admin users are blocked from the custom dashboards.
     """
     def __init__(self, get_response):
         self.get_response = get_response
@@ -17,17 +18,14 @@ class MaintenanceModeMiddleware:
 
         # Paths that are always accessible regardless of maintenance mode
         exempt_paths = [
-            '/admin/',          # Django built-in admin
+            '/admin/',          # Django built-in admin only
             '/maintenance/',    # The maintenance page itself
         ]
 
         # Check if current path is exempt
         is_exempt = any(request.path.startswith(p) for p in exempt_paths)
 
-        # Check if user is a staff/admin — they bypass maintenance
-        is_admin = request.user.is_authenticated and request.user.is_staff
-
-        if not is_exempt and not is_admin:
+        if not is_exempt:
             try:
                 site_settings = SiteSettings.get_settings()
                 if site_settings.maintenance_mode:
@@ -36,3 +34,4 @@ class MaintenanceModeMiddleware:
                 pass  # If DB not ready, don't block
 
         return self.get_response(request)
+
