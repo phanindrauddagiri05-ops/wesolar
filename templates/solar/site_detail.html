@@ -25,6 +25,10 @@
             </a>
             {% endif %}
 
+            <a href="{% url 'download_material_dispatch_excel' customer.id %}" class="btn btn-success shadow-sm flex-fill text-nowrap">
+                <i class="bi bi-file-earmark-excel me-1"></i> Download Material Dispatch
+            </a>
+
             <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary flex-fill text-nowrap">Back to Dashboard</a>
         </div>
     </div>

@@ -604,15 +604,19 @@ class OfficeStatusForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # Enforce Status Choices from Model (Pending/Completed)
         # Ensure mandatory fields have 'required' attribute
-        mandatory_fields = ['installation_date', 'workflow_status', 'discom_status', 'net_metering_status', 'subsidy_status']
-        for field in mandatory_fields:
-            self.fields[field].required = True
+        # The user requested to remove mandatory for installation status, discom status, 
+        # net metering status, and subsidy status.
+        optional_fields = ['workflow_status', 'discom_status', 'net_metering_status', 'subsidy_status']
+        for field in optional_fields:
+            self.fields[field].required = False
+
+        self.fields['installation_date'].required = False
 
 
     def clean_installation_date(self):
         date = self.cleaned_data.get('installation_date')
-        if not date:
-            raise ValidationError("Installation Completed Date is mandatory.")
+        # if not date:
+        #     raise ValidationError("Installation Completed Date is mandatory.")
         return date
 
 class BankDetailsForm(forms.ModelForm):

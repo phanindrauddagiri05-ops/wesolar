@@ -73,6 +73,7 @@ urlpatterns = [
     path('admin-portal/set-worker-password/<int:user_id>/', views.set_worker_password, name='set_worker_password'),
     path('admin-portal/delete-application/<int:survey_id>/', views.delete_application, name='delete_application'),
     path('portal/download-images/<int:survey_id>/', views.download_images, name='download_images'),
+    path('portal/download-material-dispatch/<int:pk>/', views.download_material_dispatch_excel, name='download_material_dispatch_excel'),
     path('admin/toggle-maintenance/', views.toggle_maintenance_mode, name='toggle_maintenance_mode'),
 
     # Installation Management (Admin Only)

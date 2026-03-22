@@ -812,7 +812,12 @@ def office_update_status(request, pk):
             print("Form Errors:", form.errors)
             print("Bank Form Errors:", bank_form.errors)
     else:
-        form = OfficeStatusForm(instance=survey)
+        # Pre-fill installation date if not set and installation exists
+        initial_data = {}
+        if not survey.installation_date and hasattr(survey, 'installation'):
+            initial_data['installation_date'] = survey.installation.timestamp.date()
+            
+        form = OfficeStatusForm(instance=survey, initial=initial_data)
         bank_form = OfficeBankDetailsForm(instance=bank_details)
     
     return render(request, 'solar/office_status_form.html', {
@@ -2153,3 +2158,106 @@ def custom_logout(request):
     """
     auth_logout(request)
     return redirect('login')
+
+
+# ==========================================
+# MATERIAL DISPATCH EXCEL DOWNLOAD
+# ==========================================
+@login_required
+def download_material_dispatch_excel(request, pk):
+    """
+    Download material dispatch data of a particular record as Excel.
+    """
+    survey = get_object_or_404(CustomerSurvey, pk=pk)
+    
+    installation = getattr(survey, 'installation', None)
+    
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Material Dispatch"
+
+    # Define headers
+    headers = ['Item', 'Dispatched', 'Used', 'Difference']
+    ws.append(headers)
+
+    for cell in ws[1]:
+        cell.font = Font(bold=True)
+        
+    def add_row(item_name, dispatched, used):
+        disp = dispatched or 0
+        usd = used or 0
+        if isinstance(disp, (int, float)) and isinstance(usd, (int, float)):
+            diff = disp - usd
+        else:
+            diff = "-"
+        ws.append([item_name, disp, usd, diff])
+
+    if installation:
+        # Material rows
+        add_row("Panels (Count)", installation.panels_count, installation.panels_used)
+        add_row("Structure Kit", installation.structure_kit_type, installation.structure_kit_used)
+        add_row("Inverter (kW)", installation.inverter_kw, installation.inverter_kw_used)
+        add_row("Inverter Phase", installation.inverter_phase_type, installation.inverter_phase_type_used)
+        add_row("AC Cable Red (Mtrs)", installation.ac_cable_red, installation.ac_cable_red_used)
+        add_row("AC Cable Black (Mtrs)", installation.ac_cable_black, installation.ac_cable_black_used)
+        add_row("DC Cable Red & Black (Mtrs)", installation.dc_cable_red_black, installation.dc_cable_red_black_used)
+        add_row("LA Cable (Mtrs)", installation.la_cable_mtrs, installation.la_cable_mtrs_used)
+        add_row("Pipes (Count / Mtrs)", installation.pipes_count, installation.pipes_count_used)
+        add_row("Earthing Kit (Count)", installation.earthing_kit_count, installation.earthing_kit_count_used)
+        add_row("ACDB (Count)", installation.acdb_count, installation.acdb_count_used)
+        add_row("DCDB (Count)", installation.dcdb_count, installation.dcdb_count_used)
+        add_row("MC4 Connectors (Count)", installation.mc4_connectors_count, installation.mc4_connectors_count_used)
+        add_row("Long L Bands (Count)", installation.long_l_bands_count, installation.long_l_bands_count_used)
+        add_row("Short L Bands (Count)", installation.short_l_bands_count, installation.short_l_bands_count_used)
+        add_row("T Bands (Count)", installation.t_bands_count, installation.t_bands_count_used)
+        add_row("Tapes Red (Count)", installation.tapes_red_count, installation.tapes_red_count_used)
+        add_row("Tapes Black (Count)", installation.tapes_black_count, installation.tapes_black_count_used)
+        add_row("Tags (Count)", installation.tags_count, installation.tags_count_used)
+        add_row("Nail Clamps 2 Side (Count)", installation.nail_clamps_2side_count, installation.nail_clamps_2side_count_used)
+        add_row("Nail Clamps 1 Side (Count)", installation.nail_clamps_1side_count, installation.nail_clamps_1side_count_used)
+        add_row("Anchor Hardener (Count)", installation.anchor_hardener_count, installation.anchor_hardener_count_used)
+    else:
+        # Empty Material rows
+        add_row("Panels (Count)", 0, 0)
+        add_row("Structure Kit", "Normal", "Normal")
+        add_row("Inverter (kW)", 0.0, 0.0)
+        add_row("Inverter Phase", "Single Phase", "Single Phase")
+        add_row("AC Cable Red (Mtrs)", 0.0, 0.0)
+        add_row("AC Cable Black (Mtrs)", 0.0, 0.0)
+        add_row("DC Cable Red & Black (Mtrs)", 0.0, 0.0)
+        add_row("LA Cable (Mtrs)", 0.0, 0.0)
+        add_row("Pipes (Count / Mtrs)", 0, 0)
+        add_row("Earthing Kit (Count)", 0, 0)
+        add_row("ACDB (Count)", 0, 0)
+        add_row("DCDB (Count)", 0, 0)
+        add_row("MC4 Connectors (Count)", 0, 0)
+        add_row("Long L Bands (Count)", 0, 0)
+        add_row("Short L Bands (Count)", 0, 0)
+        add_row("T Bands (Count)", 0, 0)
+        add_row("Tapes Red (Count)", 0, 0)
+        add_row("Tapes Black (Count)", 0, 0)
+        add_row("Tags (Count)", 0, 0)
+        add_row("Nail Clamps 2 Side (Count)", 0, 0)
+        add_row("Nail Clamps 1 Side (Count)", 0, 0)
+        add_row("Anchor Hardener (Count)", 0, 0)
+
+    # Auto-adjust column widths
+    for col in ws.columns:
+        max_length = 0
+        column = col[0].column_letter 
+        for cell in col:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(str(cell.value))
+            except:
+                pass
+        adjusted_width = (max_length + 2)
+        ws.column_dimensions[column].width = adjusted_width
+
+    # Generate response
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    safe_name = survey.customer_name.replace(' ', '_').replace('/', '-')
+    response['Content-Disposition'] = f'attachment; filename="{safe_name}_Material_Dispatch.xlsx"'
+    wb.save(response)
+
+    return response
