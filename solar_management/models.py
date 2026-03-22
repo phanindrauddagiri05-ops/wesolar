@@ -19,6 +19,7 @@ class UserProfile(models.Model):
     plain_password = models.CharField(max_length=128, blank=True, help_text="Stored for admin reference only")
     aadhar_photo = models.FileField(upload_to='users/documents/', null=True, blank=True, help_text="Photo/Scan of Aadhar Card")
     pan_card_photo = models.FileField(upload_to='users/documents/', null=True, blank=True, help_text="Photo/Scan of PAN Card")
+    pan_card = models.CharField(max_length=10, blank=True, null=True, help_text="PAN Card Number (10 Digits)")
 
     def save(self, *args, **kwargs):
         is_new = self.pk is None

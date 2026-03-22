@@ -214,12 +214,11 @@ def signup_view(request):
                 role=form.cleaned_data['role'],
                 is_approved=False,
                 plain_password=form.cleaned_data['password'],
+                pan_card=form.cleaned_data.get('pan_card'),
             )
 
-            # Handle multi-uploads for profile
             media_map = {
                 'aadhar_photo': 'aadhar',
-                'pan_card_photo': 'pan_card',
             }
             for field, m_type in media_map.items():
                 files = form.cleaned_data.get(field) or []
@@ -568,10 +567,7 @@ def installer_dashboard(request):
     for survey in all_surveys:
         if hasattr(survey, 'installation'):
             # It has been claimed/started.
-            # Only show in "Completed" if *I* am the one who worked on it.
-            if survey.installation.updated_by == request.user:
-                completed_installations.append(survey)
-            # If claimed by someone else, it disappears from my view entirely (as desired).
+            completed_installations.append(survey)
         else:
             # No installation yet -> Available for anyone to claim
             pending_installations.append(survey)
@@ -703,7 +699,7 @@ def download_images(request, survey_id):
     Download all images for a given CustomerSurvey as a ZIP file.
     Includes roof_photo, and all installation photos if an installation exists.
     """
-    if not (request.user.is_superuser or request.user.is_staff or getattr(request.user.userprofile, 'role', '') in ['Admin', 'Office']):
+    if not (request.user.is_superuser or request.user.is_staff or getattr(request.user.userprofile, 'role', '') in ['Admin', 'Office', 'Field Engineer']):
         messages.error(request, 'You do not have permission to download these files.')
         return redirect('dashboard')
 
@@ -715,15 +711,22 @@ def download_images(request, survey_id):
     if survey.roof_photo:
         images.append((f'roof_photo{os.path.splitext(survey.roof_photo.name)[1]}', survey.roof_photo))
 
-    # Document photos uploaded by Field Engineer
+    # New Multi-file Uploads from SurveyMedia
+    for sm in survey.media_files.all():
+        if sm.file:
+            images.append((f"{sm.media_type}_{sm.id}{os.path.splitext(sm.file.name)[1]}", sm.file))
+
+    # Legacy Document photos uploaded by Field Engineer
     if survey.pan_card_photo:
         images.append((f'pan_card{os.path.splitext(survey.pan_card_photo.name)[1]}', survey.pan_card_photo))
     if survey.aadhar_photo:
         images.append((f'aadhar_card{os.path.splitext(survey.aadhar_photo.name)[1]}', survey.aadhar_photo))
     if survey.current_bill_photo:
         images.append((f'current_bill{os.path.splitext(survey.current_bill_photo.name)[1]}', survey.current_bill_photo))
-    if survey.bank_account_photo:
+    if getattr(survey, 'bank_account_photo', None):
         images.append((f'bank_account{os.path.splitext(survey.bank_account_photo.name)[1]}', survey.bank_account_photo))
+    if getattr(survey, 'parent_bank_photo', None):
+        images.append((f'parent_bank{os.path.splitext(survey.parent_bank_photo.name)[1]}', survey.parent_bank_photo))
 
     if hasattr(survey, 'installation'):
         inst = survey.installation
@@ -735,10 +738,15 @@ def download_images(request, survey_id):
             images.append((f'panel_serial{os.path.splitext(inst.panel_serial_photo.name)[1]}', inst.panel_serial_photo))
         if inst.site_photos_with_customer:
             images.append((f'site_with_customer{os.path.splitext(inst.site_photos_with_customer.name)[1]}', inst.site_photos_with_customer))
+            
+        # Additional single/multi photos
+        for add_photo in inst.additional_photos.all():
+            if add_photo.photo:
+                images.append((f"{add_photo.photo_type}_{add_photo.id}{os.path.splitext(add_photo.photo.name)[1]}", add_photo.photo))
 
     if not images:
         messages.warning(request, f'No images found for {survey.customer_name}.')
-        return redirect('admin_dashboard')
+        return redirect('site_detail', pk=survey_id)
 
     # Build ZIP in memory
     buffer = io.BytesIO()
@@ -1502,66 +1510,63 @@ def export_solar_data(request):
         elif report_type == 'material_dispatch':
             headers = [
                 'Customer Name', 'Mobile Number', 'SC Number',
-                # Dispatched Materials
-                'Panels (Count)',
-                'Structure Kit Type',
-                'Inverter (kW)',
-                'Inverter Phase Type',
-                'AC Cable Red (m)',
-                'AC Cable Black (m)',
-                'DC Cable Red & Black (m)',
-                'LA Cable (m)',
-                'Pipes (Count)',
-                'Earthing Kit (Count)',
-                'ACDB (Count)',
-                'DCDB (Count)',
-                'MC4 Connectors (Count)',
-                'Long L Bands (Count)',
-                'Short L Bands (Count)',
-                'T Bands (Count)',
-                'Tapes Red (Count)',
-                'Tapes Black (Count)',
-                'Tags (Count)',
-                'Nail Clamps 2 Side (Count)',
-                'Nail Clamps 1 Side (Count)',
-                'Anchor Hardener (Count)',
-                'Installation Date',
-                'Installer Name',
+                'Item', 'Dispatched', 'Used', 'Difference',
+                'Installation Date', 'Installer Name',
             ]
             ws.append(headers)
             installations = Installation.objects.all().select_related('survey', 'updated_by').order_by('survey__customer_name')
+            
+            def get_diff(disp, used):
+                try:
+                    return float(disp or 0) - float(used or 0)
+                except ValueError:
+                    return ''
+                    
             for i in installations:
                 sur = i.survey
-                ws.append([
-                    sur.customer_name,
-                    sur.aadhar_linked_phone,
-                    sur.sc_no,
-                    # Materials
-                    i.panels_count,
-                    i.structure_kit_type,
-                    i.inverter_kw,
-                    i.inverter_phase_type,
-                    i.ac_cable_red,
-                    i.ac_cable_black,
-                    i.dc_cable_red_black,
-                    i.la_cable_mtrs,
-                    i.pipes_count,
-                    i.earthing_kit_count,
-                    i.acdb_count,
-                    i.dcdb_count,
-                    i.mc4_connectors_count,
-                    i.long_l_bands_count,
-                    i.short_l_bands_count,
-                    i.t_bands_count,
-                    i.tapes_red_count,
-                    i.tapes_black_count,
-                    i.tags_count,
-                    i.nail_clamps_2side_count,
-                    i.nail_clamps_1side_count,
-                    i.anchor_hardener_count,
-                    i.timestamp.strftime("%Y-%m-%d %H:%M"),
-                    i.updated_by.get_full_name() if i.updated_by else 'Unknown',
-                ])
+                
+                def add_item_row(item_name, disp, used, is_text=False):
+                    if is_text:
+                        diff = ''
+                    else:
+                        diff = get_diff(disp, used)
+                    ws.append([
+                        sur.customer_name,
+                        sur.aadhar_linked_phone,
+                        sur.sc_no,
+                        item_name,
+                        disp,
+                        used,
+                        diff,
+                        i.timestamp.strftime("%Y-%m-%d %H:%M"),
+                        i.updated_by.get_full_name() if i.updated_by else 'Unknown',
+                    ])
+
+                add_item_row('Panels', i.panels_count, i.panels_used)
+                add_item_row('Structure Kit Type', i.structure_kit_type, i.structure_kit_used, is_text=True)
+                add_item_row('Inverter (kW)', i.inverter_kw, i.inverter_kw_used)
+                add_item_row('Inverter Phase Type', i.inverter_phase_type, i.inverter_phase_type_used, is_text=True)
+                add_item_row('AC Cable Red (m)', i.ac_cable_red, i.ac_cable_red_used)
+                add_item_row('AC Cable Black (m)', i.ac_cable_black, i.ac_cable_black_used)
+                add_item_row('DC Cable Red & Black (m)', i.dc_cable_red_black, i.dc_cable_red_black_used)
+                add_item_row('LA Cable (m)', i.la_cable_mtrs, i.la_cable_mtrs_used)
+                add_item_row('Pipes', i.pipes_count, i.pipes_count_used)
+                add_item_row('Earthing Kit', i.earthing_kit_count, i.earthing_kit_count_used)
+                add_item_row('ACDB', i.acdb_count, i.acdb_count_used)
+                add_item_row('DCDB', i.dcdb_count, i.dcdb_count_used)
+                add_item_row('MC4 Connectors', i.mc4_connectors_count, i.mc4_connectors_count_used)
+                add_item_row('Long L Bands', i.long_l_bands_count, i.long_l_bands_count_used)
+                add_item_row('Short L Bands', i.short_l_bands_count, i.short_l_bands_count_used)
+                add_item_row('T Bands', i.t_bands_count, i.t_bands_count_used)
+                add_item_row('Tapes Red', i.tapes_red_count, i.tapes_red_count_used)
+                add_item_row('Tapes Black', i.tapes_black_count, i.tapes_black_count_used)
+                add_item_row('Tags', i.tags_count, i.tags_count_used)
+                add_item_row('Nail Clamps 2 Side', i.nail_clamps_2side_count, i.nail_clamps_2side_count_used)
+                add_item_row('Nail Clamps 1 Side', i.nail_clamps_1side_count, i.nail_clamps_1side_count_used)
+                add_item_row('Anchor Hardener', i.anchor_hardener_count, i.anchor_hardener_count_used)
+                
+                # Blank row to separate customers for readability
+                ws.append([])
 
         # 5. MASTER REPORT (Default) - ALL DATA FROM ALL TABLES
         else:
@@ -1668,10 +1673,8 @@ def update_profile(request):
         if form.is_valid():
             form.save()
             
-            # Handle multi-uploads for profile
             media_map = {
                 'aadhar_photo': 'aadhar',
-                'pan_card_photo': 'pan_card',
             }
             for field, m_type in media_map.items():
                 files = form.cleaned_data.get(field) or []

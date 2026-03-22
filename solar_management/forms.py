@@ -191,6 +191,8 @@ class SurveyForm(forms.ModelForm):
                  raise ValidationError("Please enter a single valid email address.")
         return email
 
+
+
     def clean(self):
         cleaned_data = super().clean()
         area = cleaned_data.get('area')
@@ -722,7 +724,6 @@ class SignUpForm(forms.ModelForm):
             'maxlength': '10',
             'minlength': '10',
             'oninput': "this.value = this.value.replace(/[^0-9]/g, '')",
-            'placeholder': '10-digit mobile number',
             'title': 'Mobile number must be exactly 10 digits'
         })
     )
@@ -732,21 +733,29 @@ class SignUpForm(forms.ModelForm):
         help_text="Upload a clear photo or scan of your Aadhar Card.",
         widget=MultipleFileInput(attrs={'class': 'form-control'})
     )
-    pan_card_photo = MultipleFileField(
-        required=True, 
-        help_text="Upload a clear photo or scan of your PAN Card.",
-        widget=MultipleFileInput(attrs={'class': 'form-control'})
+    pan_card = forms.CharField(
+        max_length=10, 
+        required=True,
+        help_text="Enter your 10-digit PAN Card Number.",
+        widget=forms.TextInput(attrs={
+            'pattern': '^[A-Z]{5}[0-9]{4}[A-Z]{1}$',
+            'title': 'Invalid PAN Card format. Enter 5 uppercase letters, 4 digits, 1 uppercase letter.',
+            'oninput': "this.value = this.value.toUpperCase()",
+            'maxlength': '10',
+            'minlength': '10',
+            'class': 'form-control',
+            'autocomplete': 'off'
+        })
     )
     email = forms.EmailField(
         required=True,
         widget=forms.EmailInput(attrs={
             'type': 'email',
-            'placeholder': 'example@email.com',
             'autocomplete': 'email'
         })
     )
-    password = forms.CharField(widget=forms.PasswordInput, required=True)
-    confirm_password = forms.CharField(widget=forms.PasswordInput, required=True)
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}), required=True)
+    confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}), required=True)
 
     class Meta:
         model = User
@@ -776,6 +785,12 @@ class SignUpForm(forms.ModelForm):
             if User.objects.filter(email=email).exists():
                 raise forms.ValidationError("This email is already registered.")
         return email
+
+    def clean_pan_card(self):
+        pan = self.cleaned_data.get('pan_card', '').upper()
+        if not re.match(r'^[A-Z]{5}[0-9]{4}[A-Z]{1}$', pan):
+            raise forms.ValidationError("Invalid PAN Card format (e.g., ABCDE1234F).")
+        return pan
 
     def clean(self):
         cleaned_data = super().clean()
@@ -874,13 +889,13 @@ class OfficeBankDetailsForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Make all fields mandatory except status, which we calculate
-        mandatory_fields = [
+        # Make loan fields optional for the Office page
+        optional_fields = [
             'first_loan_amount', 'first_loan_utr', 'first_loan_date',
             'second_loan_amount', 'second_loan_utr', 'second_loan_date'
         ]
-        for field in mandatory_fields:
-            self.fields[field].required = True
+        for field in optional_fields:
+            self.fields[field].required = False
         self.fields['loan_pending_status'].required = False
         
     def clean(self):

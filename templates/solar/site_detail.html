@@ -12,7 +12,7 @@
         </div>
         <div class="d-flex flex-column flex-sm-row flex-wrap gap-2 w-100 w-md-auto">
             {# Permission-based Download Link #}
-            {% if request.user.is_superuser or request.user.is_staff or request.user.userprofile.role == 'Admin' or request.user.userprofile.role == 'Office' %}
+            {% if request.user.is_superuser or request.user.is_staff or request.user.userprofile.role == 'Admin' or request.user.userprofile.role == 'Office' or request.user.userprofile.role == 'Field Engineer' %}
             <a href="{% url 'download_images' customer.id %}" class="btn btn-info shadow-sm text-white flex-fill">
                 <i class="bi bi-download me-1"></i> Download All
             </a>
@@ -353,7 +353,7 @@
                         <li class="list-group-item d-flex justify-content-between align-items-center gap-2">
                             <span class="text-muted mb-0">Aadhar Number:</span>
                             <div class="text-end d-flex align-items-center justify-content-end flex-wrap gap-2">
-                                {% if request.user.is_superuser or request.user.is_staff or request.user.userprofile.role == 'Admin' or request.user.userprofile.role == 'Office' %}
+                                {% if request.user.is_superuser or request.user.is_staff or request.user.userprofile.role == 'Admin' or request.user.userprofile.role == 'Office' or request.user.userprofile.role == 'Field Engineer' %}
                                     <span class="font-monospace text-wrap" style="word-break: break-all;">{{ customer.aadhar_no }}</span>
                                     {% for media in survey_media.aadhar %}
                                     <img src="{{ media.file.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="Aadhaar {{ forloop.counter }}">
@@ -371,7 +371,7 @@
                         </li>                        <li class="list-group-item d-flex justify-content-between align-items-center gap-2">
                             <span class="text-muted mb-0">PAN Card:</span>
                             <div class="text-end d-flex align-items-center justify-content-end flex-wrap gap-2">
-                                {% if request.user.is_superuser or request.user.is_staff or request.user.userprofile.role == 'Admin' or request.user.userprofile.role == 'Office' %}
+                                {% if request.user.is_superuser or request.user.is_staff or request.user.userprofile.role == 'Admin' or request.user.userprofile.role == 'Office' or request.user.userprofile.role == 'Field Engineer' %}
                                     <span class="text-uppercase">{{ customer.pan_card }}</span>
                                     {% for media in survey_media.pan_card %}
                                     <img src="{{ media.file.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="PAN {{ forloop.counter }}">
@@ -392,7 +392,7 @@
                             <span class="text-muted mb-0">Bank Account:</span>
                             <div class="text-end d-flex align-items-center justify-content-end flex-wrap gap-2">
                                 <span>{{ customer.bank_account_no|default:"-" }}</span>
-                                {% if request.user.is_superuser or request.user.is_staff or request.user.userprofile.role == 'Admin' or request.user.userprofile.role == 'Office' %}
+                                {% if request.user.is_superuser or request.user.is_staff or request.user.userprofile.role == 'Admin' or request.user.userprofile.role == 'Office' or request.user.userprofile.role == 'Field Engineer' %}
                                     {% for media in survey_media.bank_account %}
                                     <img src="{{ media.file.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="Bank Account {{ forloop.counter }}">
                                     {% endfor %}
