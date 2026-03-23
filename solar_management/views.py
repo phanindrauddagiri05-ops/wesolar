@@ -379,7 +379,7 @@ def api_global_search(request):
             has_install = hasattr(s, 'installation')
             if has_install:
                  # Installer Data
-                status = s.installation.workflow_status
+                status = s.workflow_status
                 results.append({
                     'title': s.customer_name,
                     'subtitle': f"SC: {s.sc_no} | Status: {status}",
@@ -452,7 +452,7 @@ def api_global_search(request):
                 # C. Installer Data
                 results.append({
                     'title': s.customer_name,
-                    'subtitle': f"Installer: {s.installation.updated_by.get_full_name()} | Status: {s.installation.workflow_status}",
+                    'subtitle': f"Installer: {s.installation.updated_by.get_full_name()} | Status: {s.workflow_status}",
                     'url': f"/site/{s.id}/",
                     'type': 'Installation Record'
                 })
@@ -1050,6 +1050,9 @@ def new_installation(request):
                     installation.updated_by = request.user
                     installation.save()
                     form.save_m2m() # Standard practice even if no M2M fields
+                    
+                    survey.workflow_status = 'Completed'
+                    survey.save(update_fields=['workflow_status'])
 
                     # Handle categorized multi-photo uploads
                     media_map = {
@@ -1243,6 +1246,9 @@ def update_installation(request, pk):
             inst.updated_by = request.user
             inst.save()
             form.save_m2m()
+            
+            survey.workflow_status = 'Completed'
+            survey.save(update_fields=['workflow_status'])
 
             # Handle categorized multi-photo uploads
             media_map = {

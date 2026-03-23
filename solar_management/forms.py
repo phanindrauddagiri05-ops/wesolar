@@ -791,9 +791,9 @@ class SignUpForm(forms.ModelForm):
         return email
 
     def clean_pan_card(self):
-        pan = self.cleaned_data.get('pan_card', '').upper()
+        pan = self.cleaned_data.get('pan_card', '').upper().strip()
         if not re.match(r'^[A-Z]{5}[0-9]{4}[A-Z]{1}$', pan):
-            raise forms.ValidationError("Invalid PAN Card format (e.g., ABCDE1234F).")
+            raise forms.ValidationError("Invalid PAN Card format. It must be 5 letters, 4 digits, and 1 letter (e.g., ABCDE1234F).")
         return pan
 
     def clean(self):
