@@ -142,7 +142,7 @@ class SurveyForm(forms.ModelForm):
     def clean_pan_card(self):
         pan = self.cleaned_data.get('pan_card')
         if not re.match(r'^[A-Z]{5}[0-9]{4}[A-Z]{1}$', pan):
-            raise ValidationError("Invalid PAN Card format (e.g., ABCDE1234F).")
+            raise ValidationError("Invalid PAN Card formate. Enter correct format of PAN card.")
         return pan
 
     def clean_rp_phone_number(self):
@@ -743,7 +743,7 @@ class SignUpForm(forms.ModelForm):
         help_text="Enter your 10-digit PAN Card Number.",
         widget=forms.TextInput(attrs={
             'pattern': '^[A-Z]{5}[0-9]{4}[A-Z]{1}$',
-            'title': 'Invalid PAN Card format. Enter 5 uppercase letters, 4 digits, 1 uppercase letter.',
+            'title': 'Invalid PAN Card formate. Enter correct format of PAN card.',
             'oninput': "this.value = this.value.toUpperCase()",
             'maxlength': '10',
             'minlength': '10',
@@ -793,7 +793,7 @@ class SignUpForm(forms.ModelForm):
     def clean_pan_card(self):
         pan = self.cleaned_data.get('pan_card', '').upper().strip()
         if not re.match(r'^[A-Z]{5}[0-9]{4}[A-Z]{1}$', pan):
-            raise forms.ValidationError("Invalid PAN Card format. It must be 5 letters, 4 digits, and 1 letter (e.g., ABCDE1234F).")
+            raise forms.ValidationError("Invalid PAN Card formate. Enter correct format of PAN card.")
         return pan
 
     def clean(self):
