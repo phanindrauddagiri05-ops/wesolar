@@ -132,6 +132,36 @@ class CustomerSurvey(models.Model):
         return "Invalid PAN"
 
     @property
+    def current_roof_photo_url(self):
+        if self.roof_photo: return self.roof_photo.url
+        m = self.media_files.filter(media_type='roof').first()
+        return m.file.url if m and m.file else None
+
+    @property
+    def current_pan_card_photo_url(self):
+        if self.pan_card_photo: return self.pan_card_photo.url
+        m = self.media_files.filter(media_type='pan_card').first()
+        return m.file.url if m and m.file else None
+
+    @property
+    def current_aadhar_photo_url(self):
+        if self.aadhar_photo: return self.aadhar_photo.url
+        m = self.media_files.filter(media_type='aadhar').first()
+        return m.file.url if m and m.file else None
+
+    @property
+    def current_bill_photo_url(self):
+        if self.current_bill_photo: return self.current_bill_photo.url
+        m = self.media_files.filter(media_type='current_bill').first()
+        return m.file.url if m and m.file else None
+
+    @property
+    def current_bank_account_photo_url(self):
+        if self.bank_account_photo: return self.bank_account_photo.url
+        m = self.media_files.filter(media_type='bank_account').first()
+        return m.file.url if m and m.file else None
+
+    @property
     def has_installation(self):
         return hasattr(self, 'installation')
 

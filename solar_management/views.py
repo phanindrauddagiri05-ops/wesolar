@@ -1051,8 +1051,13 @@ def new_installation(request):
                     installation.save()
                     form.save_m2m() # Standard practice even if no M2M fields
                     
+                    from django.utils import timezone
                     survey.workflow_status = 'Completed'
-                    survey.save(update_fields=['workflow_status'])
+                    if not survey.installation_date:
+                        survey.installation_date = timezone.now().date()
+                        survey.save(update_fields=['workflow_status', 'installation_date'])
+                    else:
+                        survey.save(update_fields=['workflow_status'])
 
                     # Handle categorized multi-photo uploads
                     media_map = {
@@ -1247,8 +1252,13 @@ def update_installation(request, pk):
             inst.save()
             form.save_m2m()
             
+            from django.utils import timezone
             survey.workflow_status = 'Completed'
-            survey.save(update_fields=['workflow_status'])
+            if not survey.installation_date:
+                survey.installation_date = timezone.now().date()
+                survey.save(update_fields=['workflow_status', 'installation_date'])
+            else:
+                survey.save(update_fields=['workflow_status'])
 
             # Handle categorized multi-photo uploads
             media_map = {
@@ -1899,11 +1909,13 @@ def manage_storage(request):
             (~Q(aadhar_photo='') & ~Q(aadhar_photo__isnull=True)) |
             (~Q(current_bill_photo='') & ~Q(current_bill_photo__isnull=True)) |
             (~Q(bank_account_photo='') & ~Q(bank_account_photo__isnull=True)) |
-            (~Q(parent_bank_photo='') & ~Q(parent_bank_photo__isnull=True)) | # Keep this line for filtering
+            (~Q(parent_bank_photo='') & ~Q(parent_bank_photo__isnull=True)) |
             (~Q(installation__inverter_serial_photo='') & ~Q(installation__inverter_serial_photo__isnull=True)) |
             (~Q(installation__inverter_acdb_photo='') & ~Q(installation__inverter_acdb_photo__isnull=True)) |
             (~Q(installation__panel_serial_photo='') & ~Q(installation__panel_serial_photo__isnull=True)) |
-            (~Q(installation__site_photos_with_customer='') & ~Q(installation__site_photos_with_customer__isnull=True))
+            (~Q(installation__site_photos_with_customer='') & ~Q(installation__site_photos_with_customer__isnull=True)) |
+            (~Q(media_files__isnull=True)) |
+            (~Q(installation__additional_photos__isnull=True))
         )
         surveys_with_media = CustomerSurvey.objects.filter(has_media).distinct().order_by('created_at')
     except Exception:
@@ -1962,6 +1974,11 @@ def delete_survey_media(request, survey_id):
         survey.bank_account_photo = None
         survey.save()
         
+        # Delete related SurveyMedia
+        for sm in survey.media_files.all():
+            safe_delete_file(sm.file)
+            sm.delete()
+        
         # Do the same for Installation if exists
         try:
             inst = survey.installation
@@ -1975,6 +1992,11 @@ def delete_survey_media(request, survey_id):
             inst.panel_serial_photo = None
             inst.site_photos_with_customer = None
             inst.save()
+            
+            # Delete related InstallationPhoto
+            for ip in inst.additional_photos.all():
+                safe_delete_file(ip.photo)
+                ip.delete()
         except CustomerSurvey.installation.RelatedObjectDoesNotExist:
             pass
             
@@ -2001,13 +2023,15 @@ def delete_all_media(request):
             (~Q(aadhar_photo='') & ~Q(aadhar_photo__isnull=True)) |
             (~Q(current_bill_photo='') & ~Q(current_bill_photo__isnull=True)) |
             (~Q(bank_account_photo='') & ~Q(bank_account_photo__isnull=True)) |
-            (~Q(parent_bank_photo='') & ~Q(parent_bank_photo__isnull=True)) | # Keep this line for filtering
+            (~Q(parent_bank_photo='') & ~Q(parent_bank_photo__isnull=True)) |
             (~Q(installation__inverter_serial_photo='') & ~Q(installation__inverter_serial_photo__isnull=True)) |
             (~Q(installation__inverter_acdb_photo='') & ~Q(installation__inverter_acdb_photo__isnull=True)) |
             (~Q(installation__panel_serial_photo='') & ~Q(installation__panel_serial_photo__isnull=True)) |
-            (~Q(installation__site_photos_with_customer='') & ~Q(installation__site_photos_with_customer__isnull=True))
+            (~Q(installation__site_photos_with_customer='') & ~Q(installation__site_photos_with_customer__isnull=True)) |
+            (~Q(media_files__isnull=True)) |
+            (~Q(installation__additional_photos__isnull=True))
         )
-        surveys_with_media = CustomerSurvey.objects.filter(has_media)
+        surveys_with_media = CustomerSurvey.objects.filter(has_media).distinct()
         
         count = 0
         for survey in surveys_with_media:
@@ -2026,6 +2050,11 @@ def delete_all_media(request):
             survey.bank_account_photo = None
             survey.save()
             
+            # Delete related SurveyMedia
+            for sm in survey.media_files.all():
+                safe_delete_file(sm.file)
+                sm.delete()
+            
             # Do the same for Installation if exists
             try:
                 inst = survey.installation
@@ -2039,6 +2068,11 @@ def delete_all_media(request):
                 inst.panel_serial_photo = None
                 inst.site_photos_with_customer = None
                 inst.save()
+                
+                # Delete related InstallationPhoto
+                for ip in inst.additional_photos.all():
+                    safe_delete_file(ip.photo)
+                    ip.delete()
             except CustomerSurvey.installation.RelatedObjectDoesNotExist:
                 pass
             count += 1

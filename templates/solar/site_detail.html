@@ -25,9 +25,13 @@
             </a>
             {% endif %}
 
-            <a href="{% url 'download_material_dispatch_excel' customer.id %}" class="btn btn-success shadow-sm flex-fill text-nowrap">
-                <i class="bi bi-file-earmark-excel me-1"></i> Download Material Dispatch
-            </a>
+            {% if request.user.is_superuser or request.user.userprofile.role == 'Admin' or request.user.userprofile.role == 'Office' %}
+                {% if view_mode != 'fe_only' %}
+                <a href="{% url 'download_material_dispatch_excel' customer.id %}" class="btn btn-success shadow-sm flex-fill text-nowrap">
+                    <i class="bi bi-file-earmark-excel me-1"></i> Download Material Dispatch
+                </a>
+                {% endif %}
+            {% endif %}
 
             <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary flex-fill text-nowrap">Back to Dashboard</a>
         </div>

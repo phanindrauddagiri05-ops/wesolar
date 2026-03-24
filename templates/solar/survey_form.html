@@ -50,10 +50,10 @@
                         <div class="col-md-4">{{ form.sc_no|as_crispy_field }}</div>
                         <div class="col-md-4">
                             {{ form.current_bill_photo|as_crispy_field }}
-                            {% if is_update and form.instance.current_bill_photo %}
+                            {% if is_update and form.instance.current_bill_photo_url %}
                             <div class="mb-2"><small class="text-muted">Current:</small><br>
-                                <a href="{{ form.instance.current_bill_photo.url }}" target="_blank">
-                                    <img src="{{ form.instance.current_bill_photo.url }}"
+                                <a href="{{ form.instance.current_bill_photo_url }}" target="_blank">
+                                    <img src="{{ form.instance.current_bill_photo_url }}"
                                         style="max-height:60px; max-width:120px;" class="rounded border shadow-sm">
                                 </a>
                             </div>
@@ -73,10 +73,10 @@
                         <div class="col-md-6">{{ form.aadhar_no|as_crispy_field }}</div>
                         <div class="col-md-6">
                             {{ form.aadhar_photo|as_crispy_field }}
-                            {% if is_update and form.instance.aadhar_photo %}
+                            {% if is_update and form.instance.current_aadhar_photo_url %}
                             <div class="mb-2"><small class="text-muted">Current:</small><br>
-                                <a href="{{ form.instance.aadhar_photo.url }}" target="_blank">
-                                    <img src="{{ form.instance.aadhar_photo.url }}"
+                                <a href="{{ form.instance.current_aadhar_photo_url }}" target="_blank">
+                                    <img src="{{ form.instance.current_aadhar_photo_url }}"
                                         style="max-height:60px; max-width:120px;" class="rounded border shadow-sm">
                                 </a>
                             </div>
@@ -87,10 +87,10 @@
                         <div class="col-md-6">{{ form.pan_card|as_crispy_field }}</div>
                         <div class="col-md-6">
                             {{ form.pan_card_photo|as_crispy_field }}
-                            {% if is_update and form.instance.pan_card_photo %}
+                            {% if is_update and form.instance.current_pan_card_photo_url %}
                             <div class="mb-2"><small class="text-muted">Current:</small><br>
-                                <a href="{{ form.instance.pan_card_photo.url }}" target="_blank">
-                                    <img src="{{ form.instance.pan_card_photo.url }}"
+                                <a href="{{ form.instance.current_pan_card_photo_url }}" target="_blank">
+                                    <img src="{{ form.instance.current_pan_card_photo_url }}"
                                         style="max-height:60px; max-width:120px;" class="rounded border shadow-sm">
                                 </a>
                             </div>
@@ -108,10 +108,10 @@
                         <div class="col-md-6">{{ bank_form.parent_bank|as_crispy_field }}</div>
                         <div class="col-md-6">
                             {{ form.bank_account_photo|as_crispy_field }}
-                            {% if is_update and form.instance.bank_account_photo %}
+                            {% if is_update and form.instance.current_bank_account_photo_url %}
                             <div class="mb-2"><small class="text-muted">Current:</small><br>
-                                <a href="{{ form.instance.bank_account_photo.url }}" target="_blank">
-                                    <img src="{{ form.instance.bank_account_photo.url }}"
+                                <a href="{{ form.instance.current_bank_account_photo_url }}" target="_blank">
+                                    <img src="{{ form.instance.current_bank_account_photo_url }}"
                                         style="max-height:60px; max-width:120px;" class="rounded border shadow-sm">
                                 </a>
                             </div>
@@ -154,10 +154,10 @@
                         <div class="col-md-6">{{ form.roof_type|as_crispy_field }}</div>
                         <div class="col-md-6">
                             {{ form.roof_photo|as_crispy_field }}
-                            {% if is_update and form.instance.roof_photo %}
+                            {% if is_update and form.instance.current_roof_photo_url %}
                             <div class="mb-2"><small class="text-muted">Current:</small><br>
-                                <a href="{{ form.instance.roof_photo.url }}" target="_blank">
-                                    <img src="{{ form.instance.roof_photo.url }}"
+                                <a href="{{ form.instance.current_roof_photo_url }}" target="_blank">
+                                    <img src="{{ form.instance.current_roof_photo_url }}"
                                         style="max-height:60px; max-width:120px;" class="rounded border shadow-sm">
                                 </a>
                             </div>
