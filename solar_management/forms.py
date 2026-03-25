@@ -220,39 +220,39 @@ class SurveyForm(forms.ModelForm):
 
         # Registration Date conditional validation
         if registration_status and not registration_date:
-            self.add_error('registration_date', "Registration Date is mandatory if Registration Status is Yes.")
-
-        if not registration_status:
             # Clear it if no it's not applicable
-            cleaned_data['registration_date'] = None
+            if not registration_status:
+                cleaned_data['registration_date'] = None
+            
+            # Only enforce mandatory date for NEW surveys
+            if not self.instance.pk:
+                self.add_error('registration_date', "Registration Date is mandatory if Registration Status is Yes.")
 
-        # Roof photo is mandatory
-        if not roof_photo:
-            if not (self.instance.pk and self.instance.roof_photo):
-                 self.add_error('roof_photo', "Roof photo is mandatory.")
+        # ONLY perform mandatory checks for NEW surveys
+        if not self.instance.pk:
+            # Roof photo is mandatory
+            if not roof_photo:
+                self.add_error('roof_photo', "Roof photo is mandatory.")
 
-        # Document photos are mandatory
-        if not pan_card_photo:
-            if not (self.instance.pk and self.instance.pan_card_photo):
+            # Document photos are mandatory
+            if not pan_card_photo:
                 self.add_error('pan_card_photo', "PAN Card photo is mandatory.")
 
-        if not aadhar_photo:
-            if not (self.instance.pk and self.instance.aadhar_photo):
+            if not aadhar_photo:
                 self.add_error('aadhar_photo', "Aadhar Card photo is mandatory.")
 
-        if not current_bill_photo:
-            if not (self.instance.pk and self.instance.current_bill_photo):
+            if not current_bill_photo:
                 self.add_error('current_bill_photo', "Current Electricity Bill photo is mandatory.")
                 
-        if mefma_status:
-            if not rp_name:
-                self.add_error('rp_name', "RP Name is mandatory if MEFMA is Yes.")
-            if not rp_phone:
-                self.add_error('rp_phone_number', "RP Phone Number is mandatory if MEFMA is Yes.")
-            if not co_name:
-                self.add_error('co_name', "CO Name is mandatory if MEFMA is Yes.")
-            if not co_phone:
-                self.add_error('co_phone_number', "CO Phone Number is mandatory if MEFMA is Yes.")
+            if mefma_status:
+                if not rp_name:
+                    self.add_error('rp_name', "RP Name is mandatory if MEFMA is Yes.")
+                if not rp_phone:
+                    self.add_error('rp_phone_number', "RP Phone Number is mandatory if MEFMA is Yes.")
+                if not co_name:
+                    self.add_error('co_name', "CO Name is mandatory if MEFMA is Yes.")
+                if not co_phone:
+                    self.add_error('co_phone_number', "CO Phone Number is mandatory if MEFMA is Yes.")
         # Reference Name validation removed per request
         
         return cleaned_data
