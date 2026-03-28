@@ -9,6 +9,7 @@ import os
 from datetime import datetime
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponse
 from django.core.paginator import Paginator
@@ -984,9 +985,19 @@ def survey_form_view(request):
                 for f in files:
                     SurveyMedia.objects.create(survey=survey, file=f, media_type=m_type)
 
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                messages.success(request, 'Survey and Bank Details submitted successfully!')
+                return JsonResponse({'success': True, 'redirect_url': reverse('dashboard')})
+
             messages.success(request, 'Survey and Bank Details submitted successfully!')
             return redirect('dashboard')
         else:
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                errors = {}
+                errors.update(form.errors)
+                errors.update(bank_form.errors)
+                return JsonResponse({'success': False, 'errors': errors})
+                
             messages.error(request, 'Please correct the errors below.')
     else:
         form = SurveyForm()
@@ -1073,17 +1084,28 @@ def new_installation(request):
                         for f in files:
                             InstallationPhoto.objects.create(installation=installation, photo=f, photo_type=p_type)
 
+                    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                        messages.success(request, f"Installation submitted successfully for {survey.customer_name}!")
+                        return JsonResponse({'success': True, 'redirect_url': reverse('dashboard')})
+
                     messages.success(request, f"Installation submitted successfully for {survey.customer_name}!")
                     return redirect('dashboard')
                 else:
+                    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                        return JsonResponse({'success': False, 'errors': form.errors})
+                        
                     # Form has validation errors
                     for field, errors in form.errors.items():
                         messages.error(request, f"{field.replace('_', ' ').title()}: {', '.join(errors)}")
             except CustomerSurvey.DoesNotExist:
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({'success': False, 'errors': {'__all__': ['Survey not found.']}})
                 messages.error(request, "Survey not found.")
                 form = InstallationForm()
         else:
             # No survey_id provided
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'errors': {'__all__': ['No customer selected. Please fetch customer details first.']}})
             messages.error(request, "No customer selected. Please fetch customer details first.")
             form = InstallationForm()
     else:
@@ -1277,9 +1299,16 @@ def update_installation(request, pk):
                     for f in files:
                         InstallationPhoto.objects.create(installation=inst, photo=f, photo_type=p_type)
 
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                messages.success(request, f"Installation data updated for {survey.customer_name}.")
+                return JsonResponse({'success': True, 'redirect_url': reverse('dashboard')})
+
             messages.success(request, f"Installation data updated for {survey.customer_name}.")
             return redirect('dashboard')
         else:
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'errors': form.errors})
+                
             # Form has validation errors
             for field, errors in form.errors.items():
                 messages.error(request, f"{field.replace('_', ' ').title()}: {', '.join(errors)}")
@@ -1386,11 +1415,21 @@ def update_survey(request, pk):
                     for f in files:
                         SurveyMedia.objects.create(survey=survey, file=f, media_type=m_type)
             
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                messages.success(request, "Survey and Bank details updated.")
+                return JsonResponse({'success': True, 'redirect_url': reverse('site_detail', args=[pk])})
+
             messages.success(request, "Survey and Bank details updated.")
             return redirect('site_detail', pk=pk)
     else:
         form = SurveyForm(instance=survey)
         bank_form = BankDetailsForm(instance=bank_details)
+        
+    if request.method == "POST" and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        errors = {}
+        errors.update(form.errors)
+        errors.update(bank_form.errors)
+        return JsonResponse({'success': False, 'errors': errors})
     
     return render(request, 'solar/survey_form.html', {
         'form': form, 

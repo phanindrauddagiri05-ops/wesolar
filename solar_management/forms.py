@@ -110,7 +110,7 @@ class SurveyForm(forms.ModelForm):
 
 
     # Image fields that should be optional when editing
-    IMAGE_FIELDS = ['roof_photo', 'pan_card_photo', 'aadhar_photo', 'current_bill_photo', 'bank_account_photo']
+    IMAGE_FIELDS = ['roof_photo', 'pan_card_photo', 'aadhar_photo', 'current_bill_photo', 'bank_account_photo', 'parent_bank_photo']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -119,6 +119,12 @@ class SurveyForm(forms.ModelForm):
             for field_name in self.IMAGE_FIELDS:
                 if field_name in self.fields:
                     self.fields[field_name].required = False
+        else:
+            # For new records, make mandatory fields required to trigger browser-side validation
+            mandatory_photos = ['roof_photo', 'pan_card_photo', 'aadhar_photo', 'current_bill_photo', 'bank_account_photo', 'parent_bank_photo']
+            for field_name in mandatory_photos:
+                if field_name in self.fields:
+                    self.fields[field_name].required = True
                     
             # Handle custom area logic
             if hasattr(self.instance, 'area') and self.instance.area:

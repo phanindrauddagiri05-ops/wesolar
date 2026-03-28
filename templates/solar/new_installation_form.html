@@ -439,28 +439,26 @@
                     errors.push('Inverter Phase is required');
                 }
 
-                // Check required file uploads (only if form is being submitted for first time, not on re-submit after error)
-                const hasExistingErrors = document.querySelector('.alert-danger');
-                if (!hasExistingErrors) {
-                    const inverterSerialPhoto = document.getElementById('id_inverter_serial_photo');
-                    if (inverterSerialPhoto && !inverterSerialPhoto.files.length) {
-                        errors.push('Inverter Serial Number Photo is required');
-                    }
+                // Check required file uploads
+                // NOTE: We always check files because browsers clear them on page reload after a server error.
+                const inverterSerialPhoto = document.getElementById('id_inverter_serial_photo');
+                if (inverterSerialPhoto && !inverterSerialPhoto.files.length) {
+                    errors.push('Inverter Serial Number Photo is required');
+                }
 
-                    const inverterAcdbPhoto = document.getElementById('id_inverter_acdb_photo');
-                    if (inverterAcdbPhoto && !inverterAcdbPhoto.files.length) {
-                        errors.push('Inverter Photo (with ACDB & DCDB) is required');
-                    }
+                const inverterAcdbPhoto = document.getElementById('id_inverter_acdb_photo');
+                if (inverterAcdbPhoto && !inverterAcdbPhoto.files.length) {
+                    errors.push('Inverter Photo (with ACDB & DCDB) is required');
+                }
 
-                    const panelSerialPhoto = document.getElementById('id_panel_serial_photo');
-                    if (panelSerialPhoto && !panelSerialPhoto.files.length) {
-                        errors.push('Panel Serial Numbers Photo is required');
-                    }
+                const panelSerialPhoto = document.getElementById('id_panel_serial_photo');
+                if (panelSerialPhoto && !panelSerialPhoto.files.length) {
+                    errors.push('Panel Serial Numbers Photo is required');
+                }
 
-                    const sitePhotos = document.getElementById('id_site_photos_with_customer');
-                    if (sitePhotos && !sitePhotos.files.length) {
-                        errors.push('Site Photos with Customer is required');
-                    }
+                const sitePhotos = document.getElementById('id_site_photos_with_customer');
+                if (sitePhotos && !sitePhotos.files.length) {
+                    errors.push('Site Photos with Customer is required');
                 }
 
                 // Check numeric required fields
@@ -483,20 +481,97 @@
                     e.preventDefault();
                     alert('Please fill in all required fields:\n\n' + errors.join('\n'));
                     // Scroll to top to show which fields need attention
-                    window.scrollTo({ top: document.getElementById('installation_form_container').offsetTop - 100, behavior: 'smooth' });
+                    const container = document.getElementById('installation_form_container');
+                    if (container) {
+                        window.scrollTo({ top: container.offsetTop - 100, behavior: 'smooth' });
+                    } else {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
                     return false;
                 }
 
-                // Add loading state to the submit button
-                const submitBtn = document.getElementById('submit_btn');
+                // AJAX Form Submission
+                e.preventDefault();
+                const submitBtn = document.getElementById('submit_btn') || form.querySelector('button[type="submit"]');
+                const originalBtnText = submitBtn ? submitBtn.innerHTML : 'Submit';
+                
                 if (submitBtn) {
-                    // Disable and show spinner immediately on successful validation
-                    // Set timeout slightly so form submit happens before disabled attribute stops it
-                    setTimeout(() => {
-                        submitBtn.disabled = true;
-                        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Uploading Data & Images...';
-                    }, 10);
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Uploading Data & Images...';
                 }
+
+                // Clear prior server errors
+                document.querySelectorAll('.server-invalid-feedback').forEach(el => el.remove());
+                document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+
+                const formData = new FormData(form);
+
+                fetch(window.location.href, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Redirect on success
+                        window.location.href = data.redirect_url || '/dashboard/';
+                    } else {
+                        // Show errors without reloading
+                        const serverErrors = data.errors;
+                        let firstErrorEl = null;
+
+                        alert("There were validation errors. Please check the form fields. Your selected files are preserved.");
+
+                        for (const [fieldName, fieldErrors] of Object.entries(serverErrors)) {
+                            const errString = fieldErrors.join(", ");
+                            const inputEl = document.querySelector(`[name="${fieldName}"]`);
+                            
+                            if (inputEl) {
+                                inputEl.classList.add('is-invalid');
+                                
+                                const errDiv = document.createElement('div');
+                                errDiv.className = 'invalid-feedback server-invalid-feedback d-block';
+                                errDiv.innerHTML = `<strong>${errString}</strong>`;
+                                
+                                // Append after the input or its crispy wrapper
+                                if (inputEl.parentNode.classList.contains('input-group')) {
+                                    inputEl.parentNode.parentNode.appendChild(errDiv);
+                                } else {
+                                    inputEl.parentNode.appendChild(errDiv);
+                                }
+                                
+                                if (!firstErrorEl) firstErrorEl = inputEl;
+                            } else {
+                                // Non-field errors
+                                const formAlert = document.createElement('div');
+                                formAlert.className = 'alert alert-danger server-invalid-feedback mt-3';
+                                formAlert.innerHTML = `<strong>${fieldName === '__all__' ? '' : fieldName + ': '}${errString}</strong>`;
+                                form.prepend(formAlert);
+                                if (!firstErrorEl) firstErrorEl = formAlert;
+                            }
+                        }
+
+                        if (firstErrorEl) {
+                            firstErrorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = originalBtnText;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("A network error occurred. Please try submitting again.");
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalBtnText;
+                    }
+                });
             });
         }
     });

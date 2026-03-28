@@ -487,6 +487,148 @@
             areaSelect.addEventListener('change', toggleCustomArea);
             toggleCustomArea(); // Initial check
         }
+
+        // --- NEW: Client-side Validation Before Submission ---
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                const errors = [];
+                
+                // 1. Check Mandatory Photos (Only for new entries or if re-uploading)
+                // We use the ID produced by crispy-forms
+                const mandatoryPhotoFields = [
+                    { id: 'id_roof_photo', name: 'Roof Photo' },
+                    { id: 'id_pan_card_photo', name: 'PAN Card Photo' },
+                    { id: 'id_aadhar_photo', name: 'Aadhar Card Photo' },
+                    { id: 'id_current_bill_photo', name: 'Current Electricity Bill Photo' },
+                    { id: 'id_bank_account_photo', name: 'Bank Account Photo' },
+                    { id: 'id_parent_bank_photo', name: 'Parent Bank Front Page Photo' }
+                ];
+
+                mandatoryPhotoFields.forEach(field => {
+                    const el = document.getElementById(field.id);
+                    // If it's a new entry (no 'current' photo shown) or if it's required by HTML5
+                    if (el && el.required && !el.files.length) {
+                        errors.push(field.name + " is required.");
+                        el.classList.add('is-invalid');
+                    }
+                });
+
+                // 2. Check Other Mandatory Fields that might have missed real-time validation
+                const mandatoryTextFields = [
+                    { id: 'id_customer_name', name: 'Customer Name' },
+                    { id: 'id_sc_no', name: 'Service Connection Number' },
+                    { id: 'id_aadhar_no', name: 'Aadhar Number' },
+                    { id: 'id_pan_card', name: 'PAN Card' },
+                    { id: 'id_aadhar_linked_phone', name: 'Aadhar Linked Phone' },
+                    { id: 'id_agreed_amount', name: 'Agreed Amount' },
+                    { id: 'id_parent_bank', name: 'Parent Bank' },
+                    { id: 'id_parent_bank_ac_no', name: 'Parent Bank AC Number' }
+                ];
+
+                mandatoryTextFields.forEach(field => {
+                    const el = document.getElementById(field.id);
+                    if (el && !el.value.trim()) {
+                        errors.push(field.name + " is mandatory.");
+                        el.classList.add('is-invalid');
+                    }
+                });
+
+                if (errors.length > 0) {
+                    e.preventDefault();
+                    alert("Please correct the following errors before submitting:\n\n" + errors.join("\n"));
+                    
+                    // Scroll to the first error
+                    const firstError = document.querySelector('.is-invalid');
+                    if (firstError) {
+                        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                    return false;
+                }
+                
+                // AJAX Submission to prevent file drop on server error
+                e.preventDefault();
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const originalBtnText = submitBtn ? submitBtn.innerHTML : 'Submit';
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Uploading Data & Images...';
+                }
+
+                // Clear prior server errors
+                document.querySelectorAll('.server-invalid-feedback').forEach(el => el.remove());
+                document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+
+                const formData = new FormData(form);
+
+                fetch(window.location.href, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Redirect on success
+                        window.location.href = data.redirect_url || '/dashboard/';
+                    } else {
+                        // Show errors without reloading
+                        const serverErrors = data.errors;
+                        let firstErrorEl = null;
+
+                        alert("There were validation errors. Please check the form fields. Your selected files are preserved.");
+
+                        for (const [fieldName, fieldErrors] of Object.entries(serverErrors)) {
+                            const errString = fieldErrors.join(", ");
+                            const inputEl = document.querySelector(`[name="${fieldName}"]`);
+                            
+                            if (inputEl) {
+                                inputEl.classList.add('is-invalid');
+                                
+                                const errDiv = document.createElement('div');
+                                errDiv.className = 'invalid-feedback server-invalid-feedback d-block';
+                                errDiv.innerHTML = `<strong>${errString}</strong>`;
+                                
+                                // Append after the input or its crispy wrapper
+                                if (inputEl.parentNode.classList.contains('input-group')) {
+                                    inputEl.parentNode.parentNode.appendChild(errDiv);
+                                } else {
+                                    inputEl.parentNode.appendChild(errDiv);
+                                }
+                                
+                                if (!firstErrorEl) firstErrorEl = inputEl;
+                            } else {
+                                // Non-field errors
+                                const formAlert = document.createElement('div');
+                                formAlert.className = 'alert alert-danger server-invalid-feedback mt-3';
+                                formAlert.innerHTML = `<strong>${fieldName === '__all__' ? '' : fieldName + ': '}${errString}</strong>`;
+                                form.prepend(formAlert);
+                                if (!firstErrorEl) firstErrorEl = formAlert;
+                            }
+                        }
+
+                        if (firstErrorEl) {
+                            firstErrorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = originalBtnText;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("A network error occurred. Please try submitting again.");
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalBtnText;
+                    }
+                });
+            });
+        }
     });
 
 </script>
