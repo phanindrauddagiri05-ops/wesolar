@@ -1,0 +1,1890 @@
+[
+{
+    "model": "auth.group",
+    "fields": {
+        "name": "Field_Engineers",
+        "permissions": []
+    }
+},
+{
+    "model": "auth.group",
+    "fields": {
+        "name": "Installers",
+        "permissions": []
+    }
+},
+{
+    "model": "auth.group",
+    "fields": {
+        "name": "Office_Staff",
+        "permissions": []
+    }
+},
+{
+    "model": "auth.group",
+    "fields": {
+        "name": "Loan_Officers",
+        "permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "password": "pbkdf2_sha256$720000$Ph9uotgI03hG917r6uRZSK$fFJzlLAmrl9gfMOGWcStSCrFSjTksq6Om06wfX12EdE=",
+        "last_login": "2026-03-23T13:38:57.177Z",
+        "is_superuser": true,
+        "username": "admin",
+        "first_name": "",
+        "last_name": "",
+        "email": "admin@example.com",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2026-02-10T14:04:46.728Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "password": "pbkdf2_sha256$720000$Kdo1cwqGahGMNIGzrpKmcs$9tUq2p4i8LKJastx8JL3s7tLaUSw9qL1QwxnSXhhjtU=",
+        "last_login": "2026-03-28T10:40:10.537Z",
+        "is_superuser": false,
+        "username": "9999999999",
+        "first_name": "first",
+        "last_name": "fygf",
+        "email": "gfvhgf@gmail.com",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-02-10T14:08:45.528Z",
+        "groups": [
+            [
+                "Field_Engineers"
+            ]
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "password": "pbkdf2_sha256$720000$9ZtyrXGtkKC3qx8J3Ndggb$uniHU51Wb4UkQVh0kh1kUaFBraU1Z747+l7ThBIc+/k=",
+        "last_login": "2026-03-28T10:39:12.375Z",
+        "is_superuser": false,
+        "username": "2222222222",
+        "first_name": "installer1",
+        "last_name": "installer1",
+        "email": "installet@gmail.com",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-02-12T09:29:45.358Z",
+        "groups": [
+            [
+                "Installers"
+            ]
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "password": "pbkdf2_sha256$720000$dhincMkEZQ5wCp3bMIVJgq$I35Ab7X/BeFh21O0xKGL7qorpLUcSWZskCJJCmfpSQI=",
+        "last_login": "2026-03-24T16:24:14.612Z",
+        "is_superuser": false,
+        "username": "5555555555",
+        "first_name": "office1",
+        "last_name": "office1",
+        "email": "office@gmail.com",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-02-12T09:32:14.529Z",
+        "groups": [
+            [
+                "Office_Staff"
+            ]
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "password": "pbkdf2_sha256$720000$chqO06Pc0EnGjWmH0bYNyI$ripOnGGAz1lLbcKVUoWHCVIiZGkJuXLMqIVMonDM1cs=",
+        "last_login": "2026-03-24T16:24:34.034Z",
+        "is_superuser": false,
+        "username": "6666666666",
+        "first_name": "loan1",
+        "last_name": "loan1",
+        "email": "loan@gmail.com",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-02-13T09:12:53.662Z",
+        "groups": [
+            [
+                "Loan_Officers"
+            ]
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "password": "pbkdf2_sha256$720000$d2MJpqc6sSkhf9Yr2d8fup$dWcciUgckUfawPuali6KizUzcRrZYg4rKROISbHKitc=",
+        "last_login": "2026-03-22T13:54:27.363Z",
+        "is_superuser": true,
+        "username": "1111111111",
+        "first_name": "one",
+        "last_name": "",
+        "email": "one@gmail.com",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2026-02-14T06:31:36.272Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "password": "pbkdf2_sha256$720000$BcC3Ut6dV55onUhRYNcHwt$e/g8RuEcWV5KsRA4PBHFJ60A58vfYU3hZ0NwmHaM2Ag=",
+        "last_login": "2026-03-28T16:05:23.049Z",
+        "is_superuser": false,
+        "username": "2121212121",
+        "first_name": "admin2",
+        "last_name": "admin2",
+        "email": "admin2@gmail.com",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2026-02-28T17:27:55.565Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "password": "pbkdf2_sha256$720000$2o5Mpc5I8vX2y02sgDT5zq$zW1Ljo4yjHVIno031+VIPj54Fryrk9vCsrRsWFW/mq4=",
+        "last_login": "2026-02-28T17:39:38.369Z",
+        "is_superuser": false,
+        "username": "3131313131",
+        "first_name": "admin3",
+        "last_name": "admin3",
+        "email": "admin3@gmail.com",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2026-02-28T17:39:03.380Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "password": "pbkdf2_sha256$720000$lEEldoCaoAWuMWcQpc8Rwa$M3xVWpGNJVtf4FtAhXQsea0fty4bLU6eMPJIGgz8mxQ=",
+        "last_login": "2026-03-19T03:32:26.942Z",
+        "is_superuser": false,
+        "username": "6663336663",
+        "first_name": "sex",
+        "last_name": "sex",
+        "email": "sex@gmail.com",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-03-11T17:30:06.015Z",
+        "groups": [
+            [
+                "Field_Engineers"
+            ]
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "password": "pbkdf2_sha256$720000$I4Rxdsk5GoEuPv8kDgVh3s$QU0g55iocKAYP3zqNetv52bwvdnHUptiYWI5D4PTKI0=",
+        "last_login": "2026-03-22T13:53:01.124Z",
+        "is_superuser": false,
+        "username": "1234567890",
+        "first_name": "phani",
+        "last_name": "phani",
+        "email": "phani@gmail.com",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2026-03-22T05:43:52.321Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "password": "pbkdf2_sha256$720000$TJlkW8TslLggNGptXMWGfu$Akob+5koiUB7gv3reCHHEtPvxsR7U7P0wNf7RhrlcRk=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "9876543210",
+        "first_name": "Test",
+        "last_name": "User",
+        "email": "testuser508@example.com",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-03-23T13:22:28.941Z",
+        "groups": [
+            [
+                "Field_Engineers"
+            ]
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "solar_management.userprofile",
+    "pk": 1,
+    "fields": {
+        "user": [
+            "9999999999"
+        ],
+        "worker_id": "WS-USR-0001",
+        "mobile_number": "9999999999",
+        "role": "Field Engineer",
+        "is_approved": true,
+        "plain_password": "",
+        "aadhar_photo": "",
+        "pan_card_photo": "users/documents/screencapture-dcc-godaddy-control-portfolio-ankirasolutions-com-settings_C8DXd4Q.png",
+        "pan_card": null
+    }
+},
+{
+    "model": "solar_management.userprofile",
+    "pk": 3,
+    "fields": {
+        "user": [
+            "2222222222"
+        ],
+        "worker_id": "WS-USR-0003",
+        "mobile_number": "2222222222",
+        "role": "Installer",
+        "is_approved": true,
+        "plain_password": "",
+        "aadhar_photo": "users/documents/Screenshot_2026-02-03_100615.png",
+        "pan_card_photo": "users/documents/Screenshot_2026-02-03_180936.png",
+        "pan_card": null
+    }
+},
+{
+    "model": "solar_management.userprofile",
+    "pk": 4,
+    "fields": {
+        "user": [
+            "5555555555"
+        ],
+        "worker_id": "WS-USR-0004",
+        "mobile_number": "5555555555",
+        "role": "Office",
+        "is_approved": true,
+        "plain_password": "",
+        "aadhar_photo": "",
+        "pan_card_photo": "",
+        "pan_card": null
+    }
+},
+{
+    "model": "solar_management.userprofile",
+    "pk": 5,
+    "fields": {
+        "user": [
+            "6666666666"
+        ],
+        "worker_id": "WS-USR-0005",
+        "mobile_number": "6666666666",
+        "role": "Loan",
+        "is_approved": true,
+        "plain_password": "",
+        "aadhar_photo": "",
+        "pan_card_photo": "",
+        "pan_card": null
+    }
+},
+{
+    "model": "solar_management.userprofile",
+    "pk": 7,
+    "fields": {
+        "user": [
+            "1111111111"
+        ],
+        "worker_id": "WS-USR-0007",
+        "mobile_number": "1111111111",
+        "role": "Admin",
+        "is_approved": true,
+        "plain_password": "1111",
+        "aadhar_photo": "",
+        "pan_card_photo": "",
+        "pan_card": null
+    }
+},
+{
+    "model": "solar_management.userprofile",
+    "pk": 9,
+    "fields": {
+        "user": [
+            "2121212121"
+        ],
+        "worker_id": "WS-USR-0009",
+        "mobile_number": "2121212121",
+        "role": "Admin",
+        "is_approved": true,
+        "plain_password": "",
+        "aadhar_photo": "",
+        "pan_card_photo": "",
+        "pan_card": null
+    }
+},
+{
+    "model": "solar_management.userprofile",
+    "pk": 10,
+    "fields": {
+        "user": [
+            "3131313131"
+        ],
+        "worker_id": "WS-USR-0010",
+        "mobile_number": "3131313131",
+        "role": "Admin",
+        "is_approved": true,
+        "plain_password": "",
+        "aadhar_photo": "",
+        "pan_card_photo": "",
+        "pan_card": null
+    }
+},
+{
+    "model": "solar_management.userprofile",
+    "pk": 13,
+    "fields": {
+        "user": [
+            "6663336663"
+        ],
+        "worker_id": "WS-USR-0013",
+        "mobile_number": "6663336663",
+        "role": "Field Engineer",
+        "is_approved": true,
+        "plain_password": "666333",
+        "aadhar_photo": "users/documents/Screenshot_2026-02-04_075903.png",
+        "pan_card_photo": "users/documents/Screenshot_2026-02-03_115357.png",
+        "pan_card": null
+    }
+},
+{
+    "model": "solar_management.userprofile",
+    "pk": 14,
+    "fields": {
+        "user": [
+            "1234567890"
+        ],
+        "worker_id": "WS-USR-0014",
+        "mobile_number": "1234567890",
+        "role": "Admin",
+        "is_approved": true,
+        "plain_password": "123456",
+        "aadhar_photo": "",
+        "pan_card_photo": "",
+        "pan_card": "UUUUU1234U"
+    }
+},
+{
+    "model": "solar_management.userprofile",
+    "pk": 15,
+    "fields": {
+        "user": [
+            "9876543210"
+        ],
+        "worker_id": "WS-USR-0015",
+        "mobile_number": "9876543210",
+        "role": "Field Engineer",
+        "is_approved": true,
+        "plain_password": "Password123!",
+        "aadhar_photo": "",
+        "pan_card_photo": "",
+        "pan_card": "ABCDE1234F"
+    }
+},
+{
+    "model": "solar_management.customersurvey",
+    "pk": 1,
+    "fields": {
+        "customer_name": "Uddagiri Phanindra",
+        "application_id": "WS-APP-00001",
+        "connection_type": "Domestic",
+        "sc_no": "9441055486112233",
+        "phase": "Single Phase",
+        "contracted_load": 0.0,
+        "feasibility_kw": 10.0,
+        "aadhar_no": "944105548612",
+        "pan_card": "ABCDE1234F",
+        "email": "phanindrauddagiri05@gmail.com",
+        "aadhar_linked_phone": "1231231231",
+        "bank_account_no": "",
+        "phone_number": null,
+        "roof_type": "Normal",
+        "roof_photo": "surveys/roofs/screencapture-127-0-0-1-8000-services-2026-02-05-19_18_08.png",
+        "pan_card_photo": "",
+        "aadhar_photo": "",
+        "current_bill_photo": "",
+        "bank_account_photo": "",
+        "structure_type": "Normal",
+        "structure_height": 20.0,
+        "floors": null,
+        "gps_coordinates": "17.993525, 83.416493",
+        "area": "area",
+        "measurements": null,
+        "agreed_amount": "2000.00",
+        "advance_paid": "100.00",
+        "mefma_status": true,
+        "rp_name": "cd",
+        "rp_phone_number": "2312311115",
+        "co_name": null,
+        "co_phone_number": null,
+        "reference_name": "asd",
+        "fe_remarks": "cecdr",
+        "pms_registration_number": "",
+        "division": "abc",
+        "registration_status": false,
+        "registration_date": null,
+        "parent_bank_photo": "",
+        "installation_date": null,
+        "discom_status": "Pending",
+        "net_metering_status": "Pending",
+        "subsidy_status": "Pending",
+        "office_remarks": "",
+        "workflow_status": "Pending",
+        "created_at": "2026-02-12T09:28:42.152Z",
+        "created_by": [
+            "9999999999"
+        ]
+    }
+},
+{
+    "model": "solar_management.customersurvey",
+    "pk": 2,
+    "fields": {
+        "customer_name": "Uddagiri Phanindra",
+        "application_id": "WS-APP-00002",
+        "connection_type": "Commercial",
+        "sc_no": "9441055486112233",
+        "phase": "Single Phase",
+        "contracted_load": 0.0,
+        "feasibility_kw": 10.0,
+        "aadhar_no": "944105548612",
+        "pan_card": "ABCDE1234F",
+        "email": "phanindrauddagiri05@gmail.com",
+        "aadhar_linked_phone": "1231231231",
+        "bank_account_no": "",
+        "phone_number": null,
+        "roof_type": "Normal",
+        "roof_photo": "surveys/roofs/WhatsApp_Image_2026-01-09_at_11.57.34_AM.jpeg",
+        "pan_card_photo": "",
+        "aadhar_photo": "",
+        "current_bill_photo": "",
+        "bank_account_photo": "",
+        "structure_type": "Normal",
+        "structure_height": 10.0,
+        "floors": null,
+        "gps_coordinates": "18.026314, 83.405280",
+        "area": "area",
+        "measurements": null,
+        "agreed_amount": "20.00",
+        "advance_paid": "2000.00",
+        "mefma_status": true,
+        "rp_name": "cd",
+        "rp_phone_number": "2312311115",
+        "co_name": null,
+        "co_phone_number": null,
+        "reference_name": "asd",
+        "fe_remarks": "mmmf",
+        "pms_registration_number": "vss",
+        "division": "abc",
+        "registration_status": false,
+        "registration_date": null,
+        "parent_bank_photo": "",
+        "installation_date": "2026-02-14",
+        "discom_status": "Pending",
+        "net_metering_status": "Pending",
+        "subsidy_status": "Pending",
+        "office_remarks": "g",
+        "workflow_status": "Pending",
+        "created_at": "2026-02-12T17:09:50.636Z",
+        "created_by": [
+            "9999999999"
+        ]
+    }
+},
+{
+    "model": "solar_management.customersurvey",
+    "pk": 3,
+    "fields": {
+        "customer_name": "Uddagiri Phanindra",
+        "application_id": "WS-APP-00003",
+        "connection_type": "Commercial",
+        "sc_no": "9441055486112233",
+        "phase": "Single Phase",
+        "contracted_load": 0.0,
+        "feasibility_kw": 10.0,
+        "aadhar_no": "944105548612",
+        "pan_card": "ABCDE1234F",
+        "email": "phanindrauddagiri05@gmail.com",
+        "aadhar_linked_phone": "0000000000",
+        "bank_account_no": "",
+        "phone_number": "9441055486",
+        "roof_type": "Normal",
+        "roof_photo": "surveys/roofs/wesolar_2_back-logo.png",
+        "pan_card_photo": "",
+        "aadhar_photo": "",
+        "current_bill_photo": "",
+        "bank_account_photo": "",
+        "structure_type": "Normal",
+        "structure_height": 44.0,
+        "floors": null,
+        "gps_coordinates": "18.026400, 83.405304",
+        "area": "333",
+        "measurements": null,
+        "agreed_amount": "10.00",
+        "advance_paid": "0.00",
+        "mefma_status": true,
+        "rp_name": "cna",
+        "rp_phone_number": "2312311115",
+        "co_name": null,
+        "co_phone_number": null,
+        "reference_name": "asd",
+        "fe_remarks": "ff",
+        "pms_registration_number": "ddd2",
+        "division": "abc",
+        "registration_status": true,
+        "registration_date": null,
+        "parent_bank_photo": "",
+        "installation_date": null,
+        "discom_status": "Pending",
+        "net_metering_status": "Pending",
+        "subsidy_status": "Pending",
+        "office_remarks": "",
+        "workflow_status": "Pending",
+        "created_at": "2026-02-14T04:08:59.670Z",
+        "created_by": [
+            "9999999999"
+        ]
+    }
+},
+{
+    "model": "solar_management.customersurvey",
+    "pk": 4,
+    "fields": {
+        "customer_name": "new customer",
+        "application_id": "WS-APP-00004",
+        "connection_type": "Domestic",
+        "sc_no": "9441055486112233",
+        "phase": "Single Phase",
+        "contracted_load": 0.0,
+        "feasibility_kw": 211.0,
+        "aadhar_no": "944105548612",
+        "pan_card": "ABCDE1234F",
+        "email": "pan@gmail.com",
+        "aadhar_linked_phone": "0000000000",
+        "bank_account_no": "",
+        "phone_number": "5451644546",
+        "roof_type": "Normal",
+        "roof_photo": "surveys/roofs/wesolar_2_back-logo_XmXbPC7.png",
+        "pan_card_photo": "",
+        "aadhar_photo": "",
+        "current_bill_photo": "",
+        "bank_account_photo": "",
+        "structure_type": "Normal",
+        "structure_height": 20.0,
+        "floors": null,
+        "gps_coordinates": "18.026529, 83.405365",
+        "area": "333",
+        "measurements": null,
+        "agreed_amount": "20.00",
+        "advance_paid": "20.00",
+        "mefma_status": true,
+        "rp_name": "cd",
+        "rp_phone_number": "2312311115",
+        "co_name": null,
+        "co_phone_number": null,
+        "reference_name": "",
+        "fe_remarks": "",
+        "pms_registration_number": "ddd2",
+        "division": "abc",
+        "registration_status": false,
+        "registration_date": null,
+        "parent_bank_photo": "",
+        "installation_date": null,
+        "discom_status": "Pending",
+        "net_metering_status": "Pending",
+        "subsidy_status": "Pending",
+        "office_remarks": "",
+        "workflow_status": "Completed",
+        "created_at": "2026-02-14T04:52:50.642Z",
+        "created_by": [
+            "9999999999"
+        ]
+    }
+},
+{
+    "model": "solar_management.customersurvey",
+    "pk": 5,
+    "fields": {
+        "customer_name": "test",
+        "application_id": "WS-APP-00005",
+        "connection_type": "Domestic",
+        "sc_no": "9441055486112233",
+        "phase": "Single Phase",
+        "contracted_load": 4.0,
+        "feasibility_kw": 100.0,
+        "aadhar_no": "944105548612",
+        "pan_card": "ABCDE1234F",
+        "email": "phanindrauddagiri05@gmail.com",
+        "aadhar_linked_phone": "0000000000",
+        "bank_account_no": "",
+        "phone_number": "9441055486",
+        "roof_type": "Plastic shed",
+        "roof_photo": "surveys/roofs/1.png",
+        "pan_card_photo": "",
+        "aadhar_photo": "",
+        "current_bill_photo": "",
+        "bank_account_photo": "",
+        "structure_type": "Normal",
+        "structure_height": 20.0,
+        "floors": null,
+        "gps_coordinates": "18.026536, 83.405411",
+        "area": "tedst",
+        "measurements": null,
+        "agreed_amount": "20.00",
+        "advance_paid": "0.04",
+        "mefma_status": false,
+        "rp_name": null,
+        "rp_phone_number": null,
+        "co_name": null,
+        "co_phone_number": null,
+        "reference_name": "asd",
+        "fe_remarks": "nn",
+        "pms_registration_number": "ddd2",
+        "division": "20",
+        "registration_status": true,
+        "registration_date": null,
+        "parent_bank_photo": "",
+        "installation_date": null,
+        "discom_status": "Pending",
+        "net_metering_status": "Pending",
+        "subsidy_status": "Pending",
+        "office_remarks": "",
+        "workflow_status": "Pending",
+        "created_at": "2026-03-01T04:10:22.348Z",
+        "created_by": [
+            "9999999999"
+        ]
+    }
+},
+{
+    "model": "solar_management.customersurvey",
+    "pk": 7,
+    "fields": {
+        "customer_name": "abcdd",
+        "application_id": "WS-APP-00007",
+        "connection_type": "Commercial",
+        "sc_no": "9441055486112233",
+        "phase": "Three Phase",
+        "contracted_load": 200.0,
+        "feasibility_kw": 20.0,
+        "aadhar_no": "944105548612",
+        "pan_card": "ABCDE1234F",
+        "email": "phanindrauddagiri05@gmail.com",
+        "aadhar_linked_phone": "0000000000",
+        "bank_account_no": "",
+        "phone_number": "9441055486",
+        "roof_type": "Cement shed",
+        "roof_photo": "surveys/roofs/infosys.jpg",
+        "pan_card_photo": "surveys/documents/WhatsApp_Image_2026-02-21_at_10.31.04_PM.jpeg",
+        "aadhar_photo": "surveys/documents/1.png",
+        "current_bill_photo": "surveys/documents/WhatsApp_Image_2026-02-20_at_10.24.58_PM.jpeg",
+        "bank_account_photo": "",
+        "structure_type": "Vertical",
+        "structure_height": 20.0,
+        "floors": null,
+        "gps_coordinates": "18.026160, 83.405230",
+        "area": "area",
+        "measurements": null,
+        "agreed_amount": "2000.00",
+        "advance_paid": "20.00",
+        "mefma_status": false,
+        "rp_name": null,
+        "rp_phone_number": null,
+        "co_name": null,
+        "co_phone_number": null,
+        "reference_name": "asd",
+        "fe_remarks": "mmm",
+        "pms_registration_number": "ddd2",
+        "division": "abc",
+        "registration_status": false,
+        "registration_date": null,
+        "parent_bank_photo": "",
+        "installation_date": null,
+        "discom_status": "Pending",
+        "net_metering_status": "Pending",
+        "subsidy_status": "Pending",
+        "office_remarks": "",
+        "workflow_status": "Pending",
+        "created_at": "2026-03-01T07:52:16.880Z",
+        "created_by": [
+            "9999999999"
+        ]
+    }
+},
+{
+    "model": "solar_management.customersurvey",
+    "pk": 8,
+    "fields": {
+        "customer_name": "mpq",
+        "application_id": "WS-APP-00008",
+        "connection_type": "Domestic",
+        "sc_no": "9441055486112233",
+        "phase": "Single Phase",
+        "contracted_load": 12.0,
+        "feasibility_kw": 20.0,
+        "aadhar_no": "944105548612",
+        "pan_card": "ABCDE1234F",
+        "email": "phanindrauddagiri05@gmail.com",
+        "aadhar_linked_phone": "0000000000",
+        "bank_account_no": "",
+        "phone_number": "9441055486",
+        "roof_type": "Cement shed",
+        "roof_photo": "surveys/roofs/WhatsApp_Image_2026-02-27_at_10.32.34_PM.jpeg",
+        "pan_card_photo": "surveys/documents/IBMDesign.jpg",
+        "aadhar_photo": "surveys/documents/WhatsApp_Image_2026-02-21_at_10.31.04_PM_4Jd2VTM.jpeg",
+        "current_bill_photo": "surveys/documents/1_E2y41rN.png",
+        "bank_account_photo": "",
+        "structure_type": "Horizontal",
+        "structure_height": 20.0,
+        "floors": null,
+        "gps_coordinates": "18.026160, 83.405230",
+        "area": "area",
+        "measurements": null,
+        "agreed_amount": "200.00",
+        "advance_paid": "0.03",
+        "mefma_status": false,
+        "rp_name": null,
+        "rp_phone_number": null,
+        "co_name": null,
+        "co_phone_number": null,
+        "reference_name": "asd",
+        "fe_remarks": "",
+        "pms_registration_number": "vss",
+        "division": "abc",
+        "registration_status": false,
+        "registration_date": null,
+        "parent_bank_photo": "",
+        "installation_date": "2026-03-24",
+        "discom_status": "Pending",
+        "net_metering_status": "Pending",
+        "subsidy_status": "Pending",
+        "office_remarks": "",
+        "workflow_status": "Completed",
+        "created_at": "2026-03-01T08:43:01.392Z",
+        "created_by": [
+            "9999999999"
+        ]
+    }
+},
+{
+    "model": "solar_management.customersurvey",
+    "pk": 10,
+    "fields": {
+        "customer_name": "qwer",
+        "application_id": "WS-APP-00010",
+        "connection_type": "Commercial",
+        "sc_no": "9441055486112233",
+        "phase": "Single Phase",
+        "contracted_load": 2000.0,
+        "feasibility_kw": 200.0,
+        "aadhar_no": "944105548612",
+        "pan_card": "ABCDE1234F",
+        "email": "qwer@gmail.com",
+        "aadhar_linked_phone": "0000000000",
+        "bank_account_no": "",
+        "phone_number": "9441055486",
+        "roof_type": "Normal",
+        "roof_photo": "surveys/roofs/Screenshot_2026-02-03_180936.png",
+        "pan_card_photo": "surveys/documents/Screenshot_2026-02-04_165329.png",
+        "aadhar_photo": "surveys/documents/Screenshot_2026-02-04_173709.png",
+        "current_bill_photo": "surveys/documents/Screenshot_2026-02-04_074648.png",
+        "bank_account_photo": "surveys/documents/Screenshot_2026-02-04_074830.png",
+        "structure_type": "Normal",
+        "structure_height": 200.0,
+        "floors": 5,
+        "gps_coordinates": "18.026583, 83.405209",
+        "area": "area",
+        "measurements": "mm513",
+        "agreed_amount": "2000.00",
+        "advance_paid": "300.00",
+        "mefma_status": false,
+        "rp_name": null,
+        "rp_phone_number": null,
+        "co_name": null,
+        "co_phone_number": null,
+        "reference_name": "test refer",
+        "fe_remarks": "",
+        "pms_registration_number": "ddd2",
+        "division": "bbb",
+        "registration_status": false,
+        "registration_date": null,
+        "parent_bank_photo": "surveys/documents/Screenshot_2026-02-04_080220.png",
+        "installation_date": "2026-03-23",
+        "discom_status": "Pending",
+        "net_metering_status": "Pending",
+        "subsidy_status": "Pending",
+        "office_remarks": "",
+        "workflow_status": "Completed",
+        "created_at": "2026-03-09T03:03:40.774Z",
+        "created_by": [
+            "9999999999"
+        ]
+    }
+},
+{
+    "model": "solar_management.customersurvey",
+    "pk": 11,
+    "fields": {
+        "customer_name": "testcase two sixty",
+        "application_id": "WS-APP-00011",
+        "connection_type": "Commercial",
+        "sc_no": "9441055486112233",
+        "phase": "Single Phase",
+        "contracted_load": 2000.0,
+        "feasibility_kw": 200.0,
+        "aadhar_no": "944105548612",
+        "pan_card": "ABCDE1234F",
+        "email": "testcase@gmail.com",
+        "aadhar_linked_phone": "9441055486",
+        "bank_account_no": "",
+        "phone_number": "9441055486",
+        "roof_type": "Normal",
+        "roof_photo": "surveys/roofs/Screenshot_2026-02-04_080220.png",
+        "pan_card_photo": "surveys/documents/Screenshot_2026-02-03_115357.png",
+        "aadhar_photo": "surveys/documents/Screenshot_2026-02-03_100910.png",
+        "current_bill_photo": "surveys/documents/Screenshot_2026-02-03_115229.png",
+        "bank_account_photo": "surveys/documents/Screenshot_2026-02-03_180936.png",
+        "structure_type": "Normal",
+        "structure_height": 200.0,
+        "floors": 2,
+        "gps_coordinates": "18.026583, 835209",
+        "area": "area",
+        "measurements": "mm513",
+        "agreed_amount": "2000.00",
+        "advance_paid": "500.00",
+        "mefma_status": false,
+        "rp_name": null,
+        "rp_phone_number": null,
+        "co_name": null,
+        "co_phone_number": null,
+        "reference_name": "test refer",
+        "fe_remarks": "",
+        "pms_registration_number": "2222",
+        "division": "abc",
+        "registration_status": false,
+        "registration_date": null,
+        "parent_bank_photo": "surveys/documents/Screenshot_2026-02-03_181249.png",
+        "installation_date": "2026-03-12",
+        "discom_status": "Completed",
+        "net_metering_status": "Pending",
+        "subsidy_status": "Pending",
+        "office_remarks": "",
+        "workflow_status": "Completed",
+        "created_at": "2026-03-09T03:06:36.569Z",
+        "created_by": [
+            "9999999999"
+        ]
+    }
+},
+{
+    "model": "solar_management.customersurvey",
+    "pk": 12,
+    "fields": {
+        "customer_name": "customer name",
+        "application_id": "WS-APP-00012",
+        "connection_type": "Domestic",
+        "sc_no": "9999999999999999",
+        "phase": "Three Phase",
+        "contracted_load": 200.0,
+        "feasibility_kw": 200.0,
+        "aadhar_no": "987654321098",
+        "pan_card": "ABCBC2345A",
+        "email": "customer@gmail.com",
+        "aadhar_linked_phone": "9639639639",
+        "bank_account_no": "",
+        "phone_number": null,
+        "roof_type": "Plastic shed",
+        "roof_photo": "",
+        "pan_card_photo": "",
+        "aadhar_photo": "",
+        "current_bill_photo": "",
+        "bank_account_photo": "",
+        "structure_type": "Normal",
+        "structure_height": 200.0,
+        "floors": 2,
+        "gps_coordinates": "18.026602, 83.405109",
+        "area": "Rajahmundry",
+        "measurements": "66*77",
+        "agreed_amount": "200.00",
+        "advance_paid": "10.00",
+        "mefma_status": false,
+        "rp_name": null,
+        "rp_phone_number": null,
+        "co_name": null,
+        "co_phone_number": null,
+        "reference_name": "cvbn",
+        "fe_remarks": "bjb",
+        "pms_registration_number": "cvbn",
+        "division": "hvh",
+        "registration_status": false,
+        "registration_date": null,
+        "parent_bank_photo": "",
+        "installation_date": null,
+        "discom_status": "Pending",
+        "net_metering_status": "Pending",
+        "subsidy_status": "Pending",
+        "office_remarks": "",
+        "workflow_status": "Pending",
+        "created_at": "2026-03-28T10:43:40.795Z",
+        "created_by": [
+            "9999999999"
+        ]
+    }
+},
+{
+    "model": "solar_management.installation",
+    "pk": 1,
+    "fields": {
+        "survey": 1,
+        "inverter_make": "hello",
+        "inverter_phase": "north",
+        "inverter_serial_number": "",
+        "inverter_serial_photo": "installations/inverters/Gemini_Generated_Image_68cl3c68cl3c68cl.png",
+        "inverter_acdb_photo": "installations/acdb/screencapture-aishwaryaxerox-in-checkout-summary-2026-01-23-18_00_03.png",
+        "panel_serial_numbers": "",
+        "panel_serial_photo": "installations/panels/WhatsApp_Image_2026-01-09_at_11.58.45_AM_1.jpeg",
+        "ac_cable_used": 12.0,
+        "dc_cable_used": 24.0,
+        "la_cable_used": 34.0,
+        "pipes_used": 23.0,
+        "leftover_materials": "crvr",
+        "warranty_claimed": true,
+        "app_installation_status": false,
+        "site_photos_with_customer": "installations/site/fast_copy_img3.jpeg",
+        "installer_remarks": "ce",
+        "customer_remarks": "vfr",
+        "customer_rating": 5,
+        "dc_voltage": 12.0,
+        "ac_voltage": 23.0,
+        "earthing_resistance": 34.0,
+        "panels_count": 0,
+        "structure_kit_type": "Normal",
+        "inverter_kw": 0.0,
+        "inverter_phase_type": "Single Phase",
+        "ac_cable_red": 0.0,
+        "ac_cable_black": 0.0,
+        "dc_cable_red_black": 0.0,
+        "la_cable_mtrs": 0.0,
+        "pipes_count": 0,
+        "earthing_kit_count": 0,
+        "acdb_count": 0,
+        "dcdb_count": 0,
+        "mc4_connectors_count": 0,
+        "long_l_bands_count": 0,
+        "short_l_bands_count": 0,
+        "t_bands_count": 0,
+        "tapes_red_count": 0,
+        "tapes_black_count": 0,
+        "tags_count": 0,
+        "nail_clamps_2side_count": 0,
+        "nail_clamps_1side_count": 0,
+        "anchor_hardener_count": 0,
+        "panels_used": 0,
+        "structure_kit_used": "Normal",
+        "inverter_kw_used": 0.0,
+        "inverter_phase_type_used": "Single Phase",
+        "ac_cable_red_used": 0.0,
+        "ac_cable_black_used": 0.0,
+        "dc_cable_red_black_used": 0.0,
+        "la_cable_mtrs_used": 0.0,
+        "pipes_count_used": 0,
+        "earthing_kit_count_used": 0,
+        "acdb_count_used": 0,
+        "dcdb_count_used": 0,
+        "mc4_connectors_count_used": 0,
+        "long_l_bands_count_used": 0,
+        "short_l_bands_count_used": 0,
+        "t_bands_count_used": 0,
+        "tapes_red_count_used": 0,
+        "tapes_black_count_used": 0,
+        "tags_count_used": 0,
+        "nail_clamps_2side_count_used": 0,
+        "nail_clamps_1side_count_used": 0,
+        "anchor_hardener_count_used": 0,
+        "timestamp": "2026-02-12T09:49:58.798Z",
+        "updated_by": [
+            "2222222222"
+        ]
+    }
+},
+{
+    "model": "solar_management.installation",
+    "pk": 2,
+    "fields": {
+        "survey": 2,
+        "inverter_make": "hello",
+        "inverter_phase": "north",
+        "inverter_serial_number": "",
+        "inverter_serial_photo": "installations/inverters/screencapture-127-0-0-1-8000-installation-update-2-2026-02-03-12_21_45.png",
+        "inverter_acdb_photo": "installations/acdb/screencapture-127-0-0-1-8000-installation-update-2-2026-02-03-12_21_45.png",
+        "panel_serial_numbers": "",
+        "panel_serial_photo": "installations/panels/screencapture-fastcopies-in-admin-core-pricingconfig-1-change-2026-_fKjP7VZ.png",
+        "ac_cable_used": 12.0,
+        "dc_cable_used": 23.0,
+        "la_cable_used": 20.0,
+        "pipes_used": 30.0,
+        "leftover_materials": "nkjn",
+        "warranty_claimed": true,
+        "app_installation_status": false,
+        "site_photos_with_customer": "installations/site/Gemini_Generated_Image_oqhwcdoqhwcdoqhw.png",
+        "installer_remarks": "vdvd",
+        "customer_remarks": "f3fw",
+        "customer_rating": 5,
+        "dc_voltage": 10.02,
+        "ac_voltage": 20.0,
+        "earthing_resistance": 20.0,
+        "panels_count": 0,
+        "structure_kit_type": "Normal",
+        "inverter_kw": 0.0,
+        "inverter_phase_type": "Single Phase",
+        "ac_cable_red": 0.0,
+        "ac_cable_black": 0.0,
+        "dc_cable_red_black": 0.0,
+        "la_cable_mtrs": 0.0,
+        "pipes_count": 0,
+        "earthing_kit_count": 0,
+        "acdb_count": 0,
+        "dcdb_count": 0,
+        "mc4_connectors_count": 0,
+        "long_l_bands_count": 0,
+        "short_l_bands_count": 0,
+        "t_bands_count": 0,
+        "tapes_red_count": 0,
+        "tapes_black_count": 0,
+        "tags_count": 0,
+        "nail_clamps_2side_count": 0,
+        "nail_clamps_1side_count": 0,
+        "anchor_hardener_count": 0,
+        "panels_used": 0,
+        "structure_kit_used": "Normal",
+        "inverter_kw_used": 0.0,
+        "inverter_phase_type_used": "Single Phase",
+        "ac_cable_red_used": 0.0,
+        "ac_cable_black_used": 0.0,
+        "dc_cable_red_black_used": 0.0,
+        "la_cable_mtrs_used": 0.0,
+        "pipes_count_used": 0,
+        "earthing_kit_count_used": 0,
+        "acdb_count_used": 0,
+        "dcdb_count_used": 0,
+        "mc4_connectors_count_used": 0,
+        "long_l_bands_count_used": 0,
+        "short_l_bands_count_used": 0,
+        "t_bands_count_used": 0,
+        "tapes_red_count_used": 0,
+        "tapes_black_count_used": 0,
+        "tags_count_used": 0,
+        "nail_clamps_2side_count_used": 0,
+        "nail_clamps_1side_count_used": 0,
+        "anchor_hardener_count_used": 0,
+        "timestamp": "2026-02-12T17:53:16.231Z",
+        "updated_by": [
+            "2222222222"
+        ]
+    }
+},
+{
+    "model": "solar_management.installation",
+    "pk": 3,
+    "fields": {
+        "survey": 4,
+        "inverter_make": "new one",
+        "inverter_phase": "Three Phase",
+        "inverter_serial_number": "2223532b",
+        "inverter_serial_photo": "installations/inverters/wesolar_2_back-logo.png",
+        "inverter_acdb_photo": "installations/acdb/wesolar_2_back-logo.png",
+        "panel_serial_numbers": "254233",
+        "panel_serial_photo": "installations/panels/wesolar_2_back-logo.png",
+        "ac_cable_used": null,
+        "dc_cable_used": null,
+        "la_cable_used": 50.0,
+        "pipes_used": 40.0,
+        "leftover_materials": "mmm",
+        "warranty_claimed": true,
+        "app_installation_status": true,
+        "site_photos_with_customer": "installations/site/wesolar_2_back-logo.png",
+        "installer_remarks": "xcc",
+        "customer_remarks": "nkk",
+        "customer_rating": 5,
+        "dc_voltage": 0.02,
+        "ac_voltage": 0.03,
+        "earthing_resistance": 0.036,
+        "panels_count": 14,
+        "structure_kit_type": "Normal",
+        "inverter_kw": 0.01,
+        "inverter_phase_type": "Single Phase",
+        "ac_cable_red": 0.01,
+        "ac_cable_black": 0.01,
+        "dc_cable_red_black": 0.0,
+        "la_cable_mtrs": 0.0,
+        "pipes_count": 10,
+        "earthing_kit_count": 20,
+        "acdb_count": 15,
+        "dcdb_count": 0,
+        "mc4_connectors_count": 0,
+        "long_l_bands_count": 0,
+        "short_l_bands_count": 0,
+        "t_bands_count": 0,
+        "tapes_red_count": 0,
+        "tapes_black_count": 0,
+        "tags_count": 0,
+        "nail_clamps_2side_count": 0,
+        "nail_clamps_1side_count": 0,
+        "anchor_hardener_count": 0,
+        "panels_used": 2,
+        "structure_kit_used": "Normal",
+        "inverter_kw_used": 0.0,
+        "inverter_phase_type_used": "Single Phase",
+        "ac_cable_red_used": 0.01,
+        "ac_cable_black_used": 0.0,
+        "dc_cable_red_black_used": 0.0,
+        "la_cable_mtrs_used": 0.0,
+        "pipes_count_used": 5,
+        "earthing_kit_count_used": 20,
+        "acdb_count_used": 14,
+        "dcdb_count_used": 0,
+        "mc4_connectors_count_used": 0,
+        "long_l_bands_count_used": 0,
+        "short_l_bands_count_used": 0,
+        "t_bands_count_used": 0,
+        "tapes_red_count_used": 0,
+        "tapes_black_count_used": 0,
+        "tags_count_used": 0,
+        "nail_clamps_2side_count_used": 0,
+        "nail_clamps_1side_count_used": 0,
+        "anchor_hardener_count_used": 0,
+        "timestamp": "2026-02-14T05:09:31.679Z",
+        "updated_by": [
+            "admin"
+        ]
+    }
+},
+{
+    "model": "solar_management.installation",
+    "pk": 4,
+    "fields": {
+        "survey": 10,
+        "inverter_make": "new one",
+        "inverter_phase": "Single Phase",
+        "inverter_serial_number": "2223532b",
+        "inverter_serial_photo": "",
+        "inverter_acdb_photo": "",
+        "panel_serial_numbers": "254233",
+        "panel_serial_photo": "",
+        "ac_cable_used": null,
+        "dc_cable_used": null,
+        "la_cable_used": 0.0,
+        "pipes_used": 0.0,
+        "leftover_materials": "",
+        "warranty_claimed": true,
+        "app_installation_status": true,
+        "site_photos_with_customer": "",
+        "installer_remarks": "m m",
+        "customer_remarks": "mnmnm",
+        "customer_rating": 5,
+        "dc_voltage": 0.03,
+        "ac_voltage": 20.0,
+        "earthing_resistance": 5.0,
+        "panels_count": 0,
+        "structure_kit_type": "Normal",
+        "inverter_kw": 0.0,
+        "inverter_phase_type": "Single Phase",
+        "ac_cable_red": 0.0,
+        "ac_cable_black": 0.0,
+        "dc_cable_red_black": 0.0,
+        "la_cable_mtrs": 0.0,
+        "pipes_count": 0,
+        "earthing_kit_count": 0,
+        "acdb_count": 0,
+        "dcdb_count": 0,
+        "mc4_connectors_count": 0,
+        "long_l_bands_count": 0,
+        "short_l_bands_count": 0,
+        "t_bands_count": 0,
+        "tapes_red_count": 0,
+        "tapes_black_count": 0,
+        "tags_count": 0,
+        "nail_clamps_2side_count": 0,
+        "nail_clamps_1side_count": 0,
+        "anchor_hardener_count": 0,
+        "panels_used": 0,
+        "structure_kit_used": "Normal",
+        "inverter_kw_used": 0.0,
+        "inverter_phase_type_used": "Single Phase",
+        "ac_cable_red_used": 0.0,
+        "ac_cable_black_used": 0.0,
+        "dc_cable_red_black_used": 0.0,
+        "la_cable_mtrs_used": 0.0,
+        "pipes_count_used": 0,
+        "earthing_kit_count_used": 0,
+        "acdb_count_used": 0,
+        "dcdb_count_used": 0,
+        "mc4_connectors_count_used": 0,
+        "long_l_bands_count_used": 0,
+        "short_l_bands_count_used": 0,
+        "t_bands_count_used": 0,
+        "tapes_red_count_used": 0,
+        "tapes_black_count_used": 0,
+        "tags_count_used": 0,
+        "nail_clamps_2side_count_used": 0,
+        "nail_clamps_1side_count_used": 0,
+        "anchor_hardener_count_used": 0,
+        "timestamp": "2026-03-23T13:53:44.405Z",
+        "updated_by": [
+            "2222222222"
+        ]
+    }
+},
+{
+    "model": "solar_management.installation",
+    "pk": 5,
+    "fields": {
+        "survey": 8,
+        "inverter_make": "ten",
+        "inverter_phase": "Single Phase",
+        "inverter_serial_number": "2223533",
+        "inverter_serial_photo": "",
+        "inverter_acdb_photo": "",
+        "panel_serial_numbers": "254233",
+        "panel_serial_photo": "",
+        "ac_cable_used": null,
+        "dc_cable_used": null,
+        "la_cable_used": 0.0,
+        "pipes_used": 0.0,
+        "leftover_materials": "hjbjhb",
+        "warranty_claimed": true,
+        "app_installation_status": true,
+        "site_photos_with_customer": "",
+        "installer_remarks": "jhvv",
+        "customer_remarks": "dcfcf",
+        "customer_rating": 5,
+        "dc_voltage": 2.0,
+        "ac_voltage": 30.0,
+        "earthing_resistance": 50.0,
+        "panels_count": 10,
+        "structure_kit_type": "Normal",
+        "inverter_kw": 20.0,
+        "inverter_phase_type": "Single Phase",
+        "ac_cable_red": 0.5,
+        "ac_cable_black": 6.0,
+        "dc_cable_red_black": 0.0,
+        "la_cable_mtrs": 0.0,
+        "pipes_count": 0,
+        "earthing_kit_count": 0,
+        "acdb_count": 0,
+        "dcdb_count": 0,
+        "mc4_connectors_count": 0,
+        "long_l_bands_count": 0,
+        "short_l_bands_count": 0,
+        "t_bands_count": 0,
+        "tapes_red_count": 0,
+        "tapes_black_count": 0,
+        "tags_count": 0,
+        "nail_clamps_2side_count": 0,
+        "nail_clamps_1side_count": 0,
+        "anchor_hardener_count": 0,
+        "panels_used": 5,
+        "structure_kit_used": "Normal",
+        "inverter_kw_used": 0.05,
+        "inverter_phase_type_used": "Single Phase",
+        "ac_cable_red_used": 0.2,
+        "ac_cable_black_used": 0.5,
+        "dc_cable_red_black_used": 0.0,
+        "la_cable_mtrs_used": 0.0,
+        "pipes_count_used": 0,
+        "earthing_kit_count_used": 0,
+        "acdb_count_used": 0,
+        "dcdb_count_used": 0,
+        "mc4_connectors_count_used": 0,
+        "long_l_bands_count_used": 0,
+        "short_l_bands_count_used": 0,
+        "t_bands_count_used": 0,
+        "tapes_red_count_used": 0,
+        "tapes_black_count_used": 0,
+        "tags_count_used": 0,
+        "nail_clamps_2side_count_used": 0,
+        "nail_clamps_1side_count_used": 0,
+        "anchor_hardener_count_used": 0,
+        "timestamp": "2026-03-24T16:43:11.099Z",
+        "updated_by": [
+            "2222222222"
+        ]
+    }
+},
+{
+    "model": "solar_management.installation",
+    "pk": 6,
+    "fields": {
+        "survey": 11,
+        "inverter_make": "new one",
+        "inverter_phase": "Three Phase",
+        "inverter_serial_number": "2223532b",
+        "inverter_serial_photo": "",
+        "inverter_acdb_photo": "",
+        "panel_serial_numbers": "",
+        "panel_serial_photo": "",
+        "ac_cable_used": null,
+        "dc_cable_used": null,
+        "la_cable_used": 0.0,
+        "pipes_used": 0.0,
+        "leftover_materials": "",
+        "warranty_claimed": false,
+        "app_installation_status": false,
+        "site_photos_with_customer": "",
+        "installer_remarks": "",
+        "customer_remarks": "",
+        "customer_rating": 5,
+        "dc_voltage": 0.0,
+        "ac_voltage": 0.0,
+        "earthing_resistance": 0.0,
+        "panels_count": 0,
+        "structure_kit_type": "Normal",
+        "inverter_kw": 0.0,
+        "inverter_phase_type": "Single Phase",
+        "ac_cable_red": 0.0,
+        "ac_cable_black": 0.0,
+        "dc_cable_red_black": 0.0,
+        "la_cable_mtrs": 0.0,
+        "pipes_count": 0,
+        "earthing_kit_count": 0,
+        "acdb_count": 0,
+        "dcdb_count": 0,
+        "mc4_connectors_count": 0,
+        "long_l_bands_count": 0,
+        "short_l_bands_count": 0,
+        "t_bands_count": 0,
+        "tapes_red_count": 0,
+        "tapes_black_count": 0,
+        "tags_count": 0,
+        "nail_clamps_2side_count": 0,
+        "nail_clamps_1side_count": 0,
+        "anchor_hardener_count": 0,
+        "panels_used": 0,
+        "structure_kit_used": "Normal",
+        "inverter_kw_used": 0.0,
+        "inverter_phase_type_used": "Single Phase",
+        "ac_cable_red_used": 0.0,
+        "ac_cable_black_used": 0.0,
+        "dc_cable_red_black_used": 0.0,
+        "la_cable_mtrs_used": 0.0,
+        "pipes_count_used": 0,
+        "earthing_kit_count_used": 0,
+        "acdb_count_used": 0,
+        "dcdb_count_used": 0,
+        "mc4_connectors_count_used": 0,
+        "long_l_bands_count_used": 0,
+        "short_l_bands_count_used": 0,
+        "t_bands_count_used": 0,
+        "tapes_red_count_used": 0,
+        "tapes_black_count_used": 0,
+        "tags_count_used": 0,
+        "nail_clamps_2side_count_used": 0,
+        "nail_clamps_1side_count_used": 0,
+        "anchor_hardener_count_used": 0,
+        "timestamp": "2026-03-28T10:39:44.797Z",
+        "updated_by": [
+            "2121212121"
+        ]
+    }
+},
+{
+    "model": "solar_management.installationphoto",
+    "pk": 37,
+    "fields": {
+        "installation": 3,
+        "photo": "installations/site_additional/We_Soalr.png",
+        "photo_type": "inverter_serial",
+        "uploaded_at": "2026-03-23T13:50:49.204Z"
+    }
+},
+{
+    "model": "solar_management.installationphoto",
+    "pk": 38,
+    "fields": {
+        "installation": 3,
+        "photo": "installations/site_additional/We_Soalr_EIACYVR.png",
+        "photo_type": "inverter_acdb",
+        "uploaded_at": "2026-03-23T13:50:49.262Z"
+    }
+},
+{
+    "model": "solar_management.installationphoto",
+    "pk": 39,
+    "fields": {
+        "installation": 3,
+        "photo": "installations/site_additional/We_Soalr_MGxmNWX.png",
+        "photo_type": "panel_serial",
+        "uploaded_at": "2026-03-23T13:50:49.286Z"
+    }
+},
+{
+    "model": "solar_management.installationphoto",
+    "pk": 40,
+    "fields": {
+        "installation": 3,
+        "photo": "installations/site_additional/We_Soalr_NzejxM7.png",
+        "photo_type": "site_with_customer",
+        "uploaded_at": "2026-03-23T13:50:49.313Z"
+    }
+},
+{
+    "model": "solar_management.installationphoto",
+    "pk": 41,
+    "fields": {
+        "installation": 3,
+        "photo": "installations/site_additional/We_Soalr_pSAQmU4.png",
+        "photo_type": "additional",
+        "uploaded_at": "2026-03-23T13:50:49.336Z"
+    }
+},
+{
+    "model": "solar_management.installationphoto",
+    "pk": 42,
+    "fields": {
+        "installation": 4,
+        "photo": "installations/site_additional/We_Soalr_1_Q31Zaug.png",
+        "photo_type": "inverter_serial",
+        "uploaded_at": "2026-03-23T13:53:44.469Z"
+    }
+},
+{
+    "model": "solar_management.installationphoto",
+    "pk": 43,
+    "fields": {
+        "installation": 4,
+        "photo": "installations/site_additional/We_Soalr_1_RXiNRif.png",
+        "photo_type": "inverter_acdb",
+        "uploaded_at": "2026-03-23T13:53:44.495Z"
+    }
+},
+{
+    "model": "solar_management.installationphoto",
+    "pk": 44,
+    "fields": {
+        "installation": 4,
+        "photo": "installations/site_additional/We_Soalr_1_Js4m4fv.png",
+        "photo_type": "panel_serial",
+        "uploaded_at": "2026-03-23T13:53:44.522Z"
+    }
+},
+{
+    "model": "solar_management.installationphoto",
+    "pk": 45,
+    "fields": {
+        "installation": 4,
+        "photo": "installations/site_additional/We_Soalr_JgypONG.png",
+        "photo_type": "site_with_customer",
+        "uploaded_at": "2026-03-23T13:53:44.555Z"
+    }
+},
+{
+    "model": "solar_management.installationphoto",
+    "pk": 46,
+    "fields": {
+        "installation": 4,
+        "photo": "installations/site_additional/We_Soalr_1_zXp82oD.png",
+        "photo_type": "additional",
+        "uploaded_at": "2026-03-23T13:53:44.587Z"
+    }
+},
+{
+    "model": "solar_management.installationphoto",
+    "pk": 47,
+    "fields": {
+        "installation": 5,
+        "photo": "installations/site_additional/We_Soalr_qdTbW4j.png",
+        "photo_type": "inverter_serial",
+        "uploaded_at": "2026-03-24T16:43:11.201Z"
+    }
+},
+{
+    "model": "solar_management.installationphoto",
+    "pk": 48,
+    "fields": {
+        "installation": 5,
+        "photo": "installations/site_additional/We_Soalr_h56VxW7.png",
+        "photo_type": "inverter_acdb",
+        "uploaded_at": "2026-03-24T16:43:11.244Z"
+    }
+},
+{
+    "model": "solar_management.installationphoto",
+    "pk": 49,
+    "fields": {
+        "installation": 5,
+        "photo": "installations/site_additional/We_Soalr_xp0uhOr.png",
+        "photo_type": "panel_serial",
+        "uploaded_at": "2026-03-24T16:43:11.279Z"
+    }
+},
+{
+    "model": "solar_management.installationphoto",
+    "pk": 50,
+    "fields": {
+        "installation": 5,
+        "photo": "installations/site_additional/We_Soalr_jyVTAmh.png",
+        "photo_type": "site_with_customer",
+        "uploaded_at": "2026-03-24T16:43:11.309Z"
+    }
+},
+{
+    "model": "solar_management.installationphoto",
+    "pk": 51,
+    "fields": {
+        "installation": 5,
+        "photo": "installations/site_additional/We_Soalr_bSE89uH.png",
+        "photo_type": "additional",
+        "uploaded_at": "2026-03-24T16:43:11.339Z"
+    }
+},
+{
+    "model": "solar_management.installationphoto",
+    "pk": 52,
+    "fields": {
+        "installation": 6,
+        "photo": "installations/site_additional/We_Soalr_1_uDCmMyV.png",
+        "photo_type": "inverter_acdb",
+        "uploaded_at": "2026-03-28T10:39:44.831Z"
+    }
+},
+{
+    "model": "solar_management.installationphoto",
+    "pk": 53,
+    "fields": {
+        "installation": 6,
+        "photo": "installations/site_additional/FastCopies_Flyer_ZqeHF9h.png",
+        "photo_type": "panel_serial",
+        "uploaded_at": "2026-03-28T10:44:16.020Z"
+    }
+},
+{
+    "model": "solar_management.surveymedia",
+    "pk": 1,
+    "fields": {
+        "survey": 12,
+        "file": "surveys/media/We_Soalr.png",
+        "media_type": "roof",
+        "uploaded_at": "2026-03-28T10:43:40.841Z"
+    }
+},
+{
+    "model": "solar_management.surveymedia",
+    "pk": 2,
+    "fields": {
+        "survey": 12,
+        "file": "surveys/media/We_Soalr_XeSG7u8.png",
+        "media_type": "pan_card",
+        "uploaded_at": "2026-03-28T10:43:40.857Z"
+    }
+},
+{
+    "model": "solar_management.surveymedia",
+    "pk": 3,
+    "fields": {
+        "survey": 12,
+        "file": "surveys/media/We_Soalr_HkqcZfk.png",
+        "media_type": "aadhar",
+        "uploaded_at": "2026-03-28T10:43:40.868Z"
+    }
+},
+{
+    "model": "solar_management.surveymedia",
+    "pk": 4,
+    "fields": {
+        "survey": 12,
+        "file": "surveys/media/We_Soalr_HA3HSv9.png",
+        "media_type": "current_bill",
+        "uploaded_at": "2026-03-28T10:43:40.883Z"
+    }
+},
+{
+    "model": "solar_management.surveymedia",
+    "pk": 5,
+    "fields": {
+        "survey": 12,
+        "file": "surveys/media/We_Soalr_pgIJGLt.png",
+        "media_type": "bank_account",
+        "uploaded_at": "2026-03-28T10:43:40.896Z"
+    }
+},
+{
+    "model": "solar_management.profilemedia",
+    "pk": 1,
+    "fields": {
+        "profile": 14,
+        "file": "profiles/media/FastCopies_Presentation.docx",
+        "media_type": "aadhar",
+        "uploaded_at": "2026-03-22T05:43:52.969Z"
+    }
+},
+{
+    "model": "solar_management.bankdetails",
+    "pk": 1,
+    "fields": {
+        "survey": 1,
+        "parent_bank": "sbi",
+        "parent_bank_ac_no": "123412341234",
+        "loan_applied_bank": "abc",
+        "loan_applied_ifsc": "12341234123",
+        "loan_applied_ac_no": "123456",
+        "manager_number": null,
+        "loan_pending_status": "Pending",
+        "first_loan_amount": "0.00",
+        "first_loan_utr": "",
+        "first_loan_date": null,
+        "second_loan_amount": "0.00",
+        "second_loan_utr": "",
+        "second_loan_date": null
+    }
+},
+{
+    "model": "solar_management.bankdetails",
+    "pk": 2,
+    "fields": {
+        "survey": 2,
+        "parent_bank": "sbi",
+        "parent_bank_ac_no": "123412341234",
+        "loan_applied_bank": "abc",
+        "loan_applied_ifsc": "12341234123",
+        "loan_applied_ac_no": "123456",
+        "manager_number": null,
+        "loan_pending_status": "Pending",
+        "first_loan_amount": "2000.00",
+        "first_loan_utr": "",
+        "first_loan_date": null,
+        "second_loan_amount": "2000.00",
+        "second_loan_utr": "",
+        "second_loan_date": null
+    }
+},
+{
+    "model": "solar_management.bankdetails",
+    "pk": 3,
+    "fields": {
+        "survey": 3,
+        "parent_bank": "vv",
+        "parent_bank_ac_no": "123412341234",
+        "loan_applied_bank": "abc",
+        "loan_applied_ifsc": "12341234123",
+        "loan_applied_ac_no": "123456",
+        "manager_number": "",
+        "loan_pending_status": "Pending",
+        "first_loan_amount": "0.00",
+        "first_loan_utr": "",
+        "first_loan_date": null,
+        "second_loan_amount": "0.00",
+        "second_loan_utr": "",
+        "second_loan_date": null
+    }
+},
+{
+    "model": "solar_management.bankdetails",
+    "pk": 4,
+    "fields": {
+        "survey": 4,
+        "parent_bank": "sbi",
+        "parent_bank_ac_no": "123412341234",
+        "loan_applied_bank": "abc",
+        "loan_applied_ifsc": "12341234123",
+        "loan_applied_ac_no": "1234563333",
+        "manager_number": "",
+        "loan_pending_status": "Pending",
+        "first_loan_amount": "0.00",
+        "first_loan_utr": "",
+        "first_loan_date": null,
+        "second_loan_amount": "0.00",
+        "second_loan_utr": "",
+        "second_loan_date": null
+    }
+},
+{
+    "model": "solar_management.bankdetails",
+    "pk": 5,
+    "fields": {
+        "survey": 5,
+        "parent_bank": "sbi",
+        "parent_bank_ac_no": "123412341234",
+        "loan_applied_bank": "abc",
+        "loan_applied_ifsc": "12341234123",
+        "loan_applied_ac_no": "1234563333",
+        "manager_number": null,
+        "loan_pending_status": "Pending",
+        "first_loan_amount": "0.00",
+        "first_loan_utr": "",
+        "first_loan_date": null,
+        "second_loan_amount": "0.00",
+        "second_loan_utr": "",
+        "second_loan_date": null
+    }
+},
+{
+    "model": "solar_management.bankdetails",
+    "pk": 7,
+    "fields": {
+        "survey": 7,
+        "parent_bank": "hdfc",
+        "parent_bank_ac_no": "123412341234",
+        "loan_applied_bank": "",
+        "loan_applied_ifsc": "",
+        "loan_applied_ac_no": "123456",
+        "manager_number": null,
+        "loan_pending_status": "Pending",
+        "first_loan_amount": "0.00",
+        "first_loan_utr": "",
+        "first_loan_date": null,
+        "second_loan_amount": "0.00",
+        "second_loan_utr": "",
+        "second_loan_date": null
+    }
+},
+{
+    "model": "solar_management.bankdetails",
+    "pk": 8,
+    "fields": {
+        "survey": 8,
+        "parent_bank": "sbi",
+        "parent_bank_ac_no": "123412341234",
+        "loan_applied_bank": "",
+        "loan_applied_ifsc": "",
+        "loan_applied_ac_no": "",
+        "manager_number": null,
+        "loan_pending_status": "Pending",
+        "first_loan_amount": "0.00",
+        "first_loan_utr": "",
+        "first_loan_date": null,
+        "second_loan_amount": "0.00",
+        "second_loan_utr": "",
+        "second_loan_date": null
+    }
+},
+{
+    "model": "solar_management.bankdetails",
+    "pk": 12,
+    "fields": {
+        "survey": 10,
+        "parent_bank": "sbi",
+        "parent_bank_ac_no": "123412341234",
+        "loan_applied_bank": "abc",
+        "loan_applied_ifsc": "12341234123",
+        "loan_applied_ac_no": "1234563333",
+        "manager_number": null,
+        "loan_pending_status": "Pending",
+        "first_loan_amount": "0.00",
+        "first_loan_utr": "",
+        "first_loan_date": null,
+        "second_loan_amount": "0.00",
+        "second_loan_utr": "",
+        "second_loan_date": null
+    }
+},
+{
+    "model": "solar_management.bankdetails",
+    "pk": 13,
+    "fields": {
+        "survey": 11,
+        "parent_bank": "sbi",
+        "parent_bank_ac_no": "123412341234",
+        "loan_applied_bank": "abcd",
+        "loan_applied_ifsc": "12341234224",
+        "loan_applied_ac_no": "1234563336",
+        "manager_number": null,
+        "loan_pending_status": "Pending",
+        "first_loan_amount": "1000.00",
+        "first_loan_utr": "",
+        "first_loan_date": null,
+        "second_loan_amount": "50.00",
+        "second_loan_utr": "",
+        "second_loan_date": null
+    }
+},
+{
+    "model": "solar_management.bankdetails",
+    "pk": 14,
+    "fields": {
+        "survey": 12,
+        "parent_bank": "cwdc",
+        "parent_bank_ac_no": "1235646665",
+        "loan_applied_bank": "",
+        "loan_applied_ifsc": "",
+        "loan_applied_ac_no": "",
+        "manager_number": null,
+        "loan_pending_status": "Pending",
+        "first_loan_amount": "0.00",
+        "first_loan_utr": "",
+        "first_loan_date": null,
+        "second_loan_amount": "0.00",
+        "second_loan_utr": "",
+        "second_loan_date": null
+    }
+},
+{
+    "model": "solar_management.enquiry",
+    "pk": 1,
+    "fields": {
+        "name": "Uddagiri Phanindra",
+        "mobile_number": "9441055486",
+        "address": "2-132/ Bus Stop Center/ Cheepurupalli",
+        "email": "phanindrauddagiri05@gmail.com",
+        "remarks": null,
+        "created_at": "2026-02-12T12:39:08.728Z"
+    }
+},
+{
+    "model": "solar_management.enquiry",
+    "pk": 2,
+    "fields": {
+        "name": "deva",
+        "mobile_number": "9876543210",
+        "address": "kghh",
+        "email": "Deva@gmail.com",
+        "remarks": null,
+        "created_at": "2026-03-06T02:17:04.021Z"
+    }
+},
+{
+    "model": "solar_management.enquiry",
+    "pk": 3,
+    "fields": {
+        "name": "fff",
+        "mobile_number": "1233212321",
+        "address": "fds",
+        "email": "ffg@gmail.com",
+        "remarks": null,
+        "created_at": "2026-03-09T05:28:42.527Z"
+    }
+},
+{
+    "model": "solar_management.sitesettings",
+    "pk": 1,
+    "fields": {
+        "maintenance_mode": false
+    }
+}
+]
