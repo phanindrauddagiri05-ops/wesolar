@@ -364,10 +364,26 @@
                                 {% if request.user.is_superuser or request.user.is_staff or request.user.userprofile.role == 'Admin' or request.user.userprofile.role == 'Office' or request.user.userprofile.role == 'Field Engineer' %}
                                     <span class="font-monospace text-wrap" style="word-break: break-all;">{{ customer.aadhar_no }}</span>
                                     {% for media in survey_media.aadhar %}
-                                    <img src="{{ media.file.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="Aadhaar {{ forloop.counter }}">
+                                        {% if ".pdf" in media.file.name|lower %}
+                                        <a href="{{ media.file.url }}" target="_blank" class="text-decoration-none" title="View PDF Document">
+                                            <div class="d-flex align-items-center justify-content-center bg-light rounded shadow-sm border hover-overlay" style="height: 50px; width: 80px; transition: 0.2s;">
+                                                <i class="bi bi-filetype-pdf text-danger fs-3"></i>
+                                            </div>
+                                        </a>
+                                        {% else %}
+                                        <img src="{{ media.file.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="Aadhaar {{ forloop.counter }}">
+                                        {% endif %}
                                     {% endfor %}
                                     {% if not survey_media.aadhar and customer.aadhar_photo %}
-                                    <img src="{{ customer.aadhar_photo.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="Aadhaar (Legacy)">
+                                        {% if ".pdf" in customer.aadhar_photo.name|lower %}
+                                        <a href="{{ customer.aadhar_photo.url }}" target="_blank" class="text-decoration-none" title="View PDF Document">
+                                            <div class="d-flex align-items-center justify-content-center bg-light rounded shadow-sm border hover-overlay" style="height: 50px; width: 80px; transition: 0.2s;">
+                                                <i class="bi bi-filetype-pdf text-danger fs-3"></i>
+                                            </div>
+                                        </a>
+                                        {% else %}
+                                        <img src="{{ customer.aadhar_photo.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="Aadhaar (Legacy)">
+                                        {% endif %}
                                     {% endif %}
                                 {% else %}
                                     <span class="font-monospace">{{ customer.masked_aadhar }}</span>
@@ -382,10 +398,26 @@
                                 {% if request.user.is_superuser or request.user.is_staff or request.user.userprofile.role == 'Admin' or request.user.userprofile.role == 'Office' or request.user.userprofile.role == 'Field Engineer' %}
                                     <span class="text-uppercase">{{ customer.pan_card }}</span>
                                     {% for media in survey_media.pan_card %}
-                                    <img src="{{ media.file.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="PAN {{ forloop.counter }}">
+                                        {% if ".pdf" in media.file.name|lower %}
+                                        <a href="{{ media.file.url }}" target="_blank" class="text-decoration-none" title="View PDF Document">
+                                            <div class="d-flex align-items-center justify-content-center bg-light rounded shadow-sm border hover-overlay" style="height: 50px; width: 80px; transition: 0.2s;">
+                                                <i class="bi bi-filetype-pdf text-danger fs-3"></i>
+                                            </div>
+                                        </a>
+                                        {% else %}
+                                        <img src="{{ media.file.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="PAN {{ forloop.counter }}">
+                                        {% endif %}
                                     {% endfor %}
                                     {% if not survey_media.pan_card and customer.pan_card_photo %}
-                                    <img src="{{ customer.pan_card_photo.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="PAN (Legacy)">
+                                        {% if ".pdf" in customer.pan_card_photo.name|lower %}
+                                        <a href="{{ customer.pan_card_photo.url }}" target="_blank" class="text-decoration-none" title="View PDF Document">
+                                            <div class="d-flex align-items-center justify-content-center bg-light rounded shadow-sm border hover-overlay" style="height: 50px; width: 80px; transition: 0.2s;">
+                                                <i class="bi bi-filetype-pdf text-danger fs-3"></i>
+                                            </div>
+                                        </a>
+                                        {% else %}
+                                        <img src="{{ customer.pan_card_photo.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="PAN (Legacy)">
+                                        {% endif %}
                                     {% endif %}
                                 {% else %}
 
@@ -402,10 +434,26 @@
                                 <span>{{ customer.bank_account_no|default:"-" }}</span>
                                 {% if request.user.is_superuser or request.user.is_staff or request.user.userprofile.role == 'Admin' or request.user.userprofile.role == 'Office' or request.user.userprofile.role == 'Field Engineer' %}
                                     {% for media in survey_media.bank_account %}
-                                    <img src="{{ media.file.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="Bank Account {{ forloop.counter }}">
+                                        {% if ".pdf" in media.file.name|lower %}
+                                        <a href="{{ media.file.url }}" target="_blank" class="text-decoration-none" title="View PDF Document">
+                                            <div class="d-flex align-items-center justify-content-center bg-light rounded shadow-sm border hover-overlay" style="height: 50px; width: 80px; transition: 0.2s;">
+                                                <i class="bi bi-filetype-pdf text-danger fs-3"></i>
+                                            </div>
+                                        </a>
+                                        {% else %}
+                                        <img src="{{ media.file.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="Bank Account {{ forloop.counter }}">
+                                        {% endif %}
                                     {% endfor %}
                                     {% if not survey_media.bank_account and customer.bank_account_photo %}
-                                    <img src="{{ customer.bank_account_photo.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="Bank Account (Legacy)">
+                                        {% if ".pdf" in customer.bank_account_photo.name|lower %}
+                                        <a href="{{ customer.bank_account_photo.url }}" target="_blank" class="text-decoration-none" title="View PDF Document">
+                                            <div class="d-flex align-items-center justify-content-center bg-light rounded shadow-sm border hover-overlay" style="height: 50px; width: 80px; transition: 0.2s;">
+                                                <i class="bi bi-filetype-pdf text-danger fs-3"></i>
+                                            </div>
+                                        </a>
+                                        {% else %}
+                                        <img src="{{ customer.bank_account_photo.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="Bank Account (Legacy)">
+                                        {% endif %}
                                     {% endif %}
                                 {% else %}
                                     {% if survey_media.bank_account or customer.bank_account_photo %}
@@ -418,10 +466,26 @@
                             <span class="text-muted mb-0">Current Bill:</span>
                             <div class="text-end d-flex align-items-center justify-content-end flex-wrap gap-2">
                                 {% for media in survey_media.current_bill %}
-                                <img src="{{ media.file.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="Current Bill {{ forloop.counter }}">
+                                    {% if ".pdf" in media.file.name|lower %}
+                                    <a href="{{ media.file.url }}" target="_blank" class="text-decoration-none" title="View PDF Document">
+                                        <div class="d-flex align-items-center justify-content-center bg-light rounded shadow-sm border hover-overlay" style="height: 50px; width: 80px; transition: 0.2s;">
+                                            <i class="bi bi-filetype-pdf text-danger fs-3"></i>
+                                        </div>
+                                    </a>
+                                    {% else %}
+                                    <img src="{{ media.file.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="Current Bill {{ forloop.counter }}">
+                                    {% endif %}
                                 {% endfor %}
                                 {% if not survey_media.current_bill and customer.current_bill_photo %}
-                                <img src="{{ customer.current_bill_photo.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="Current Bill (Legacy)">
+                                    {% if ".pdf" in customer.current_bill_photo.name|lower %}
+                                    <a href="{{ customer.current_bill_photo.url }}" target="_blank" class="text-decoration-none" title="View PDF Document">
+                                        <div class="d-flex align-items-center justify-content-center bg-light rounded shadow-sm border hover-overlay" style="height: 50px; width: 80px; transition: 0.2s;">
+                                            <i class="bi bi-filetype-pdf text-danger fs-3"></i>
+                                        </div>
+                                    </a>
+                                    {% else %}
+                                    <img src="{{ customer.current_bill_photo.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="Current Bill (Legacy)">
+                                    {% endif %}
                                 {% endif %}
                                 {% if not survey_media.current_bill and not customer.current_bill_photo %}
                                 <span class="text-muted small">Not Uploaded</span>
