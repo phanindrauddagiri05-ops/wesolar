@@ -21,6 +21,7 @@ urlpatterns = [
     path('office-dashboard/', views.office_dashboard, name='office_dashboard'),
     path('office/update/', views.office_update_home, name='office_update_home'),
     path('office/update-status/<int:pk>/', views.office_update_status, name='office_update_status'),
+    path('office/approve/<int:pk>/', views.approve_survey, name='approve_survey'),
 
     # Profile Update
     path('profile/update/', views.update_profile, name='update_profile'),

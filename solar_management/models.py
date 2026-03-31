@@ -102,7 +102,7 @@ class CustomerSurvey(models.Model):
     subsidy_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
     office_remarks = models.TextField(blank=True)
 
-    WORKFLOW_STATUS_CHOICES = [('Pending', 'Pending'), ('Completed', 'Completed')]
+    WORKFLOW_STATUS_CHOICES = [('Pending', 'Pending'), ('Approved', 'Approved'), ('Completed', 'Completed')]
     workflow_status = models.CharField(max_length=20, choices=WORKFLOW_STATUS_CHOICES, default='Pending')
     
     # Metadata

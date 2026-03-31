@@ -569,8 +569,8 @@ def installer_dashboard(request):
         if hasattr(survey, 'installation'):
             # It has been claimed/started.
             completed_installations.append(survey)
-        else:
-            # No installation yet -> Available for anyone to claim
+        elif survey.workflow_status == 'Approved':
+            # Only show to installer after Office accepts
             pending_installations.append(survey)
             
     pending_paginator = Paginator(pending_installations, 10)
@@ -826,6 +826,16 @@ def office_update_status(request, pk):
         'bank_form': bank_form,
         'survey': survey
     })
+
+@login_required
+@user_passes_test(is_office_staff)
+def approve_survey(request, pk):
+    """Quick approve an application from the dashboard."""
+    survey = get_object_or_404(CustomerSurvey, pk=pk)
+    survey.workflow_status = 'Approved'
+    survey.save(update_fields=['workflow_status'])
+    messages.success(request, f"Application for {survey.customer_name} has been approved and sent to Installer.")
+    return redirect('office_dashboard')
 
 @login_required
 @user_passes_test(is_office_staff)
@@ -1137,8 +1147,8 @@ def get_survey_by_phone(request):
             'message': 'No customer found with this phone number.'
         })
     
-    # Filter out surveys that already have installations
-    available_surveys = [s for s in surveys if not hasattr(s, 'installation')]
+    # Filter out surveys that already have installations AND must be Approved
+    available_surveys = [s for s in surveys if not hasattr(s, 'installation') and s.workflow_status == 'Approved']
     
     if not available_surveys:
         return JsonResponse({
@@ -1219,6 +1229,12 @@ def get_survey_by_id(request):
             return JsonResponse({
                 'found': False,
                 'message': f'Installation already exists for this application.'
+            })
+            
+        if survey.workflow_status != 'Approved':
+            return JsonResponse({
+                'found': False,
+                'message': f'This application is pending Office approval and is not yet available for installation.'
             })
         
         # Return full customer details
@@ -1463,7 +1479,7 @@ def export_solar_data(request):
         # Determine access
         is_staff = request.user.is_staff
         is_office = hasattr(request.user, 'userprofile') and request.user.userprofile.role == 'Office'
-        office_allowed_types = {'installer', 'material_dispatch'}
+        office_allowed_types = {'installer', 'material_dispatch', 'enquiries'}
 
         if not is_staff and not (is_office and report_type in office_allowed_types):
             from django.http import HttpResponseForbidden
@@ -1545,12 +1561,12 @@ def export_solar_data(request):
 
         # 3. ENQUIRIES REPORT
         elif report_type == 'enquiries':
-            headers = ['Name', 'Mobile', 'Email', 'Address', 'Date Received']
+            headers = ['Name', 'Mobile', 'Email', 'Address', 'Remarks', 'Date Received']
             ws.append(headers)
             enquiries = Enquiry.objects.all().order_by('-created_at')
             for e in enquiries:
                 ws.append([
-                    e.name, e.mobile_number, e.email, e.address, 
+                    e.name, e.mobile_number, e.email, e.address, e.remarks or '',
                     e.created_at.strftime("%Y-%m-%d %H:%M")
                 ])
 

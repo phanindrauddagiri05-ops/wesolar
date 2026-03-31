@@ -592,7 +592,7 @@ class OfficeStatusForm(forms.ModelForm):
             'office_remarks'
         ]
         labels = {
-            'workflow_status': 'Installation Status',
+            'workflow_status': 'Approval / Installation Status',
             'discom_status': 'Discom Status',
             'net_metering_status': 'Net Metering Status',
             'subsidy_status': 'Subsidy Status',

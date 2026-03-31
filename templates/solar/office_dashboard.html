@@ -35,6 +35,45 @@
         font-weight: 600;
         letter-spacing: 0.5px;
     }
+
+    /* Fixed size action buttons for perfect alignment */
+    .btn-action {
+        width: 90px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.75rem;
+        border-radius: 50px;
+        transition: all 0.2s ease;
+        padding: 0 !important; /* Reset padding to ensure width/height take over */
+    }
+
+    .btn-action:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    /* Sticky Action Column */
+    .sticky-col {
+        position: sticky;
+        right: 0;
+        z-index: 10;
+        background-color: #ffffff !important;
+        border-left: 1px solid #dee2e6;
+        box-shadow: -4px 0 8px rgba(0,0,0,0.05);
+    }
+
+    thead th.sticky-col {
+        z-index: 20;
+        background-color: #f8f9fa !important;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+        scrollbar-width: thin;
+    }
 </style>
 
 <div class="container-fluid mt-4 px-3 px-md-4">
@@ -52,6 +91,10 @@
                 class="btn btn-outline-success shadow-sm">
                 <i class="bi bi-box-seam me-2"></i>Material Dispatch
             </a>
+            <a href="{% url 'export_solar_data' %}?type=enquiries"
+                class="btn btn-success shadow-sm">
+                <i class="bi bi-file-earmark-spreadsheet me-2"></i>Enquiries Report
+            </a>
             <a href="{% url 'update_profile' %}" class="btn btn-outline-primary shadow-sm">
                 <i class="bi bi-person-lines-fill me-2"></i>Update Profile
             </a>
@@ -61,7 +104,7 @@
     <div class="card shadow-sm border-0 bg-transparent">
         <div class="card-body p-0">
             <div class="table-responsive d-none d-md-block">
-                <table class="table table-hover align-middle mb-0 bg-white rounded-3 overflow-hidden shadow-sm">
+                <table class="table table-hover align-middle mb-0 bg-white rounded-3 shadow-sm" style="table-layout: auto; min-width: 1400px;">
                     <thead class="bg-light">
                         <tr>
                             <th class="py-3 px-4 text-secondary text-uppercase small" style="font-weight: 600;">Customer
@@ -78,8 +121,8 @@
                             </th>
                             <th class="py-3 text-secondary text-uppercase small" style="font-weight: 600;">Subsidy</th>
                             <th class="py-3 text-secondary text-uppercase small" style="font-weight: 600;">Remarks</th>
-                            <th class="py-3 px-4 text-secondary text-uppercase small text-center"
-                                style="font-weight: 600;">Action</th>
+                            <th class="py-3 px-3 text-secondary text-uppercase small text-center sticky-col"
+                                style="font-weight: 600; width: 280px; min-width: 280px;">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -89,12 +132,12 @@
                             <td class="py-3 text-dark">
                                 {{survey.aadhar_linked_phone|default:"-" }}</td>
                             <td class="py-3 text-dark">{{ survey.installation_date|date:"d M Y"|default:"-" }}</td>
-                            <td class="py-3">
-                                <span
-                                    class="badge {% if survey.workflow_status == 'Completed' %}bg-success{% else %}bg-warning text-dark{% endif %} status-badge">
-                                    {{ survey.workflow_status }}
-                                </span>
-                            </td>
+                                    <td class="py-3">
+                                        <span
+                                            class="badge {% if survey.workflow_status == 'Completed' %}bg-success{% elif survey.workflow_status == 'Approved' %}bg-info text-white{% else %}bg-warning text-dark{% endif %} status-badge">
+                                            {{ survey.workflow_status }}
+                                        </span>
+                                    </td>
                             <td class="py-3">
                                 <span
                                     class="badge {% if survey.discom_status == 'Completed' %}bg-success{% else %}bg-warning text-dark{% endif %} status-badge">
@@ -114,15 +157,23 @@
                                 </span>
                             </td>
                             <td class="py-3 text-dark small"
-                                style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                style="max-width: 120px;">
                                 {{ survey.office_remarks|default:"-" }}
                             </td>
-                            <td class="py-3 px-4 text-center">
-                                <div class="d-flex gap-2 justify-content-center">
+                            <td class="py-3 px-3 sticky-col" style="width: 280px; min-width: 280px; white-space: nowrap;">
+                                <div class="d-flex gap-2 align-items-center justify-content-center">
                                     <a href="{% url 'site_detail' survey.id %}"
-                                        class="btn btn-sm btn-outline-info rounded-pill" target="_blank" title="View Details">View</a>
+                                        class="btn btn-outline-info btn-action" target="_blank" title="View Details">View</a>
                                     <a href="{% url 'office_update_status' survey.id %}"
-                                        class="btn btn-sm btn-outline-primary rounded-pill">Update</a>
+                                        class="btn btn-outline-primary btn-action">Update</a>
+                                    {% if survey.workflow_status == 'Pending' %}
+                                    <a href="{% url 'approve_survey' survey.id %}"
+                                        class="btn btn-success btn-action" title="Approve & Send to Installer">Approve</a>
+                                    {% elif survey.workflow_status == 'Approved' %}
+                                    <button class="btn btn-success btn-action" disabled>
+                                        <i class="bi bi-check-circle me-1"></i>Approved
+                                    </button>
+                                    {% endif %}
                                 </div>
                             </td>
                         </tr>
@@ -139,14 +190,23 @@
                 {% for survey in surveys %}
                 <div class="mobile-card">
                     <div class="card-body p-4">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="fw-bold text-dark mb-0 text-truncate" style="max-width: 55%;">
-                                {{survey.customer_name }}</h5>
-                            <div class="d-flex gap-2">
+                        <div class="mb-4">
+                            <h5 class="fw-bold text-dark mb-3" style="font-size: 1.1rem; line-height: 1.4;">
+                                {{ survey.customer_name }}
+                            </h5>
+                            <div class="d-flex gap-2 flex-wrap">
                                 <a href="{% url 'site_detail' survey.id %}"
-                                    class="btn btn-sm btn-outline-info rounded-pill px-3" target="_blank">View</a>
+                                    class="btn btn-outline-info btn-action flex-fill" target="_blank" style="min-width: 80px;">View</a>
                                 <a href="{% url 'office_update_status' survey.id %}"
-                                    class="btn btn-sm btn-primary rounded-pill px-3">Update</a>
+                                    class="btn btn-primary btn-action flex-fill" style="min-width: 80px;">Update</a>
+                                {% if survey.workflow_status == 'Pending' %}
+                                <a href="{% url 'approve_survey' survey.id %}"
+                                    class="btn btn-success btn-action flex-fill" style="min-width: 85px;">Approve</a>
+                                {% elif survey.workflow_status == 'Approved' %}
+                                <button class="btn btn-success btn-action flex-fill" disabled style="min-width: 95px;">
+                                    <i class="bi bi-check-circle me-1"></i>Approved
+                                </button>
+                                {% endif %}
                             </div>
                         </div>
                         <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light">
@@ -161,7 +221,7 @@
                         <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light">
                             <span class="mobile-label">Installation</span>
                             <span
-                                class="badge {% if survey.workflow_status == 'Completed' %}bg-success{% else %}bg-warning text-dark{% endif %} status-badge">{{survey.workflow_status}}</span>
+                                class="badge {% if survey.workflow_status == 'Completed' %}bg-success{% elif survey.workflow_status == 'Approved' %}bg-info text-white{% else %}bg-warning text-dark{% endif %} status-badge">{{survey.workflow_status}}</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-light">
                             <span class="mobile-label">Discom</span>
