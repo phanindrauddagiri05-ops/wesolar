@@ -169,7 +169,7 @@
                                     {% if survey.workflow_status == 'Pending' %}
                                     <a href="{% url 'approve_survey' survey.id %}"
                                         class="btn btn-success btn-action" title="Approve & Send to Installer">Approve</a>
-                                    {% elif survey.workflow_status == 'Approved' %}
+                                    {% elif survey.workflow_status == 'Approved' or survey.workflow_status == 'Completed' %}
                                     <button class="btn btn-success btn-action" disabled>
                                         <i class="bi bi-check-circle me-1"></i>Approved
                                     </button>
@@ -202,7 +202,7 @@
                                 {% if survey.workflow_status == 'Pending' %}
                                 <a href="{% url 'approve_survey' survey.id %}"
                                     class="btn btn-success btn-action flex-fill" style="min-width: 85px;">Approve</a>
-                                {% elif survey.workflow_status == 'Approved' %}
+                                {% elif survey.workflow_status == 'Approved' or survey.workflow_status == 'Completed' %}
                                 <button class="btn btn-success btn-action flex-fill" disabled style="min-width: 95px;">
                                     <i class="bi bi-check-circle me-1"></i>Approved
                                 </button>
