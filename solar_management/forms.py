@@ -83,12 +83,12 @@ class SurveyForm(forms.ModelForm):
              'mefma_status': forms.Select(choices=[(True, 'Yes'), (False, 'No')]),
              'registration_status': forms.Select(choices=[(True, 'Yes'), (False, 'No')]),
              'registration_date': forms.DateInput(attrs={'type': 'date'}),
-             'customer_name': forms.TextInput(attrs={'pattern': '[a-zA-Z\s]+', 'oninput': "this.value = this.value.replace(/[^a-zA-Z\s]/g, '')", 'title': 'Name must contain only letters.'}),
-             'aadhar_linked_phone': forms.TextInput(attrs={'pattern': '\d{10}', 'maxlength': '10', 'minlength': '10', 'oninput': "this.value = this.value.replace(/[^0-9]/g, '')", 'title': 'Phone number must be exactly 10 digits.'}),
+             'customer_name': forms.TextInput(attrs={'pattern': r'[a-zA-Z\s]+', 'oninput': "this.value = this.value.replace(/[^a-zA-Z\s]/g, '')", 'title': 'Name must contain only letters.'}),
+             'aadhar_linked_phone': forms.TextInput(attrs={'pattern': r'\d{10}', 'maxlength': '10', 'minlength': '10', 'oninput': "this.value = this.value.replace(/[^0-9]/g, '')", 'title': 'Phone number must be exactly 10 digits.'}),
              'email': forms.EmailInput(attrs={'pattern': '[^, ]+', 'title': 'Enter a single valid email address.'}),
-             'rp_name': forms.TextInput(attrs={'pattern': '[a-zA-Z\s]+', 'oninput': "this.value = this.value.replace(/[^a-zA-Z\s]/g, '')", 'title': 'RP Name must contain only letters.'}),
-             'co_name': forms.TextInput(attrs={'pattern': '[a-zA-Z\s]+', 'oninput': "this.value = this.value.replace(/[^a-zA-Z\s]/g, '')", 'title': 'CO Name must contain only letters.'}),
-             'co_phone_number': forms.TextInput(attrs={'pattern': '\d{10}', 'maxlength': '10', 'minlength': '10', 'oninput': "this.value = this.value.replace(/[^0-9]/g, '')", 'title': 'Phone number must be exactly 10 digits.'}),
+             'rp_name': forms.TextInput(attrs={'pattern': r'[a-zA-Z\s]+', 'oninput': "this.value = this.value.replace(/[^a-zA-Z\s]/g, '')", 'title': 'RP Name must contain only letters.'}),
+             'co_name': forms.TextInput(attrs={'pattern': r'[a-zA-Z\s]+', 'oninput': "this.value = this.value.replace(/[^a-zA-Z\s]/g, '')", 'title': 'CO Name must contain only letters.'}),
+             'co_phone_number': forms.TextInput(attrs={'pattern': r'\d{10}', 'maxlength': '10', 'minlength': '10', 'oninput': "this.value = this.value.replace(/[^0-9]/g, '')", 'title': 'Phone number must be exactly 10 digits.'}),
              'measurements': forms.TextInput(attrs={'title': 'Alphanumeric values allowed.'}),
              'measurements': forms.TextInput(attrs={'title': 'Alphanumeric values allowed.'}),
              'area': forms.Select(choices=[
@@ -678,8 +678,8 @@ class BankDetailsForm(forms.ModelForm):
             'agreed_amount',
         ]
         widgets = {
-             'parent_bank': forms.TextInput(attrs={'pattern': '[a-zA-Z\s]+', 'oninput': "this.value = this.value.replace(/[^a-zA-Z\s]/g, '')", 'title': 'Bank Name must contain only letters.'}),
-             'loan_applied_bank': forms.TextInput(attrs={'pattern': '[a-zA-Z\s]+', 'oninput': "this.value = this.value.replace(/[^a-zA-Z\s]/g, '')", 'title': 'Bank Name must contain only letters.'}),
+             'parent_bank': forms.TextInput(attrs={'pattern': r'[a-zA-Z\s]+', 'oninput': "this.value = this.value.replace(/[^a-zA-Z\s]/g, '')", 'title': 'Bank Name must contain only letters.'}),
+             'loan_applied_bank': forms.TextInput(attrs={'pattern': r'[a-zA-Z\s]+', 'oninput': "this.value = this.value.replace(/[^a-zA-Z\s]/g, '')", 'title': 'Bank Name must contain only letters.'}),
              'first_loan_date': forms.DateInput(attrs={'type': 'date'}),
              'second_loan_date': forms.DateInput(attrs={'type': 'date'}),
         }
