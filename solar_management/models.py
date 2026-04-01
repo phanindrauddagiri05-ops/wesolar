@@ -91,6 +91,7 @@ class CustomerSurvey(models.Model):
     registration_date = models.DateField(null=True, blank=True)
     
     parent_bank_photo = models.FileField(upload_to='surveys/documents/', null=True, blank=True, help_text="Photo/Scan of Parent Bank Front Page")
+    property_tax_photo = models.FileField(upload_to='surveys/documents/', null=True, blank=True, help_text="Photo/Scan of Property Tax")
 
     # Office Tracking Fields
     STATUS_CHOICES = [('Pending', 'Pending'), ('Completed', 'Completed')]
@@ -159,6 +160,12 @@ class CustomerSurvey(models.Model):
     def current_bank_account_photo_url(self):
         if self.bank_account_photo: return self.bank_account_photo.url
         m = self.media_files.filter(media_type='bank_account').first()
+        return m.file.url if m and m.file else None
+
+    @property
+    def current_property_tax_photo_url(self):
+        if self.property_tax_photo: return self.property_tax_photo.url
+        m = self.media_files.filter(media_type='property_tax').first()
         return m.file.url if m and m.file else None
 
     @property
@@ -278,6 +285,7 @@ class SurveyMedia(models.Model):
         ('current_bill', 'Current Bill'),
         ('bank_account', 'Bank Account'),
         ('parent_bank', 'Parent Bank'),
+        ('property_tax', 'Property Tax'),
     ]
     survey = models.ForeignKey(CustomerSurvey, on_delete=models.CASCADE, related_name='media_files')
     file = models.FileField(upload_to='surveys/media/')

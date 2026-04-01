@@ -36,6 +36,7 @@ class SurveyForm(forms.ModelForm):
     current_bill_photo = MultipleFileField(required=False, label="Current Electricity Bill Photo")
     bank_account_photo = MultipleFileField(required=False, label="Bank Account Photo")
     parent_bank_photo = MultipleFileField(required=False, label="Parent Bank Front Page Photo")
+    property_tax_photo = MultipleFileField(required=False, label="Property Tax Photo")
 
     class Meta:
         model = CustomerSurvey
@@ -77,6 +78,7 @@ class SurveyForm(forms.ModelForm):
             'current_bill_photo': 'Current Electricity Bill Photo',
             'bank_account_photo': 'Bank Account Photo',
             'parent_bank_photo': 'Parent Bank Front Page Photo',
+            'property_tax_photo': 'Property Tax Photo',
         }
         widgets = {
              'gps_coordinates': forms.TextInput(attrs={'placeholder': 'Latitude, Longitude'}),
@@ -110,7 +112,7 @@ class SurveyForm(forms.ModelForm):
 
 
     # Image fields that should be optional when editing
-    IMAGE_FIELDS = ['roof_photo', 'pan_card_photo', 'aadhar_photo', 'current_bill_photo', 'bank_account_photo', 'parent_bank_photo']
+    IMAGE_FIELDS = ['roof_photo', 'pan_card_photo', 'aadhar_photo', 'current_bill_photo', 'bank_account_photo', 'parent_bank_photo', 'property_tax_photo']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -121,7 +123,7 @@ class SurveyForm(forms.ModelForm):
                     self.fields[field_name].required = False
         else:
             # For new records, make mandatory fields required to trigger browser-side validation
-            mandatory_photos = ['roof_photo', 'pan_card_photo', 'aadhar_photo', 'current_bill_photo', 'bank_account_photo', 'parent_bank_photo']
+            mandatory_photos = ['roof_photo', 'pan_card_photo', 'aadhar_photo', 'current_bill_photo', 'bank_account_photo', 'parent_bank_photo', 'property_tax_photo']
             for field_name in mandatory_photos:
                 if field_name in self.fields:
                     self.fields[field_name].required = True
@@ -219,7 +221,9 @@ class SurveyForm(forms.ModelForm):
         roof_photo = cleaned_data.get('roof_photo')
         pan_card_photo = cleaned_data.get('pan_card_photo')
         aadhar_photo = cleaned_data.get('aadhar_photo')
-        current_bill_photo = cleaned_data.get('current_bill_photo')
+        bank_account_photo = cleaned_data.get('bank_account_photo')
+        parent_bank_photo = cleaned_data.get('parent_bank_photo')
+        property_tax_photo = cleaned_data.get('property_tax_photo')
 
         registration_status = cleaned_data.get('registration_status')
         registration_date = cleaned_data.get('registration_date')
@@ -249,6 +253,9 @@ class SurveyForm(forms.ModelForm):
 
             if not current_bill_photo:
                 self.add_error('current_bill_photo', "Current Electricity Bill photo is mandatory.")
+                
+            if not property_tax_photo:
+                self.add_error('property_tax_photo', "Property Tax photo is mandatory.")
                 
             if mefma_status:
                 if not rp_name:

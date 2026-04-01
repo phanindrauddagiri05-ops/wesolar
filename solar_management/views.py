@@ -728,6 +728,8 @@ def download_images(request, survey_id):
         images.append((f'bank_account{os.path.splitext(survey.bank_account_photo.name)[1]}', survey.bank_account_photo))
     if getattr(survey, 'parent_bank_photo', None):
         images.append((f'parent_bank{os.path.splitext(survey.parent_bank_photo.name)[1]}', survey.parent_bank_photo))
+    if getattr(survey, 'property_tax_photo', None):
+        images.append((f'property_tax{os.path.splitext(survey.property_tax_photo.name)[1]}', survey.property_tax_photo))
 
     if hasattr(survey, 'installation'):
         inst = survey.installation
@@ -988,6 +990,7 @@ def survey_form_view(request):
                 'current_bill_photo': 'current_bill',
                 'bank_account_photo': 'bank_account',
                 'parent_bank_photo': 'parent_bank',
+                'property_tax_photo': 'property_tax',
             }
             
             for field, m_type in media_map.items():
@@ -1421,6 +1424,7 @@ def update_survey(request, pk):
                 'current_bill_photo': 'current_bill',
                 'bank_account_photo': 'bank_account',
                 'parent_bank_photo': 'parent_bank',
+                'property_tax_photo': 'property_tax',
             }
             
             for field, m_type in media_map.items():
@@ -1499,7 +1503,7 @@ def export_solar_data(request):
         if report_type == 'field_engineer':
             headers = [
                 'Customer Name', 'SC No', 'Phone', 'Connection', 'Phase', 'Contracted Load (KW)', 'Feasibility KW',
-                'Aadhar No', 'PAN Card', 'Email', 'Aadhar Linked Phone', 'Bank Account No',
+                'Aadhar No', 'PAN Card', 'Email', 'Aadhar Linked Phone', 'Bank Account No', 'Property Tax Photo',
                 'Roof Type', 'Structure Type', 'Structure Height', 'Floors', 'Area', 'GPS Coordinates',
                 'Agreed Amount', 'Advance Paid', 'MEFMA Status', 'RP Name', 'RP Phone',
                 'FE Remarks', 'Reference Name', 'PMS Registration Number', 'Division', 'Registration Status',
@@ -1511,7 +1515,7 @@ def export_solar_data(request):
             for s in surveys:
                 ws.append([
                     s.customer_name, s.sc_no, s.aadhar_linked_phone, s.connection_type, s.phase, s.contracted_load, s.feasibility_kw,
-                    s.aadhar_no, s.pan_card, s.email, s.aadhar_linked_phone, s.bank_account_no,
+                    s.aadhar_no, s.pan_card, s.email, s.aadhar_linked_phone, s.bank_account_no, 'Uploaded' if s.property_tax_photo or s.media_files.filter(media_type='property_tax').exists() else 'Not Uploaded',
                     s.roof_type, s.structure_type, s.structure_height, s.floors if s.floors is not None else '', s.area, s.gps_coordinates,
                     s.agreed_amount, s.advance_paid, 'Yes' if s.mefma_status else 'No', s.rp_name, s.rp_phone_number,
                     s.fe_remarks, s.reference_name, s.pms_registration_number, s.division, 'Yes' if s.registration_status else 'No',

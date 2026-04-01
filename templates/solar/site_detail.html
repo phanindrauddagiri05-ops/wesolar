@@ -492,6 +492,36 @@
                                 {% endif %}
                             </div>
                         </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center gap-2">
+                            <span class="text-muted mb-0">Property Tax:</span>
+                            <div class="text-end d-flex align-items-center justify-content-end flex-wrap gap-2">
+                                {% for media in survey_media.property_tax %}
+                                    {% if ".pdf" in media.file.name|lower %}
+                                    <a href="{{ media.file.url }}" target="_blank" class="text-decoration-none" title="View PDF Document">
+                                        <div class="d-flex align-items-center justify-content-center bg-light rounded shadow-sm border hover-overlay" style="height: 50px; width: 80px; transition: 0.2s;">
+                                            <i class="bi bi-filetype-pdf text-danger fs-3"></i>
+                                        </div>
+                                    </a>
+                                    {% else %}
+                                    <img src="{{ media.file.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="Property Tax {{ forloop.counter }}">
+                                    {% endif %}
+                                {% endfor %}
+                                {% if not survey_media.property_tax and customer.property_tax_photo %}
+                                    {% if ".pdf" in customer.property_tax_photo.name|lower %}
+                                    <a href="{{ customer.property_tax_photo.url }}" target="_blank" class="text-decoration-none" title="View PDF Document">
+                                        <div class="d-flex align-items-center justify-content-center bg-light rounded shadow-sm border hover-overlay" style="height: 50px; width: 80px; transition: 0.2s;">
+                                            <i class="bi bi-filetype-pdf text-danger fs-3"></i>
+                                        </div>
+                                    </a>
+                                    {% else %}
+                                    <img src="{{ customer.property_tax_photo.url }}" class="viewable-image rounded shadow-sm border" style="height: 50px; width: 80px; object-fit: cover;" alt="Property Tax (Legacy)">
+                                    {% endif %}
+                                {% endif %}
+                                {% if not survey_media.property_tax and not customer.property_tax_photo %}
+                                <span class="text-muted small">Not Uploaded</span>
+                                {% endif %}
+                            </div>
+                        </li>
                         <li class="list-group-item d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
                             <span class="text-muted mb-1 mb-sm-0">Agreed Amount:</span>
                             <span class="fw-bold text-success text-start text-sm-end">₹ {{ customer.agreed_amount }}</span>

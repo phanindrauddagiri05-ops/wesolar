@@ -97,6 +97,20 @@
                             {% endif %}
                         </div>
                     </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            {{ form.property_tax_photo|as_crispy_field }}
+                            {% if is_update and form.instance.current_property_tax_photo_url %}
+                            <div class="mb-2"><small class="text-muted">Current:</small><br>
+                                <a href="{{ form.instance.current_property_tax_photo_url }}" target="_blank">
+                                    <img src="{{ form.instance.current_property_tax_photo_url }}"
+                                        style="max-height:60px; max-width:120px;" class="rounded border shadow-sm">
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6"></div>
+                    </div>
 
                 </div>
 
@@ -502,7 +516,8 @@
                     { id: 'id_aadhar_photo', name: 'Aadhar Card Photo' },
                     { id: 'id_current_bill_photo', name: 'Current Electricity Bill Photo' },
                     { id: 'id_bank_account_photo', name: 'Bank Account Photo' },
-                    { id: 'id_parent_bank_photo', name: 'Parent Bank Front Page Photo' }
+                    { id: 'id_parent_bank_photo', name: 'Parent Bank Front Page Photo' },
+                    { id: 'id_property_tax_photo', name: 'Property Tax Photo' }
                 ];
 
                 mandatoryPhotoFields.forEach(field => {
