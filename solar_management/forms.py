@@ -221,6 +221,7 @@ class SurveyForm(forms.ModelForm):
         roof_photo = cleaned_data.get('roof_photo')
         pan_card_photo = cleaned_data.get('pan_card_photo')
         aadhar_photo = cleaned_data.get('aadhar_photo')
+        current_bill_photo = cleaned_data.get('current_bill_photo')
         bank_account_photo = cleaned_data.get('bank_account_photo')
         parent_bank_photo = cleaned_data.get('parent_bank_photo')
         property_tax_photo = cleaned_data.get('property_tax_photo')
