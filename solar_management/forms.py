@@ -92,7 +92,21 @@ class SurveyForm(forms.ModelForm):
              'co_name': forms.TextInput(attrs={'pattern': r'[a-zA-Z\s]+', 'oninput': "this.value = this.value.replace(/[^a-zA-Z\s]/g, '')", 'title': 'CO Name must contain only letters.'}),
              'co_phone_number': forms.TextInput(attrs={'pattern': r'\d{10}', 'maxlength': '10', 'minlength': '10', 'oninput': "this.value = this.value.replace(/[^0-9]/g, '')", 'title': 'Phone number must be exactly 10 digits.'}),
              'measurements': forms.TextInput(attrs={'title': 'Alphanumeric values allowed.'}),
-             'measurements': forms.TextInput(attrs={'title': 'Alphanumeric values allowed.'}),
+             # Use TextInput for money fields to avoid browser-level decimal validation errors on Android
+             'agreed_amount': forms.TextInput(attrs={
+                 'inputmode': 'decimal',
+                 'pattern': r'[0-9]+(\.[0-9]{1,2})?',
+                 'placeholder': 'e.g. 50000',
+                 'title': 'Enter a valid amount (up to 2 decimal places).',
+                 'oninput': "this.value = this.value.replace(/[^0-9.]/g, '')",
+             }),
+             'advance_paid': forms.TextInput(attrs={
+                 'inputmode': 'decimal',
+                 'pattern': r'[0-9]+(\.[0-9]{1,2})?',
+                 'placeholder': 'e.g. 5000',
+                 'title': 'Enter a valid amount (up to 2 decimal places).',
+                 'oninput': "this.value = this.value.replace(/[^0-9.]/g, '')",
+             }),
              'area': forms.Select(choices=[
                 ('', '--- Select Area ---'),
                 ('Rajahmundry', 'Rajahmundry'),
@@ -198,6 +212,35 @@ class SurveyForm(forms.ModelForm):
             if ',' in email or ' ' in email:
                  raise ValidationError("Please enter a single valid email address.")
         return email
+
+    def clean_agreed_amount(self):
+        """Normalize agreed_amount: strip spaces, handle leading zeros, validate as decimal."""
+        from decimal import Decimal, InvalidOperation
+        value = self.cleaned_data.get('agreed_amount')
+        if value is None:
+            raise ValidationError("Agreed Amount is required.")
+        try:
+            # value may already be Decimal if Django parsed it; convert to string to normalize
+            normalized = Decimal(str(value).strip()).quantize(Decimal('0.01'))
+            if normalized < 0:
+                raise ValidationError("Agreed Amount cannot be negative.")
+            return normalized
+        except InvalidOperation:
+            raise ValidationError("Enter a valid amount (e.g. 50000 or 50000.00).")
+
+    def clean_advance_paid(self):
+        """Normalize advance_paid: strip spaces, handle leading zeros, validate as decimal."""
+        from decimal import Decimal, InvalidOperation
+        value = self.cleaned_data.get('advance_paid')
+        if value is None:
+            return Decimal('0.00')
+        try:
+            normalized = Decimal(str(value).strip()).quantize(Decimal('0.01'))
+            if normalized < 0:
+                raise ValidationError("Advance Paid cannot be negative.")
+            return normalized
+        except InvalidOperation:
+            raise ValidationError("Enter a valid amount (e.g. 5000 or 5000.00).")
 
 
 
